@@ -6,6 +6,9 @@ def print_h5ad_info(h5ad_file):
     # Laden der AnnData-Datei
     adata = sc.read_h5ad(h5ad_file)
 
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.width", None)
+
     # --- Überprüfung der Hauptstruktur ---
     print("===================================")
     print("AnnData Objekt Struktur:")
@@ -35,9 +38,14 @@ def print_h5ad_info(h5ad_file):
     print(count_matrix_df.iloc[:40, :5])
     print(f"\nDataFrame-Dimensionen: {count_matrix_df.shape}")
 
+    for i in range(14):
+        cols = [f"gene_ids-{i}", f"feature_types-{i}", f"genome-{i}", f"n_cells-{i}"]
+        print(f"\n--- Dataset {i} ---")
+        print(adata.var[cols].head())
+
 
 def main():
-    h5ad_file = "database/GSE272513_RAW/GSM840378/GSM8403781_merged.h5ad"
+    h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad"
     print_h5ad_info(h5ad_file)
 
 if __name__ == '__main__':

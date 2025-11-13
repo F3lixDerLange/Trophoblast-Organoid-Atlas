@@ -14,14 +14,17 @@ def convert_mtx2h5(mtx_folder):
         for filename in os.listdir(sub_entry_path):
             if filename.endswith(".mtx") or filename.endswith(".mtx.gz"):
                 basename = os.path.basename(filename)
-                prefix_mtx = basename.removesuffix("matrix.mtx.gz")
+                if filename.endswith(".mtx.gz"):
+                    prefix_mtx = basename.removesuffix("matrix.mtx.gz")
+                elif filename.endswith(".mtx"):
+                    prefix_mtx = basename.removesuffix("matrix.mtx")
                 print(prefix_mtx)
 
                 try:
                     adata = sc.read_10x_mtx(sub_entry_path,
                                             var_names='gene_symbols',
                                             cache=True,
-                                            prefix=prefix_mtx
+                                            prefix=prefix_mtx,
                     )
                 except Exception as e:
                     print(f"Error using sc.read_10x_mtx: {e}")
