@@ -1,4 +1,4 @@
-sample, unfiltered, batch_col
-EMO6_hESC, /nfs/proj/tropho_org_atlas/database/Shibata/Shibata_EMO6_hESC/GSM7714458_EMO6_hor_merged.h5ad, batch1
-CT30Org1, /nfs/proj/tropho_org_atlas/database/Karvas/Karvas_CT30_hTSC_Org1/Karvas_CT30_hTSC_organoid_merged.h5ad, batch2
-EVT-D_hTSC_CT27, /nfs/proj/tropho_org_atlas/database/Shannon_Baltayeva/Shannon_Baltayeva_EVT-D_hTSC_CT27/Shannon_Baltayeva_EVT-D_hTSC_CT27_merged.h5ad, batch3
+sample, unfiltered
+EMO6_hESC, /nfs/proj/tropho_org_atlas/database/Shibata/Shibata_EMO6_hESC/GSM7714458_EMO6_hor_merged.h5ad
+CT30Org1, /nfs/proj/tropho_org_atlas/database/Karvas/Karvas_CT30_hTSC_Org1/Karvas_CT30_hTSC_organoid_merged.h5ad
+EVT-D_hTSC_CT27, /nfs/proj/tropho_org_atlas/database/Shannon_Baltayeva/Shannon_Baltayeva_EVT-D_hTSC_CT27/Shannon_Baltayeva_EVT-D_hTSC_CT27_merged.h5ad
