@@ -1,5 +1,8 @@
+import sys
+
 import scanpy as sc
 import pandas as pd
+import os
 
 def print_h5ad_info(h5ad_file):
 
@@ -38,14 +41,17 @@ def print_h5ad_info(h5ad_file):
     print(count_matrix_df.iloc[:40, :5])
     print(f"\nDataFrame-Dimensionen: {count_matrix_df.shape}")
 
-    for i in range(14):
-        cols = [f"gene_ids-{i}", f"feature_types-{i}", f"genome-{i}", f"n_cells-{i}"]
-        print(f"\n--- Dataset {i} ---")
-        print(adata.var[cols].head())
+    if "cellxgene" in os.path.basename(h5ad_file):
+        for i in range(14):
+            cols = [f"gene_ids-{i}", f"feature_types-{i}", f"genome-{i}", f"n_cells-{i}"]
+            print(f"\n--- Dataset {i} ---")
+            print(adata.var[cols].head())
 
 
 def main():
-    h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad"
+    h5ad_file = "/Users/felixlang/Downloads/merged.h5ad"
+    # h5ad_file = "database/Shibata/Shibata_EMO6_hESC/GSM7714458_EMO6_hor_merged.h5ad"
+    # h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad"
     print_h5ad_info(h5ad_file)
 
 if __name__ == '__main__':

@@ -1,10 +1,7 @@
 import argparse
-from xml.sax.handler import all_features
-
 import scanpy as sc
-import pandas as pd
 import os
-import sys
+
 
 
 def read_docs(db_dir):
