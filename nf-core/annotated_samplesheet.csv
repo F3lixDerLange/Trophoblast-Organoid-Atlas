@@ -1,0 +1,4 @@
+sample, unfiltered
+Shibata, /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org.annotated.h5ad
+Arutyunyan_PTO, /nfs/proj/tropho_org_atlas/database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad
+Arutyunyan_TSC, /nfs/proj/tropho_org_atlas/database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene.h5ad
