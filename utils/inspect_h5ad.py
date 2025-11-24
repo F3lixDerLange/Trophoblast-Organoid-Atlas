@@ -6,7 +6,6 @@ import os
 
 def print_h5ad_info(h5ad_file):
 
-    # Laden der AnnData-Datei
     adata = sc.read_h5ad(h5ad_file)
 
     pd.set_option("display.max_columns", None)
@@ -31,6 +30,9 @@ def print_h5ad_info(h5ad_file):
     print(f"Anzahl Gene (var): {adata.n_vars}")
     print("===================================")
 
+    print("Unique cell type annotation:")
+    print(adata.obs['cell_annotation'].value_counts())
+
     count_matrix_df = pd.DataFrame(
         adata.X.toarray().T,
         index=adata.var_names,  # Set gene names as the rows names
@@ -49,8 +51,10 @@ def print_h5ad_info(h5ad_file):
 
 
 def main():
-    h5ad_file = "/Users/felixlang/Downloads/merged.h5ad"
+    # h5ad_file = "processed_data/merged_hvg.h5ad"
     # h5ad_file = "database/Shibata/Shibata_EMO6_hESC/GSM7714458_EMO6_hor_merged.h5ad"
+    # h5ad_file = "database/Shibata/GSE241052_ari_org.annotated.h5ad"
+    h5ad_file = "database/Shannon_McNeil/Shannon_McNeil_TBp_EVT_D/GSM6664615_DPT_merged.h5ad"
     # h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad"
     print_h5ad_info(h5ad_file)
 
