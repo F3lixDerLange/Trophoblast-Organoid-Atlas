@@ -1,0 +1,12 @@
+datasets:
+  - name: Arutyunyan_Organoid_PTO
+    path: database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad
+    label_col: cell_annotation
+
+  - name: Arutyunyan_Organoid_TSC
+    path: database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene.h5ad
+    label_col: cell_annotation
+
+  - name: Shibata
+    path: database/Shibata/GSE241052_ari_org.annotated.h5ad
+    label_col: celltype
