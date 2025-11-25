@@ -1,6 +1,11 @@
+import numpy as np
+import pandas as pd
 import scanpy as sc
 import scmappy as smp
 import matplotlib.pyplot as plt
+from scipy.optimize import linear_sum_assignment
+import plot_analysis
+
 import utils
 
 def scmap_comparison(datasets):
@@ -8,7 +13,7 @@ def scmap_comparison(datasets):
 
     for i, ref_ds in enumerate(datasets):
         for j, target_ds in enumerate(datasets):
-            if i == j:
+            if i <= j:
                 continue  # skip self mapping
 
             ref_name = ref_ds["name"]
@@ -24,9 +29,9 @@ def scmap_comparison(datasets):
             ref_adata_common_genes, target_adata_common_genes = utils.common_genes(ref_ds, target_ds)
             sc.pp.highly_variable_genes(ref_adata_common_genes, flavor="seurat_v3")
 
-            print(f"ref = {ref_adata_common_genes}")
-            print(f"target = {target_adata_common_genes}")
-            print(target_label_col)
+            # print(f"ref = {ref_adata_common_genes}")
+            # print(f"target = {target_adata_common_genes}")
+            # print(target_label_col)
 
 
 
@@ -38,12 +43,14 @@ def scmap_comparison(datasets):
                                n_genes_selected=4000
                                )
 
-            print(f"ref = {ref_adata_common_genes}")
-            print(f"target = {target_adata_common_genes}")
+            # print(f"ref = {ref_adata_common_genes}")
+            # print(f"target = {target_adata_common_genes}")
             label_col = "cell_annotation" if "cell_annotation" in target_adata_common_genes.obs else "celltype"
-            print(target_adata_common_genes.obs[[f"{label_col}", 'scmap_annotation']])
-            print(target_adata_common_genes.obsm['X_umap'])
-            print("\n")
+            # print(target_adata_common_genes.obs[[f"{label_col}", 'scmap_annotation']])
+            # print(target_adata_common_genes.obsm['X_umap'])
+            # print("\n")
+
+            map_celltype(target_adata_common_genes, label_col, ref_name, target_name)
 
             plt.rcParams['figure.figsize'] = (12, 6)
             sc.pl.umap(target_adata_common_genes,
@@ -66,6 +73,41 @@ def scmap_comparison(datasets):
                                  key_added='scmap_annotation')
 
             print(target_adata_common_genes.obsm['X_umap'])
+
+
+def map_celltype(target_adata_common_genes, label_col, ref_name, target_name):
+    mapping, ct = optimal_celltype_mapping(target_adata_common_genes.obs[f"{label_col}"],
+                                           target_adata_common_genes.obs["scmap_annotation"])
+    print("cross-tabulation (contingency table) - frequency table")
+    print(ct)
+    print("\n--- Normalized Table (Row-wise: Percentage of Real Type) ---")
+    normalized_table = ct.div(ct.sum(axis=1), axis=0).round(2)
+    plot_analysis.similarity_df_heatmap(normalized_table, f"ref:{ref_name}_target:{target_name}")
+    print(normalized_table)
+    print("hungarian algorithm")
+    print(mapping)
+
+
+
+def optimal_celltype_mapping(real, transferred): # hungarian algorithm
+    ct = celltype_contingency(real, transferred)
+
+    # cost matrix = high cost for low counts
+    cost = ct.max().max() - ct.values
+    row_ind, col_ind = linear_sum_assignment(cost)
+
+    mapping = pd.Series(
+        index=ct.index[row_ind],      # real labels
+        data=ct.columns[col_ind],     # transferred labels
+        name="transferred_match"
+    )
+    return mapping, ct
+
+
+def celltype_contingency(real, transferred):
+    df = pd.DataFrame({"real": real, "trans": transferred})
+    ct = pd.crosstab(df["real"], df["trans"])
+    return ct
 
 
 def main():

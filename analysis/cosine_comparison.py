@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 import utils
+import plot_analysis
 
 def compute_cosign_similarity(datasets):
     results = {}
@@ -10,8 +11,8 @@ def compute_cosign_similarity(datasets):
 
     for i, ref_ds in enumerate(datasets):
         for j, target_ds in enumerate(datasets):
-            if i == j:
-                continue  # skip self mapping
+            if i <= j:
+                continue  # avoid duplicates
 
             ref_ds_name = ref_ds["name"]
             target_ds_name = target_ds["name"]
@@ -28,16 +29,15 @@ def compute_cosign_similarity(datasets):
             cosine_similarity = pairwise_cosine_similarity(ref_cell_profile, target_cell_profile)
             results[(ref_ds_name, target_ds_name)] = cosine_similarity
 
-            print(cosine_similarity)
-
+            print(cosine_similarity.shape)
+            plot_analysis.similarity_df_heatmap(cosine_similarity, f"ref:{ref_ds_name}_target:{target_ds_name}")
 
 
 def pairwise_cosine_similarity(profiles1, profiles2):
     sim = cosine_similarity(profiles1.values, profiles2.values)
     return pd.DataFrame(sim, index=profiles1.index, columns=profiles2.index)
 
-
-def compute_celltype_profiles(adata, label_col):
+def compute_celltype_profiles(adata, label_col):   # mean expression vectors
     labels = adata.obs[label_col].unique()
     X = adata.X.A if hasattr(adata.X, "A") else adata.X  # ensure dense or csr
 
