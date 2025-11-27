@@ -32,7 +32,8 @@ def print_h5ad_info(h5ad_file):
 
     print(adata.obs['sample'].value_counts())
     print("Unique cell type annotation:")
-    print(adata.obs['cell_annotation'].value_counts())
+    label_col = "cell_annotation" if "cell_annotation" in adata.obs else "celltype"
+    print(adata.obs[label_col].value_counts())
     print("X_pca:", adata.obsm.get("X_pca", None).shape if "X_pca" in adata.obsm else None)
     print("PCs:", adata.varm.get("PCs", None).shape if "PCs" in adata.varm else None)
 
@@ -54,9 +55,10 @@ def print_h5ad_info(h5ad_file):
 
 
 def main():
-    # h5ad_file = "processed_data/merged_hvg.h5ad"
+    # h5ad_file = "processed_data/Shibata_Karvas_Shannon_Baltayeva_merged_hvg.h5ad"
     # h5ad_file = "database/Shibata/Shibata_EMO6_hESC/GSM7714458_EMO6_hor_merged.h5ad"
     # h5ad_file = "database/Shibata/GSE241052_ari_org.annotated.h5ad"
+    # h5ad_file = "database/Shibata/GSE241052_ari_org_annotated_fixed.h5ad"
     # h5ad_file = "database/Shannon_McNeil/Shannon_McNeil_TBp_EVT_D/GSM6664615_DPT_merged.h5ad"
     h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad"
     print_h5ad_info(h5ad_file)

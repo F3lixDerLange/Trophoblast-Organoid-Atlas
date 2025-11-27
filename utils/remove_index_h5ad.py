@@ -18,7 +18,7 @@ def remove_index_h5ad(input_file):
         adata.raw.var.rename(columns={"_index": "raw_old_index"}, inplace=True)
     print("raw.var:", adata.raw.var.columns)
 
-    adata.write_h5ad(f"{os.path.basename(input_file)}_fixed.h5ad")
+    adata.write_h5ad(f"{input_file}_fixed.h5ad")
 
 def main():
     parser = argparse.ArgumentParser()

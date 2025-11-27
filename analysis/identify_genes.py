@@ -1,6 +1,8 @@
+import numpy as np
 import pandas as pd
 import scanpy as sc
 from typing import Literal
+import plot_analysis
 
 
 def generate_hvg_per_batch(hvg_file, sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "cell_ranger"):
@@ -10,7 +12,8 @@ def generate_hvg_per_batch(hvg_file, sc_flavor: Literal["seurat_v3_paper","seura
         adata,
         batch_key="batch",
         n_top_genes=None,  # keep all genes
-        flavor=sc_flavor
+        flavor=sc_flavor,
+        # min_mean=0.1
     )
     pd.set_option("display.max_columns", None)
     pd.set_option("display.width", None)
@@ -23,8 +26,9 @@ def generate_hvg_per_batch(hvg_file, sc_flavor: Literal["seurat_v3_paper","seura
     identify_batch_specific_genes(adata, sc_flavor=sc_flavor)
 
 def identify_conserved_genes(processed_adata, sc_flavor):
+    np.random.seed(42)
     print("Conserved genes:")
-    n_batches = processed_adata.obs["batch"].nunique()
+    n_batches = len(set(processed_adata.obs["batch"]))
     if sc_flavor == "cell_ranger":
         conserved_hvgs = processed_adata.var.index[processed_adata.var["highly_variable_intersection"]].tolist()
     else:
@@ -34,6 +38,10 @@ def identify_conserved_genes(processed_adata, sc_flavor):
         ].tolist()
     print(conserved_hvgs)
     print(len(conserved_hvgs))
+
+    subsample_common_genes = conserved_hvgs if len(conserved_hvgs) <= 50 else np.random.choice(conserved_hvgs, size=50, replace=True)
+    mean_expr_gene_batch_common_genes = processed_adata[: , subsample_common_genes]
+    mean_expression_per_gene_per_batch(mean_expr_gene_batch_common_genes)
 
 def identify_batch_specific_genes(processed_adata, sc_flavor):
     print("\nBatch Specific Genes (not in all batches)")
@@ -71,9 +79,26 @@ def identify_batch_specific_genes(processed_adata, sc_flavor):
     for key, val in batch_to_genes.items():
         print(key, val)
 
+
+def mean_expression_per_gene_per_batch(processed_adata):
+    batches = list(set(processed_adata.obs["batch"]))
+    batch_means = {}
+
+    for b in batches:
+        subset_batch = processed_adata[processed_adata.obs["batch"] == b, :]
+        X = subset_batch.X.A if hasattr(subset_batch.X, "A") else subset_batch.X
+        batch_means[b] = np.asarray(X.mean(axis=0)).ravel()
+
+    batch_mean_df = pd.DataFrame(batch_means, index=processed_adata.var_names).T
+
+    plot_analysis.common_gene_heatmap(batch_mean_df, f"Common Genes ({batch_mean_df.shape[1]}) per dataset")
+
+    print(batch_mean_df)
+
 def main():
-    sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "seurat_v3"
-    hvg_file = "processed_data/merged_hvg.h5ad"
+    sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "cell_ranger"
+    # hvg_file = "processed_data/Shibata_Karvas_Shannon_Baltayeva_merged_hvg.h5ad"
+    hvg_file = "processed_data/Shibata_Arutyunyan_merged_hvg.h5ad"
     generate_hvg_per_batch(hvg_file, sc_flavor)
 
 if __name__ == '__main__':

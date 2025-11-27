@@ -21,3 +21,21 @@ def similarity_df_heatmap(result_df, title):
 
     plt.tight_layout()
     plt.show()
+
+def common_gene_heatmap(df, title):
+    plt.figure(figsize=(int(1.25*df.shape[1]),10))
+    ax = sns.heatmap(
+        df,
+        annot=True,  # change to True if you want numbers inside
+        cmap="viridis",
+        cbar_kws={"label": "expression mean"},
+    )
+
+    if title:
+        ax.set_title(title, fontsize=14)
+
+    ax.set_xlabel("common genes")
+    ax.set_ylabel("dataset")
+
+    plt.tight_layout()
+    plt.show()
