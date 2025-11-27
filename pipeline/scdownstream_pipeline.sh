@@ -3,7 +3,7 @@
 sample_sheet=$1
 output_dir=$2
 filename="${sample_sheet##*/}"
-methods=("scVI" "harmony" "bbknn" "combat")
+methods=("scvi" "harmony" "bbknn" "combat")
 
 for tool in "${methods[@]}"; do
   outpath="$output_dir/${filename%.*}_${tool}"

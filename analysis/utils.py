@@ -49,3 +49,9 @@ def common_genes(dataset_ref, dataset_query):
     ref_adata = ref_adata[:, common_genes_list].copy()
     query_adata = query_adata[:, common_genes_list].copy()
     return ref_adata, query_adata
+
+
+def normalize_data(adata):
+    sc.pp.normalize_total(adata, target_sum=1e4)
+    sc.pp.log1p(adata)
+    return adata

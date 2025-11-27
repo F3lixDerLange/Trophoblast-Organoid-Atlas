@@ -27,7 +27,7 @@ def scmap_comparison(datasets):
             print(f"\n--- Map {ref_name} -> {target_name} ---")
 
             ref_adata_common_genes, target_adata_common_genes = utils.common_genes(ref_ds, target_ds)
-            sc.pp.highly_variable_genes(ref_adata_common_genes, flavor="seurat_v3")
+            sc.pp.highly_variable_genes(ref_adata_common_genes, flavor="cell_ranger")
 
             # print(f"ref = {ref_adata_common_genes}")
             # print(f"target = {target_adata_common_genes}")
@@ -40,7 +40,7 @@ def scmap_comparison(datasets):
                                ref_label_col,
                                algorithm_flavor="centroid",
                                gene_selection_flavor="HVGs",
-                               n_genes_selected=4000
+                               #n_genes_selected=4000
                                )
 
             # print(f"ref = {ref_adata_common_genes}")

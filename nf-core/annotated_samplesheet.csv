@@ -1,5 +1,5 @@
 sample, filtered, batch_col, label_col
-Shibata, /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_fixed.annotated.h5ad, sample, celltype
+Shibata, /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_fixed.annotated_normalized.h5ad, sample, celltype
 Arutyunyan_PTO, /nfs/proj/tropho_org_atlas/database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad, sample, cell_annotation
 Arutyunyan_TSC, /nfs/proj/tropho_org_atlas/database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene_fixed.h5ad, sample, cell_annotation
 

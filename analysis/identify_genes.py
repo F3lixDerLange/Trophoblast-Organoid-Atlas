@@ -3,6 +3,7 @@ import pandas as pd
 import scanpy as sc
 from typing import Literal
 import plot_analysis
+import utils
 
 
 def generate_hvg_per_batch(hvg_file, sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "cell_ranger"):

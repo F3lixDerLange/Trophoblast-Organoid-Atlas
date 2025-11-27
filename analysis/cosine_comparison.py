@@ -37,7 +37,7 @@ def pairwise_cosine_similarity(profiles1, profiles2):
     sim = cosine_similarity(profiles1.values, profiles2.values)
     return pd.DataFrame(sim, index=profiles1.index, columns=profiles2.index)
 
-def compute_celltype_profiles(adata, label_col):   # mean expression vectors
+def compute_celltype_profiles(adata, label_col):   # mean expression vectors of each gene per cell
     labels = adata.obs[label_col].unique()
     X = adata.X.A if hasattr(adata.X, "A") else adata.X  # ensure dense or csr
 
