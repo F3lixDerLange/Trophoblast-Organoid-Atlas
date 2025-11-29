@@ -7,7 +7,9 @@ methods=("scvi" "harmony" "bbknn" "combat")
 
 for tool in "${methods[@]}"; do
   outpath="$output_dir/${filename%.*}_${tool}"
+  report_path="$outpath/report/"
   mkdir -p "$outpath"
+  mkdir -p "$report_path"
   echo "Starting nf-core/scdonstream with method $tool..."
   nextflow run nf-core/scdownstream \
     -r dev \
@@ -16,10 +18,10 @@ for tool in "${methods[@]}"; do
     --integration_methods "$tool" \
     --integration_hvgs 0 \
     -profile daisybio,apptainer \
-    -with-report "$outpath/report/${tool}_report.html" \
-    -with-trace "$outpath/report/${tool}_trace.txt" \
-    -with-timeline "$outpath/report/${tool}_timeline.html" \
-    2> "$outpath/report/${tool}_time.txt" \
+    -with-report "${report_path}/${tool}_report.html" \
+    -with-trace "${report_path}/${tool}_trace.txt" \
+    -with-timeline "${report_path}/${tool}_timeline.html" \
+    2> "${report_path}/${tool}_time.txt" \
     &
 done
 
