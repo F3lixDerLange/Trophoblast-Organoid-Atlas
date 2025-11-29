@@ -7,11 +7,11 @@ methods=("scvi" "harmony" "bbknn" "combat")
 
 for tool in "${methods[@]}"; do
   outpath="$output_dir/${filename%.*}_${tool}"
-  report_path="$outpath/report/"
-  mkdir -p "$outpath"
-  mkdir -p "$report_path"
+  report_path="$output_dir/report"
+  # mkdir -p "$outpath"
+  # mkdir -p "$report_path"
   echo "Starting nf-core/scdonstream with method $tool..."
-  nextflow run nf-core/scdownstream \
+  echo nextflow run nf-core/scdownstream \
     -r dev \
     --input "$sample_sheet" \
     --outdir "$outpath" \
