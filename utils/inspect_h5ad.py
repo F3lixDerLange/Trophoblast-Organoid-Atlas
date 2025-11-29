@@ -40,7 +40,7 @@ def print_h5ad_info(h5ad_file):
     print("X_pca:", adata.obsm.get("X_pca", None).shape if "X_pca" in adata.obsm else None)
     print("PCs:", adata.varm.get("PCs", None).shape if "PCs" in adata.varm else None)
 
-    utils.normalize_data(adata)
+    # utils.normalize_data(adata)
 
     count_matrix_df = pd.DataFrame(
         adata.X.toarray().T,

@@ -97,7 +97,7 @@ def mean_expression_per_gene_per_batch(processed_adata):
     print(batch_mean_df)
 
 def main():
-    sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "cell_ranger"
+    sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "seurat_v3"
     # hvg_file = "processed_data/Shibata_Karvas_Shannon_Baltayeva_merged_hvg.h5ad"
     hvg_file = "processed_data/Shibata_Arutyunyan_merged_hvg.h5ad"
     generate_hvg_per_batch(hvg_file, sc_flavor)

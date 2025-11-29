@@ -111,6 +111,7 @@ def celltype_contingency(real, transferred):
 
 
 def main():
+    print("install git+https://github.com/gatocor/scmappy.git@affa0c378ad274e27279f60c48a58644f01a8772")
     configs = utils.load_config("analysis/cosine_comp_config.yaml")
     datasets = utils.load_data(configs)
     scmap_comparison(datasets)
