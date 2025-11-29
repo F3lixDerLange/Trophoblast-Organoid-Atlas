@@ -11,7 +11,7 @@ for tool in "${methods[@]}"; do
   mkdir -p "$outpath"
   mkdir -p "$report_path"
   echo "Starting nf-core/scdonstream with method $tool..."
-  echo nextflow run nf-core/scdownstream \
+  nextflow run nf-core/scdownstream \
     -r dev \
     --input "$sample_sheet" \
     --outdir "$outpath" \
