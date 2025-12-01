@@ -18,4 +18,10 @@
 #SBATCH --mem=32G
 # GPU specific
 
+CONDA_BASE=$(conda info --base)
+source $CONDA_BASE/etc/profile.d/conda.sh
+conda activate sc_env
+
 srun python3 ./Trophoblast-Organoid-Atlas/integration/scanorama_integration.py -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result
+
+conda deactivate
