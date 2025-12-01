@@ -38,4 +38,5 @@ def common_gene_heatmap(df, title):
     ax.set_ylabel("dataset")
 
     plt.tight_layout()
+    plt.savefig(f"plots/{title}.png")
     plt.show()
