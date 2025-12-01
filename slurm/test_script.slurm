@@ -18,4 +18,4 @@
 #SBATCH --mem=32G
 # GPU specific
 
-srun nextflow run nf-core/scdownstream -r dev  --input Trophoblast-Organoid-Atlas/nf-core/samplesheet_test.csv --outdir nf-core_out/ -profile daisybio,singularity
+srun /Trophoblast-Organoid-Atlas/slurm/scanorama_integration.py -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result
