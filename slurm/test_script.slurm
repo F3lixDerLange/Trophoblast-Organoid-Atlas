@@ -18,4 +18,4 @@
 #SBATCH --mem=32G
 # GPU specific
 
-srun /Trophoblast-Organoid-Atlas/slurm/scanorama_integration.py -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result
+srun /Trophoblast-Organoid-Atlas/integration/scanorama_integration.py -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result
