@@ -13,12 +13,14 @@ except ImportError:
 
 def pyl_integration(h5ad_file):
     adata = sc.read_h5ad(h5ad_file)
-    batch_cats = []
+    batch_key = 'sample'
+    batch_cats = adata.obs[batch_key].astype(str).unique()
+    print("Found batches:", batch_cats)
     # Pyliger normalizes by library size with a size factor of 1
     # So here we give it the count data
     # bdata.X = bdata.layers["counts"]
     # List of adata per batch
-    adata_list = [adata[adata.obs["sample"] == b].copy() for b in batch_cats]
+    adata_list = [adata[adata.obs[batch_key] == b].copy() for b in batch_cats]
     for i, ad in enumerate(adata_list):
         ad.uns["sample_name"] = batch_cats[i]
         # Hack to make sure each method uses the same genes
