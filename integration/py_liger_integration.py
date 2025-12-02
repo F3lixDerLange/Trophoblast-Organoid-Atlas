@@ -18,7 +18,7 @@ def pyl_integration(h5ad_file):
     # So here we give it the count data
     # bdata.X = bdata.layers["counts"]
     # List of adata per batch
-    adata_list = [adata[adata.obs.batch == b].copy() for b in batch_cats]
+    adata_list = [adata[adata.obs["sample"] == b].copy() for b in batch_cats]
     for i, ad in enumerate(adata_list):
         ad.uns["sample_name"] = batch_cats[i]
         # Hack to make sure each method uses the same genes
