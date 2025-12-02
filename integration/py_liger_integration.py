@@ -39,13 +39,14 @@ def pyl_integration(h5ad_file):
 
     liger_data = pl.create_liger(adata_list, remove_missing=False, make_sparse=False)
     liger_data.var_genes = adata.var_names
+    pl.normalize(liger_data)
     pl.scale_not_center(liger_data)
     pl.optimize_ALS(liger_data, k=30)
     pl.quantile_norm(liger_data)
 
     adata.obsm["LIGER"] = np.zeros((adata.shape[0], liger_data.adata_list[0].obsm["H_norm"].shape[1]))
     for i, b in enumerate(batch_cats):
-        adata.obsm["LIGER"][adata.obs.batch == b] = liger_data.adata_list[i].obsm["H_norm"]
+        adata.obsm["LIGER"][adata.obs[batch_key] == b] = liger_data.adata_list[i].obsm["H_norm"]
 
     pl.leiden_cluster(liger_data, resolution=0.25)
     pl.run_umap(liger_data, distance='cosine', n_neighbors=30, min_dist=0.3)
