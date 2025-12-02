@@ -1,6 +1,6 @@
 #!/bin/bash
 # Job metadata
-#SBATCH --job-name scanorama
+#SBATCH --job-name pyliger
 #SBATCH --time=02:00:00
 #SBATCH --no-requeue
 # Working directory

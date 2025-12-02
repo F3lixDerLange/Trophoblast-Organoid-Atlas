@@ -23,7 +23,10 @@ def pyl_integration(h5ad_file):
         ad.uns["sample_name"] = batch_cats[i]
         # Hack to make sure each method uses the same genes
         ad.uns["var_gene_idx"] = np.arange(adata.n_vars)
-    liger_data = pl.create_liger(adata, remove_missing=False, make_sparse=False)
+
+    print(adata_list)
+
+    liger_data = pl.create_liger(adata_list, remove_missing=False, make_sparse=False)
     liger_data.var_genes = adata.var_names
     pl.select_genes(liger_data)
     pl.scale_not_center(liger_data)
