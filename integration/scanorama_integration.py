@@ -17,7 +17,6 @@ def scn_integration(h5ad_file, output_dir):
     var_select = adata.var.highly_variable_nbatches > 2
     var_genes = var_select.index[var_select]
     adatas = [adata[adata.obs[batch_key] == batch_value][:, var_genes].copy() for batch_value in adata.obs[batch_key].unique()]
-    print("save")
 
     #adatas = [adata[adata.obs[batch_key] == batch_value].copy() for batch_value in adata.obs[batch_key].unique()]
     scn.integrate_scanpy(adatas)
@@ -27,8 +26,11 @@ def scn_integration(h5ad_file, output_dir):
     all_s = np.concatenate(scanorama_int)
     adata_sc.obsm['Scanorama'] = all_s
 
+    sc.pp.neighbors(adata_sc)
+    sc.tl.umap(adata_sc)
+
     save_file = f"{output_dir}/scanorama_integration.h5ad"
-    adata.write_h5ad(save_file)
+    adata_sc.write_h5ad(save_file)
 
 
 def main():

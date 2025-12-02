@@ -2,19 +2,31 @@
 name = "master-thesis"
 version = "0.1.0"
 description = "Trophoblast Organoid Atlas"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
+    "cmake>=4.2.0",
     "disutils>=1.4.32.post2",
+    "igraph>=1.0.0",
+    "pip>=25.3",
     "pyyaml>=6.0.3",
     "scanorama>=1.7.4",
     "scanpy>=1.11.5",
+    "scglue>=0.4.0",
     "scib>=1.1.7",
     "scikit-misc>=0.5.2",
     "scmappy>=0.2",
     "scvi>=0.6.8",
     "scvi-tools>=1.4.0.post1",
     "setuptools>=80.9.0",
+    "torch>=2.9",
+    "torchaudio>=2.9.1",
+    "torchvision>=0.24.1",
+    "wandb>=0.23.0",
 ]
 
 [tool.uv.sources]
 scmappy = { git = "https://github.com/gatocor/scmappy.git", rev = "affa0c378ad274e27279f60c48a58644f01a8772" }
+
+[tool.uv.extra-build-dependencies]
+flash-attn = ["torch"]
+

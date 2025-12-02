@@ -42,7 +42,7 @@ def common_genes(dataset_ref, dataset_query):
 
     common_genes_list = ref_adata.var_names.intersection(query_adata.var_names)
     if len(common_genes_list) == 0:
-        print(f"WARNING: no common genes between {dataset_ref["name"]} and {dataset_query["name"]}")
+        print("WARNING: no common genes between " + dataset_ref["name"] + " and " + dataset_query["name"])
 
     print(f"Number of common genes: {len(common_genes_list)}")
 
