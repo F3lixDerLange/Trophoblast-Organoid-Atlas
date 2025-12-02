@@ -16,10 +16,19 @@ def pyl_integration(h5ad_file):
     batch_key = 'sample'
     batch_cats = adata.obs[batch_key].astype(str).unique()
     print("Found batches:", batch_cats)
-    # Pyliger normalizes by library size with a size factor of 1
-    # So here we give it the count data
-    # bdata.X = bdata.layers["counts"]
-    # List of adata per batch
+
+    tmp = adata.copy()
+
+    sc.pp.highly_variable_genes(
+       tmp,
+        batch_key="batch",
+        n_top_genes=3000,
+        flavor="seurat_v3"
+    )
+
+    # Keep only HVGs
+    adata = adata[:, tmp.var["highly_variable"]].copy()
+
     adata_list = [adata[adata.obs[batch_key] == b].copy() for b in batch_cats]
     for i, ad in enumerate(adata_list):
         ad.uns["sample_name"] = batch_cats[i]
@@ -30,7 +39,6 @@ def pyl_integration(h5ad_file):
 
     liger_data = pl.create_liger(adata_list, remove_missing=False, make_sparse=False)
     liger_data.var_genes = adata.var_names
-    pl.select_genes(liger_data)
     pl.scale_not_center(liger_data)
     pl.optimize_ALS(liger_data, k=30)
     pl.quantile_norm(liger_data)
