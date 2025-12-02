@@ -21,7 +21,7 @@ def pyl_integration(h5ad_file):
 
     sc.pp.highly_variable_genes(
        tmp,
-        batch_key="batch",
+        batch_key=batch_key,
         n_top_genes=3000,
         flavor="seurat_v3"
     )
