@@ -19,8 +19,8 @@
 # GPU specific
 
 CONDA_BASE=$(conda info --base)
-source $CONDA_BASE/etc/profile.d/conda.sh
-conda activate env311
+source "$CONDA_BASE"/etc/profile.d/conda.sh
+conda activate test-env
 
 srun python3 ./Trophoblast-Organoid-Atlas/integration/py_liger_integration.py -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad
 
