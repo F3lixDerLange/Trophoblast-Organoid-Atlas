@@ -7,10 +7,8 @@ import scglue as scg
 
 def scg_integration(adata, out_dir, batch_key, label_key):
 
-    print(adata)
-
-    sc.pp.highly_variable_genes(adata, batch_key=batch_key, n_top_genes=4000, flavor="seurat_v3")
-    adata = adata[:, adata.var["highly_variable"]].copy()
+    #sc.pp.highly_variable_genes(adata, batch_key=batch_key, n_top_genes=4000, flavor="seurat_v3")
+    #adata = adata[:, adata.var["highly_variable"]].copy()
     sc.pp.scale(adata, max_value=10)
     sc.tl.pca(adata, n_comps=50)
 
@@ -35,7 +33,7 @@ def scg_integration(adata, out_dir, batch_key, label_key):
 
     print(G)
 
-    if os.path.exists("glue_batch/pretrain/pretrain.dill"):
+    if os.path.exists(f"glue_batch/pretrain/pretrain.dill"):
         print("loading pretrain model")
         glue = scg.models.load_model("glue_batch/pretrain/pretrain.dill")
     else:
