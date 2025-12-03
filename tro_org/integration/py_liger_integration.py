@@ -15,12 +15,12 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
     batch_cats = adata.obs[batch_key].astype(str).unique()
     print("Found batches:", batch_cats)
 
-    tmp = adata.copy()
+    #tmp = adata.copy()
 
-    sc.pp.highly_variable_genes(tmp, batch_key=batch_key)# , n_top_genes=4000, flavor="seurat_v3")
+    #sc.pp.highly_variable_genes(tmp, batch_key=batch_key)# , n_top_genes=4000, flavor="seurat_v3")
 
     # Keep only HVGs
-    adata = adata[:, tmp.var["highly_variable"]].copy()
+   # adata = adata[:, tmp.var["highly_variable"]].copy()
 
     adata_list = [adata[adata.obs[batch_key] == b].copy() for b in batch_cats]
     for i, ad in enumerate(adata_list):
@@ -41,6 +41,7 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
     liger_data = pl.create_liger(adata_list, remove_missing=False, make_sparse=False)
     liger_data.var_genes = adata.var_names
     pl.normalize(liger_data)
+    pl.select_genes(liger_data)
     pl.scale_not_center(liger_data)
     pl.optimize_ALS(liger_data, k=30)
     pl.quantile_norm(liger_data)
