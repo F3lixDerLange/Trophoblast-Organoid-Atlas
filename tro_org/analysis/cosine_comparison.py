@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-import utils
+from tro_org.analysis import utils
 import plot_analysis
 
 def compute_cosign_similarity(datasets):

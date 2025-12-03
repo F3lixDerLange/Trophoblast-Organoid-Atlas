@@ -1,9 +1,7 @@
-import sys
-
 import scanpy as sc
 import pandas as pd
 import os
-import analysis.utils as utils
+
 
 def print_h5ad_info(h5ad_file):
 
@@ -12,7 +10,7 @@ def print_h5ad_info(h5ad_file):
     pd.set_option("display.max_columns", None)
     pd.set_option("display.width", None)
 
-    print(adata.n_vars)
+    print(adata.obsm["X_scvi"])
 
     # --- Überprüfung der Hauptstruktur ---
     print("===================================")
@@ -69,8 +67,8 @@ def main():
     # h5ad_file = "database/Shibata/GSE241052_ari_org.annotated.h5ad"
     h5ad_file = "database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad"
     # h5ad_file = "database/Shannon_McNeil/Shannon_McNeil_TBp_EVT_D/GSM6664615_DPT_merged.h5ad"
-    # h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad"
-    # h5ad_file = "/Users/felixlang/Downloads/merged.h5ad"
+    h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad"
+    h5ad_file = "/Users/felixlang/Downloads/merged.h5ad"
     print_h5ad_info(h5ad_file)
 
 if __name__ == '__main__':

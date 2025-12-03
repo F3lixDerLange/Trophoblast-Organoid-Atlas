@@ -1,22 +1,23 @@
 import argparse
 from scib_metrics.benchmark import *
-import integration
-from integration import scanorama_integration, scGLUE_integration, py_liger_integration
+import tro_org.integration.scGLUE_integration
+import tro_org.integration.py_liger_integration
+import tro_org.integration.scanorama_integration
 
 def run_integrations(h5ad_file, output_dir, batchkey, labelkey):
     osbm_keys = ["Unintegrated"]
     print("Running integrations")
 
     print("scGlue integration")
-    adata = integration.scGLUE_integration.scg_integration(h5ad_file, output_dir, batchkey, labelkey)
+    adata = tro_org.integration.scGLUE_integration.scg_integration(h5ad_file, output_dir, batchkey, labelkey)
     osbm_keys.append("X_scglue")
 
     print("scanorama_integration")
-    adata = integration.scanorama_integration.scn_integration(adata, output_dir, batchkey)
+    adata = tro_org.integration.scanorama_integration.scn_integration(adata, output_dir, batchkey)
     osbm_keys.append("Scanorama")
 
     print("PyLiger integration")
-    adata = integration.py_liger_integration.pyl_integration(adata, output_dir, batchkey, labelkey)
+    adata = tro_org.integration.py_liger_integration.pyl_integration(adata, output_dir, batchkey, labelkey)
     osbm_keys.append("LIGER")
 
     return osbm_keys, adata

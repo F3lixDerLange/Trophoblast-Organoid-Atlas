@@ -1,4 +1,3 @@
-import numpy as np
 import pandas as pd
 import scanpy as sc
 import scmappy as smp
@@ -6,7 +5,8 @@ import matplotlib.pyplot as plt
 from scipy.optimize import linear_sum_assignment
 import plot_analysis
 
-import utils
+from tro_org.analysis import utils
+
 
 def scmap_comparison(datasets):
     print("Running scmap comparison")
