@@ -1,7 +1,6 @@
 # https://scib-metrics.readthedocs.io/en/stable/notebooks/lung_example.html
 
 import argparse
-
 import numpy as np
 import scanpy as sc
 try:

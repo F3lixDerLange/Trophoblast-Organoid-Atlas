@@ -1,10 +1,10 @@
 #!/bin/bash
 # Job metadata
 #SBATCH --job-name pyliger
-#SBATCH --time=02:00:00
+#SBATCH --time=01:00:00
 #SBATCH --no-requeue
 # Working directory
-#SBATCH --chdir ./
+#SBATCH --chdir=/nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
 # Environment
 #SBATCH --export=ALL
 #SBATCH --get-user-env
@@ -22,6 +22,6 @@ CONDA_BASE=$(conda info --base)
 source "$CONDA_BASE"/etc/profile.d/conda.sh
 conda activate test-env
 
-srun python3 ./Trophoblast-Organoid-Atlas/integration/py_liger_integration.py -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad
+srun python3 -m tro_org.integration.py_liger_integration -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result -bk sample -lk celltype
 
 conda deactivate

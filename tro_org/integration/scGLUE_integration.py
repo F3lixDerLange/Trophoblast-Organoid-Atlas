@@ -44,7 +44,7 @@ def scg_integration(adata, out_dir, batch_key, label_key):
             skip_balance=True,
             fit_kws={
                 "directory": "glue_batch",
-                "max_epochs": 150,
+                "max_epochs": 200,
             }
         )
         glue.save("glue_batch/pretrain/pretrain.dill")
