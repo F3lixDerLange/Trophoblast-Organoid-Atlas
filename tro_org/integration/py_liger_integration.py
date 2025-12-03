@@ -17,7 +17,7 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
 
     tmp = adata.copy()
 
-    sc.pp.highly_variable_genes(tmp, batch_key=batch_key, n_top_genes=4000, flavor="seurat_v3")
+    sc.pp.highly_variable_genes(tmp, batch_key=batch_key)# , n_top_genes=4000, flavor="seurat_v3")
 
     # Keep only HVGs
     adata = adata[:, tmp.var["highly_variable"]].copy()
@@ -27,8 +27,8 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
         ad.uns["sample_name"] = batch_cats[i]
         # Hack to make sure each method uses the same genes
         ad.uns["var_gene_idx"] = np.arange(adata.n_vars)
-        #ad.obs.index.name = "barcodes"
-        #ad.var.index.name = "gene_names"
+        ad.obs.index.name = "barcodes"
+        ad.var.index.name = "gene_names"
 
     for i, ad in enumerate(adata_list):
         print("===== AnnData", i, "=====")
@@ -38,7 +38,7 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
         print(ad.obs_names.names)
         print(ad.var_names.names)
 
-    liger_data = pl.create_liger(adata_list, remove_missing=False)
+    liger_data = pl.create_liger(adata_list, remove_missing=False, make_sparse=False)
     liger_data.var_genes = adata.var_names
     pl.normalize(liger_data)
     pl.scale_not_center(liger_data)
