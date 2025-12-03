@@ -33,7 +33,7 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
 
     print(adata_list)
 
-    liger_data = pl.create_liger(adata_list, remove_missing=False, make_sparse=False)
+    liger_data = pl.create_liger(adata_list, remove_missing=False)
     liger_data.var_genes = adata.var_names
     pl.normalize(liger_data)
     pl.scale_not_center(liger_data)
