@@ -17,11 +17,9 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 # GPU specific
-#SBATCH -p shared-gpu
+#SBATCH -p gpu01.exbio.wzw.tum.de
 #SBATCH --gres=gpu:1
 
-CONDA_BASE=$(conda info --base)
-source "$CONDA_BASE"/etc/profile.d/conda.sh
 conda activate test-env
 
 srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg -bk sample -lk celltype
