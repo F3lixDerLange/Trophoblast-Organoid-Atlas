@@ -17,7 +17,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 # GPU specific
-#SBATCH -p exbio-gpu
+#SBATCH -p shared-gpu
 #SBATCH --gres=gpu:1
 
 CONDA_BASE=$(conda info --base)
