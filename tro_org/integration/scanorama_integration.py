@@ -24,8 +24,6 @@ def scn_integration(adata, output_dir, batch_key):
     sc.pp.neighbors(adata_sc)
     sc.tl.umap(adata_sc)
 
-    save_file = f"{output_dir}/scanorama_integration.h5ad"
-    adata_sc.write_h5ad(save_file)
     return adata_sc
 
 

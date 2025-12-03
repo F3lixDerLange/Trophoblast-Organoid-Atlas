@@ -58,9 +58,6 @@ def scg_integration(adata, out_dir, batch_key, label_key):
     sc.pl.umap(adata, color=[label_key,batch_key ,"leiden_scglue"], wspace=0.4)
 
     print(adata)
-    save_file = f"{out_dir}/scanorama_integration.h5ad"
-    adata.write_h5ad(save_file)
-
     return adata
 
 
