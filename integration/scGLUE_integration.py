@@ -5,9 +5,7 @@ import networkx as nx
 import scanpy as sc
 import scglue as scg
 
-def scg_integration(h5ad_file, out_dir):
-    batch_key = "sample"
-    label_key = "celltype"
+def scg_integration(h5ad_file, out_dir, batch_key, label_key):
 
     adata = sc.read_h5ad(h5ad_file)
     sc.pp.highly_variable_genes(adata, batch_key=batch_key, n_top_genes=4000, flavor="seurat_v3")
@@ -15,13 +13,16 @@ def scg_integration(h5ad_file, out_dir):
     sc.pp.scale(adata, max_value=10)
     sc.tl.pca(adata, n_comps=50)
 
+    print(adata)
+    print(batch_key)
+
     scg.models.configure_dataset(
         adata,
         prob_model="Normal",
         use_highly_variable=True,
         use_rep="X_pca",
-        use_batch=batch_key,
-        use_cell_type=label_key
+        use_batch=str(batch_key),
+        #use_cell_type=label_key
     )
 
     genes = adata.var_names
@@ -60,15 +61,21 @@ def scg_integration(h5ad_file, out_dir):
     save_file = f"{out_dir}/scanorama_integration.h5ad"
     adata.write_h5ad(save_file)
 
+    return adata
+
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-input", required=True)
+    parser.add_argument("-input", required=True, help="h5ad file")
     parser.add_argument("-output", required=True)
+    parser.add_argument("-bk", "--batch_key", required=True, help="batch_key")
+    parser.add_argument("-lk", "--label_key", required=True, help="label_key")
     args = parser.parse_args()
     input_file = args.input
     out_dir = args.output
-    scg_integration(input_file, out_dir)
+    batch_key = args.batch_key
+    label_key = args.label_key
+    scg_integration(input_file, out_dir, batch_key, label_key)
 
 if __name__ == '__main__':
     main()

@@ -11,9 +11,8 @@ except ImportError:
 
 
 
-def pyl_integration(h5ad_file):
+def pyl_integration(h5ad_file, out_dir, batch_key, label_key):
     adata = sc.read_h5ad(h5ad_file)
-    batch_key = 'sample'
     batch_cats = adata.obs[batch_key].astype(str).unique()
     print("Found batches:", batch_cats)
 
@@ -57,12 +56,16 @@ def pyl_integration(h5ad_file):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-input", required=True)
-    # parser.add_argument("-output", required=True)
+    parser.add_argument("-input", required=True, help="h5ad file")
+    parser.add_argument("-output", required=True)
+    parser.add_argument("-bk", "--batch_key", required=True, help="batch_key")
+    parser.add_argument("-lk", "--label_key", required=True, help="label_key")
     args = parser.parse_args()
     input_file = args.input
-    # out_dir = args.output
-    pyl_integration(input_file)
+    out_dir = args.output
+    batch_key = args.batch_key
+    label_key = args.label_key
+    pyl_integration(input_file, out_dir, batch_key, label_key)
 
 if __name__ == '__main__':
     main()

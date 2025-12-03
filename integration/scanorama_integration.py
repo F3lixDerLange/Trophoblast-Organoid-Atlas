@@ -5,12 +5,10 @@ import numpy as np
 import scanpy as sc
 import scanorama as scn
 
-def scn_integration(h5ad_file, output_dir):
+def scn_integration(h5ad_file, output_dir, batch_key):
     adata = sc.read_h5ad(h5ad_file)
 
-    batch_key = "sample"
-    label_key = "celltype"
-
+    # label_key = "celltype"
 
     sc.pp.highly_variable_genes(adata, batch_key=batch_key)
     # Select all genes that are variable in at least 2 batches
@@ -31,16 +29,19 @@ def scn_integration(h5ad_file, output_dir):
 
     save_file = f"{output_dir}/scanorama_integration.h5ad"
     adata_sc.write_h5ad(save_file)
+    return adata_sc
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-input", required=True)
     parser.add_argument("-output", required=True)
+    parser.add_argument("-bk", "--batch_key", required=True)
     args = parser.parse_args()
     input_file = args.input
     out_dir = args.output
-    scn_integration(input_file, out_dir)
+    batch_key = args.batch_key
+    scn_integration(input_file, out_dir, batch_key)
 
 if __name__ == '__main__':
     main()
