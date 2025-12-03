@@ -23,7 +23,7 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
     sc.pp.highly_variable_genes(
         tmp,
         batch_key=batch_key,
-        n_top_genes=3000,
+        n_top_genes=4000,
         flavor="seurat_v3"
     )
 
