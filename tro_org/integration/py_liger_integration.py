@@ -12,8 +12,6 @@ except ImportError:
 
 def pyl_integration(adata, out_dir, batch_key, label_key):
 
-    print(adata)
-
     batch_cats = adata.obs[batch_key].astype(str).unique()
     print("Found batches:", batch_cats)
 
@@ -29,14 +27,16 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
         ad.uns["sample_name"] = batch_cats[i]
         # Hack to make sure each method uses the same genes
         ad.uns["var_gene_idx"] = np.arange(adata.n_vars)
+        ad.obs.index.name = "barcodes"
+        ad.var.index.name = "gene_names"
 
     for i, ad in enumerate(adata_list):
         print("===== AnnData", i, "=====")
         print("shape:", ad.shape)
         print("obs_names empty?", ad.obs_names is None or len(ad.obs_names) == 0)
         print("var_names empty?", ad.var_names is None or len(ad.var_names) == 0)
-        print(ad.obs_names[:5])
-        print(ad.var_names[:5])
+        print(ad.obs_names.names)
+        print(ad.var_names.names)
 
     liger_data = pl.create_liger(adata_list, remove_missing=False)
     liger_data.var_genes = adata.var_names
