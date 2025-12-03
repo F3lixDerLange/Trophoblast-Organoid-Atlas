@@ -11,15 +11,17 @@ except ImportError:
 
 
 
-def pyl_integration(h5ad_file, out_dir, batch_key, label_key):
-    adata = sc.read_h5ad(h5ad_file)
+def pyl_integration(adata, out_dir, batch_key, label_key):
+
+    print(adata)
+
     batch_cats = adata.obs[batch_key].astype(str).unique()
     print("Found batches:", batch_cats)
 
     tmp = adata.copy()
 
     sc.pp.highly_variable_genes(
-       tmp,
+        tmp,
         batch_key=batch_key,
         n_top_genes=3000,
         flavor="seurat_v3"
@@ -65,7 +67,7 @@ def main():
     out_dir = args.output
     batch_key = args.batch_key
     label_key = args.label_key
-    pyl_integration(input_file, out_dir, batch_key, label_key)
+    pyl_integration(sc.read_h5ad(input_file), out_dir, batch_key, label_key)
 
 if __name__ == '__main__':
     main()

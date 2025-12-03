@@ -3,6 +3,7 @@ from scib_metrics.benchmark import *
 import tro_org.integration.scGLUE_integration
 import tro_org.integration.py_liger_integration
 import tro_org.integration.scanorama_integration
+import scanpy as sc
 
 def run_integrations(h5ad_file, output_dir, batchkey, labelkey):
     osbm_keys = ["Unintegrated"]
@@ -56,7 +57,7 @@ def main():
     out_dir = args.output
     batch_key = args.batch_key
     label_key = args.label_key
-    benchmark(input_file, out_dir, batch_key, label_key)
+    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key)
 
 if __name__ == '__main__':
     main()
