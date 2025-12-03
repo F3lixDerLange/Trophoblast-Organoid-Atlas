@@ -1,24 +1,19 @@
 import argparse
-import os
 from scib_metrics.benchmark import *
-import matplotlib.pyplot as plt
-
 import integration
 from integration import scanorama_integration, scGLUE_integration, py_liger_integration
-
-import scanpy as sc
 
 def run_integrations(h5ad_file, output_dir, batchkey, labelkey):
     osbm_keys = ["Unintegrated"]
     print("Running integrations")
 
-    print("scanorama_integration")
-    adata = integration.scanorama_integration.scn_integration(h5ad_file, output_dir, batchkey)
-    osbm_keys.append("Scanorama")
-
     print("scGlue integration")
-    adata = integration.scGLUE_integration.scg_integration(adata, output_dir, batchkey, labelkey)
+    adata = integration.scGLUE_integration.scg_integration(h5ad_file, output_dir, batchkey, labelkey)
     osbm_keys.append("X_scglue")
+
+    print("scanorama_integration")
+    adata = integration.scanorama_integration.scn_integration(adata, output_dir, batchkey)
+    osbm_keys.append("Scanorama")
 
     print("PyLiger integration")
     adata = integration.py_liger_integration.pyl_integration(adata, output_dir, batchkey, labelkey)
@@ -44,8 +39,8 @@ def benchmark(h5ad_file, output_dir, batch_key, label_key):
     )
     bm.benchmark()
     print("plotting benchmark")
-    bm.plot_results_table()
-    bm.plot_results_table(min_max_scale=False)
+    bm.plot_results_table(save_dir=output_dir)
+    bm.plot_results_table(min_max_scale=False, save_dir=output_dir)
 
 
 
