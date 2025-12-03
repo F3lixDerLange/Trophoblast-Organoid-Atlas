@@ -17,7 +17,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 # GPU specific
-#SBATCH -p gpu01.exbio.wzw.tum.de
+#SBATCH -p shared-gpu
 #SBATCH --gres=gpu:1
 
 conda activate test-env
