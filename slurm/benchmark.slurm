@@ -22,7 +22,7 @@ CONDA_BASE=$(conda info --base)
 source "$CONDA_BASE"/etc/profile.d/conda.sh
 conda activate test-env
 
-srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg
+srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg -bk sample -lk celltype
 
 conda deactivate
 
