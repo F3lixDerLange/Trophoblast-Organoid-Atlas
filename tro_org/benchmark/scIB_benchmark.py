@@ -9,13 +9,13 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey):
     osbm_keys = ["Unintegrated"]
     print("Running integrations")
 
-    print("PyLiger integration")
-    liger_adata = tro_org.integration.py_liger_integration.pyl_integration(base_adata.copy(), output_dir, batchkey, labelkey)
-    osbm_keys.append("LIGER")
-
     print("scGlue integration")
     scGlue_adata = tro_org.integration.scGLUE_integration.scg_integration(base_adata.copy(), output_dir, batchkey, labelkey)
     osbm_keys.append("X_scglue")
+
+    print("PyLiger integration")
+    liger_adata = tro_org.integration.py_liger_integration.pyl_integration(base_adata.copy(), output_dir, batchkey, labelkey)
+    osbm_keys.append("LIGER")
 
     print("scanorama_integration")
     scanorama_adata = tro_org.integration.scanorama_integration.scn_integration(base_adata.copy(), output_dir, batchkey)
