@@ -57,6 +57,8 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
     print(f"liger_data: {liger_data}")
     print(f"adata: {adata}")
 
+    return adata
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-input", required=True, help="h5ad file")
