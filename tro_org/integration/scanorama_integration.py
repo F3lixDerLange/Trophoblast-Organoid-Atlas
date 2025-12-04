@@ -8,7 +8,7 @@ import tro_org.utils.plot_utils as pu
 
 def scn_integration(adata, output_dir, batch_key, label_key):
 
-    pu.plot_umap_before_integration(adata, "scanorama", output_dir)
+    pu.plot_umap_before_integration(adata, "scanorama", output_dir, batch_key, label_key)
 
     sc.pp.highly_variable_genes(adata, batch_key=batch_key)
     # Select all genes that are variable in at least 2 batches

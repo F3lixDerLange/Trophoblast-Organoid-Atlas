@@ -1,23 +1,22 @@
+from pathlib import Path
 import matplotlib.pyplot as plt
 import scanpy as sc
 import os
 
-def plot_umap_before_integration(adata, method, outdir):
-    save_dir = f"{outdir}/{method}"
-    # os.makedirs(save_dir, exist_ok=True)
-    sc.settings.figdir(save_dir)
-    print("save dir before")
-    print(save_dir)
+def plot_umap_before_integration(adata, method, outdir, batch_key, label_key):
+    save_dir = Path(f"{outdir}/{method}")
+    sc.settings.figdir = save_dir
     sc.tl.pca(adata)
     sc.pp.neighbors(adata)
     sc.tl.umap(adata)
-    sc.pl.umap(adata, save=f"umap_after_integration_{method}.png")
+    sc.pl.umap(adata, color=label_key,save=f"umap_after_integration_{method}.png")
+    plt.savefig()
     print("before")
     print(adata)
 
 def plot_umap_after_integration(adata, key, method, outdir, batch_key, label_key):
-    save_dir = f"{outdir}/{method}"
-    sc.settings.figdir(save_dir)
+    save_dir = Path(f"{outdir}/{method}")
+    sc.settings.figdir = save_dir
     sc.pp.neighbors(adata, use_rep=key)
     sc.tl.umap(adata)
     sc.tl.leiden(adata, key_added=f"leiden_{method}", flavor="igraph", n_iterations=2)
