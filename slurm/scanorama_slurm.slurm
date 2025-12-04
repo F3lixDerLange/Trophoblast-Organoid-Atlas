@@ -4,7 +4,7 @@
 #SBATCH --time=02:00:00
 #SBATCH --no-requeue
 # Working directory
-#SBATCH --chdir ./
+#SBATCH --chdir=/nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
 # Environment
 #SBATCH --export=ALL
 #SBATCH --get-user-env
@@ -22,6 +22,6 @@ CONDA_BASE=$(conda info --base)
 source "$CONDA_BASE"/etc/profile.d/conda.sh
 conda activate uv-env
 
-srun /usr/bin/time -v python3 ./Trophoblast-Organoid-Atlas/integration/scanorama_integration.py -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result
+srun python3 -m tro_org.integration.scanorama_integration -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result -bk samle -lk celltype
 
 conda deactivate
