@@ -4,6 +4,7 @@ import os
 import networkx as nx
 import scanpy as sc
 import scglue as scg
+import tro_org.utils.plot_utils as pu
 
 def scg_integration(adata, out_dir, batch_key, label_key):
 
@@ -11,6 +12,8 @@ def scg_integration(adata, out_dir, batch_key, label_key):
     adata = adata[:, adata.var["highly_variable"]].copy()
     sc.pp.scale(adata, max_value=10)
     sc.tl.pca(adata, n_comps=50)
+
+    pu.plot_umap_before_integration(adata, "scglue", out_dir, batch_key, label_key)
 
     scg.models.configure_dataset(
         adata,
@@ -59,11 +62,7 @@ def scg_integration(adata, out_dir, batch_key, label_key):
 
     adata.obsm["X_scglue"] = glue.encode_data("rna", adata)
 
-    sc.pp.neighbors(adata, use_rep="X_scglue")
-    sc.tl.umap(adata)
-    sc.tl.leiden(adata, key_added="leiden_scglue", flavor="igraph", n_iterations=2)
-
-    sc.pl.umap(adata, color=[label_key, batch_key ,"leiden_scglue"], wspace=0.4)
+    pu.plot_umap_after_integration(adata,"X_scglue", "scglue", out_dir, batch_key, label_key)
 
     print(adata)
     return adata

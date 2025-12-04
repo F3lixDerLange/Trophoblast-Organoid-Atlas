@@ -3,6 +3,7 @@
 import argparse
 import numpy as np
 import scanpy as sc
+import tro_org.utils.plot_utils as pu
 try:
     import pyliger as pl
 except ImportError:
@@ -14,6 +15,8 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
 
     batch_cats = adata.obs[batch_key].astype(str).unique()
     print("Found batches:", batch_cats)
+
+    pu.plot_umap_before_integration(adata, "pyliger", out_dir, batch_key, label_key)
 
     # tmp = adata.copy()
 
@@ -56,6 +59,8 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
     print(all_plots)
     print(f"liger_data: {liger_data}")
     print(f"adata: {adata}")
+
+    pu.plot_umap_after_integration(adata, "LIGER", "liger", out_dir, batch_key, label_key)
 
     return adata
 
