@@ -4,7 +4,7 @@ import argparse
 import numpy as np
 import scanpy as sc
 import scanorama as scn
-import utils.plot_utils as pu
+import tro_org.utils.plot_utils as pu
 
 def scn_integration(adata, output_dir, batch_key, label_key):
 
