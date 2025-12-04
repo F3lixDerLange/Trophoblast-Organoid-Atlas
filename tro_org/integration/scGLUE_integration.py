@@ -63,7 +63,7 @@ def scg_integration(adata, out_dir, batch_key, label_key):
     sc.tl.umap(adata)
     sc.tl.leiden(adata, key_added="leiden_scglue", flavor="igraph", n_iterations=2)
 
-    sc.pl.umap(adata, color=[label_key,batch_key ,"leiden_scglue"], wspace=0.4)
+    sc.pl.umap(adata, color=[label_key, batch_key ,"leiden_scglue"], wspace=0.4)
 
     print(adata)
     return adata

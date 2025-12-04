@@ -4,11 +4,12 @@ import os
 
 def plot_umap_before_integration(adata, method, outdir):
     save_dir = os.path.join(outdir, method)
+    print("save dir before")
     print(save_dir)
     sc.tl.pca(adata)
     sc.pp.neighbors(adata)
     sc.tl.umap(adata)
-    sc.pl.umap(adata, save=f"{save_dir}umap_after_integration_{method}.png")
+    sc.pl.umap(adata, save=f"{save_dir}/umap_after_integration_{method}.png")
     print("before")
     print(adata)
 
