@@ -17,6 +17,6 @@ def plot_umap_after_integration(adata, osbm_key, method, outdir, batch_key, labe
     sc.pp.neighbors(adata, use_rep=osbm_key)
     sc.tl.umap(adata)
     sc.tl.leiden(adata, key_added=f"leiden_{method}", flavor="igraph", n_iterations=2)
-    sc.pl.umap(adata, color=[label_key, batch_key, "leiden_scglue"], wspace=0.4, save=f"_after_integration_{method}.png")
+    sc.pl.umap(adata, color=[label_key, batch_key, f"leiden_{method}"], wspace=0.4, save=f"_after_integration_{method}.png")
     print("after")
     print(adata)
