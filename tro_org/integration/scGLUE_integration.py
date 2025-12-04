@@ -12,9 +12,6 @@ def scg_integration(adata, out_dir, batch_key, label_key):
     sc.pp.scale(adata, max_value=10)
     sc.tl.pca(adata, n_comps=50)
 
-    print(adata)
-    print(batch_key)
-
     scg.models.configure_dataset(
         adata,
         prob_model="Normal",
@@ -32,7 +29,7 @@ def scg_integration(adata, out_dir, batch_key, label_key):
         G.add_edge(gene, gene, weight=1, sign=1)
 
     print(G)
-
+    """
     if os.path.exists(f"glue_batch/pretrain/pretrain.dill"):
         print("loading pretrain model")
         glue = scg.models.load_model("glue_batch/pretrain/pretrain.dill")
@@ -48,6 +45,17 @@ def scg_integration(adata, out_dir, batch_key, label_key):
             }
         )
         glue.save("glue_batch/pretrain/pretrain.dill")
+    """
+
+    glue = scg.models.fit_SCGLUE(
+        {"rna": adata},
+        G,
+        skip_balance=True,
+        fit_kws={
+            "directory": "glue_batch",
+            "max_epochs": 200,
+        }
+    )
 
     adata.obsm["X_scglue"] = glue.encode_data("rna", adata)
 
