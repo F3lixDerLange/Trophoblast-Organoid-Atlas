@@ -17,8 +17,7 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
 # GPU specific
-#SBATCH -p shared-gpu
-#SBATCH --gres=gpu:1
+
 
 conda activate test-env
 
