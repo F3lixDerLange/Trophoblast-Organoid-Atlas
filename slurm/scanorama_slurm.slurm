@@ -22,6 +22,6 @@ CONDA_BASE=$(conda info --base)
 source "$CONDA_BASE"/etc/profile.d/conda.sh
 conda activate uv-env
 
-srun python3 -m tro_org.integration.scanorama_integration -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result -bk samle -lk celltype
+srun python3 -m tro_org.integration.scanorama_integration -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/slurm_result -bk sample -lk celltype
 
 conda deactivate
