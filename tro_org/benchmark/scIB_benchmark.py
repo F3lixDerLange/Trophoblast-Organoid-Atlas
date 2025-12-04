@@ -5,23 +5,31 @@ import tro_org.integration.py_liger_integration
 import tro_org.integration.scanorama_integration
 import scanpy as sc
 
-def run_integrations(h5ad_file, output_dir, batchkey, labelkey):
+def run_integrations(base_adata, output_dir, batchkey, labelkey):
     osbm_keys = ["Unintegrated"]
     print("Running integrations")
 
+    print("PyLiger integration")
+    liger_adata = tro_org.integration.py_liger_integration.pyl_integration(base_adata.copy(), output_dir, batchkey, labelkey)
+    osbm_keys.append("LIGER")
+
     print("scGlue integration")
-    adata = tro_org.integration.scGLUE_integration.scg_integration(h5ad_file, output_dir, batchkey, labelkey)
+    scGlue_adata = tro_org.integration.scGLUE_integration.scg_integration(base_adata.copy(), output_dir, batchkey, labelkey)
     osbm_keys.append("X_scglue")
 
     print("scanorama_integration")
-    adata = tro_org.integration.scanorama_integration.scn_integration(adata, output_dir, batchkey)
+    scanorama_adata = tro_org.integration.scanorama_integration.scn_integration(base_adata.copy(), output_dir, batchkey)
     osbm_keys.append("Scanorama")
 
-    print("PyLiger integration")
-    adata = tro_org.integration.py_liger_integration.pyl_integration(adata, output_dir, batchkey, labelkey)
-    osbm_keys.append("LIGER")
+    integrated_adata = base_adata.copy()
 
-    return osbm_keys, adata
+    integrated_adata.obsm["X_scglue"] = scGlue_adata.obsm["X_scglue"]
+    integrated_adata.obsm["Scanorama"] = scanorama_adata.obsm["Scanorama"]
+    integrated_adata.obsm["LIGER"] = liger_adata.obsm["LIGER"]
+
+
+
+    return osbm_keys, integrated_adata
 
 
 def benchmark(h5ad_file, output_dir, batch_key, label_key):
