@@ -27,7 +27,11 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey):
     integrated_adata.obsm["Scanorama"] = scanorama_adata.obsm["Scanorama"]
     integrated_adata.obsm["LIGER"] = liger_adata.obsm["LIGER"]
 
+    if "X_pca" not in integrated_adata.obsm:
+        print("Perform PCA")
+        sc.pp.pca(integrated_adata)
 
+    integrated_adata.obsm["Unintegrated"] = integrated_adata.obsm["X_pca"]
 
     return osbm_keys, integrated_adata
 
