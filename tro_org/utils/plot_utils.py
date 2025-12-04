@@ -1,5 +1,4 @@
 from pathlib import Path
-import matplotlib.pyplot as plt
 import scanpy as sc
 
 def plot_umap_before_integration(adata, method, outdir, batch_key, label_key):
