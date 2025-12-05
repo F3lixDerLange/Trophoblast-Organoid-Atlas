@@ -3,14 +3,14 @@ import seaborn as sns
 
 figsize = (10,8)
 
-def similarity_df_heatmap(result_df, title):
+def similarity_df_heatmap(result_df, title, method):
     plt.figure(figsize=figsize)
 
     ax = sns.heatmap(
         result_df,
         annot=True,  # change to True if you want numbers inside
         cmap="viridis",
-        cbar_kws={"label": "Cosine similarity"},
+        cbar_kws={"label": f"{method}"},
     )
 
     if title:

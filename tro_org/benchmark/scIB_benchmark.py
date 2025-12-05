@@ -18,7 +18,7 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey):
     osbm_keys.append("LIGER")
 
     print("scanorama_integration")
-    scanorama_adata = tro_org.integration.scanorama_integration.scn_integration(base_adata.copy(), output_dir, batchkey)
+    scanorama_adata = tro_org.integration.scanorama_integration.scn_integration(base_adata.copy(), output_dir, batchkey, labelkey)
     osbm_keys.append("Scanorama")
 
     integrated_adata = base_adata.copy()

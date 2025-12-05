@@ -1,6 +1,10 @@
+from pathlib import Path
+
 import scanpy as sc
 import pandas as pd
 import os
+
+from matplotlib import pyplot as plt
 
 
 def print_h5ad_info(h5ad_file):
@@ -9,8 +13,6 @@ def print_h5ad_info(h5ad_file):
 
     pd.set_option("display.max_columns", None)
     pd.set_option("display.width", None)
-
-    print(adata.obsm["X_scvi"])
 
     # --- Überprüfung der Hauptstruktur ---
     print("===================================")
@@ -42,17 +44,31 @@ def print_h5ad_info(h5ad_file):
 
     # utils.normalize_data(adata)
 
+    print("check for raw counts and normalized counts:")
+    raw_count_matrix_df = pd.DataFrame(
+        adata.raw.X.toarray().T,
+        index=adata.var_names,  # Set gene names as the rows names
+        columns=adata.obs_names  # Set cell barcodes as the column names
+    )
+
+    print("Raw counts:")
+    print(raw_count_matrix_df.iloc[:5, :5])
+    print(f"\nDataFrame-Dimensionen: {raw_count_matrix_df.shape}")
+    print("Global min:", raw_count_matrix_df.values.min())
+    print("Global max:", raw_count_matrix_df.values.max())
+
     count_matrix_df = pd.DataFrame(
         adata.X.toarray().T,
         index=adata.var_names,  # Set gene names as the rows names
         columns=adata.obs_names  # Set cell barcodes as the column names
     )
 
-    print("--- DataFrame (Genes in Rows, Cells in Columns) ---")
-    print(count_matrix_df.iloc[:40, :5])
+    print("Normalized counts:")
+    print(count_matrix_df.iloc[:5, :5])
     print(f"\nDataFrame-Dimensionen: {count_matrix_df.shape}")
     print("Global min:", count_matrix_df.values.min())
     print("Global max:", count_matrix_df.values.max())
+
 
     if "cellxgene" in os.path.basename(h5ad_file):
         for i in range(14):
@@ -67,8 +83,9 @@ def main():
     # h5ad_file = "database/Shibata/GSE241052_ari_org.annotated.h5ad"
     h5ad_file = "database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad"
     # h5ad_file = "database/Shannon_McNeil/Shannon_McNeil_TBp_EVT_D/GSM6664615_DPT_merged.h5ad"
-    h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad"
-    h5ad_file = "/Users/felixlang/Downloads/merged.h5ad"
+    # h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad"
+    # h5ad_file = "/Users/felixlang/Downloads/merged.h5ad"
+    # h5ad_file = "/Users/felixlang/Downloads/pipeline_w_report/annotated_samplesheet_bbknn/finalized/merged.h5ad"
     print_h5ad_info(h5ad_file)
 
 if __name__ == '__main__':

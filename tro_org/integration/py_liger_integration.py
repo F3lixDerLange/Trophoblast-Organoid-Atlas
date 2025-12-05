@@ -16,7 +16,7 @@ def pyl_integration(adata, out_dir, batch_key, label_key):
     batch_cats = adata.obs[batch_key].astype(str).unique()
     print("Found batches:", batch_cats)
 
-    pu.plot_umap_before_integration(adata, "pyliger", out_dir, batch_key, label_key)
+    pu.plot_umap_before_integration(adata, "liger", out_dir, batch_key, label_key)
 
     # tmp = adata.copy()
 
