@@ -1,16 +1,18 @@
 import argparse
+import os
+
 from scib_metrics.benchmark import *
 import tro_org.integration.scGLUE_integration
 import tro_org.integration.py_liger_integration
 import tro_org.integration.scanorama_integration
 import scanpy as sc
 
-def run_integrations(base_adata, output_dir, batchkey, labelkey):
+def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
     osbm_keys = ["Unintegrated"]
     print("Running integrations")
 
     print("scGlue integration")
-    scGlue_adata = tro_org.integration.scGLUE_integration.scg_integration(base_adata.copy(), output_dir, batchkey, labelkey)
+    scGlue_adata = tro_org.integration.scGLUE_integration.scg_integration(base_adata.copy(), output_dir, batchkey, labelkey, modeldir)
     osbm_keys.append("X_scglue")
 
     print("PyLiger integration")
@@ -36,9 +38,9 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey):
     return osbm_keys, integrated_adata
 
 
-def benchmark(h5ad_file, output_dir, batch_key, label_key):
+def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir):
 
-    osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key)
+    osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key, modeldir)
     integrated_adata.obsm["Unintegrated"] = integrated_adata.obsm["X_pca"]
 
     print("benchmark")
@@ -69,7 +71,9 @@ def main():
     out_dir = args.output
     batch_key = args.batch_key
     label_key = args.label_key
-    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key)
+    base_name = os.path.basename(input_file)
+    filename = os.path.splitext(base_name)[0]
+    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename)
 
 if __name__ == '__main__':
     main()
