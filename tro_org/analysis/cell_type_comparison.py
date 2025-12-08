@@ -136,9 +136,9 @@ def main():
     config = utils.load_config("tro_org/analysis/cosine_comp_config.yaml")
     print("Loaded datasets:", [d["name"] for d in config])
     datasets = utils.load_data(config)
-    # compute_cosign_similarity(datasets)
-    method: Literal["wilcoxon", "t-test", None] = None
-    top_n = 200
+    compute_cosign_similarity(datasets)
+    method: Literal["wilcoxon", "t-test", None] = "wilcoxon"
+    top_n = 100
     jaccard_similarity(datasets, method, top_n)
 
 

@@ -1,5 +1,7 @@
 from pathlib import Path
 import scanpy as sc
+from matplotlib.pyplot import title
+
 
 def plot_umap_before_integration(adata, method, outdir, batch_key, label_key):
     save_dir = Path(f"{outdir}/{method}")
@@ -20,3 +22,13 @@ def plot_umap_after_integration(adata, osbm_key, method, outdir, batch_key, labe
     sc.pl.umap(adata, color=[label_key, batch_key, f"leiden_{method}"], wspace=0.4, save=f"_after_integration_{method}.png")
     print("after")
     print(adata)
+
+    print("highlight one batch")
+
+    ax = sc.pl.umap(adata, show=False)
+    for batch in adata.obs[batch_key].unique():
+        sc.pl.umap(adata[adata.obs[batch_key] == batch],
+                   color=label_key,
+                   ax=ax,
+                   title=f"{method} Umap {batch} batch highlighted",
+                   save=f"_after_integration_{method}_{batch}_highlighted.png")
