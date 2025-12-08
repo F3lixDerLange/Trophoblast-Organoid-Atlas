@@ -4,6 +4,7 @@ from matplotlib.pyplot import title
 
 
 def plot_umap_before_integration(adata, method, outdir, batch_key, label_key):
+    sc.set_figure_params(dpi_save=300, figsize=(10, 10), fontsize=14, vector_friendly=True)
     save_dir = Path(f"{outdir}/{method}")
     sc.settings.figdir = save_dir
     sc.tl.pca(adata)
@@ -14,6 +15,7 @@ def plot_umap_before_integration(adata, method, outdir, batch_key, label_key):
     print(adata)
 
 def plot_umap_after_integration(adata, osbm_key, method, outdir, batch_key, label_key):
+    sc.set_figure_params(dpi_save=300, figsize=(10, 10), fontsize=14, vector_friendly=True)
     save_dir = Path(f"{outdir}/{method}")
     sc.settings.figdir = save_dir
     sc.pp.neighbors(adata, use_rep=osbm_key)
@@ -25,9 +27,10 @@ def plot_umap_after_integration(adata, osbm_key, method, outdir, batch_key, labe
 
     print("highlight one batch")
 
-    ax = sc.pl.umap(adata, show=False)
+
     for batch in adata.obs[batch_key].unique():
-        sc.pl.umap(adata[adata.obs[batch_key] == batch],
+        ax = sc.pl.umap(adata, show=False)
+        sc.pl.umap(adata[adata.obs[batch_key] == batch].copy(),
                    color=label_key,
                    ax=ax,
                    title=f"{method} Umap {batch} batch highlighted",

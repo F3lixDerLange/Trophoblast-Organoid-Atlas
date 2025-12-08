@@ -84,14 +84,24 @@ def print_h5ad_info(h5ad_file):
             print(f"\n--- Dataset {i} --- Shape: {adata.var[cols].shape}")
             print(adata.var[cols].head())
 
-    plot(adata, "celltype", "sample")
+    plot(adata, "celltype", "sample", "X_umap")
 
-def plot(adata, label_key, batch_key):
-    sc.pp.neighbors(adata)
+def plot(adata, label_key, batch_key, osbmkey):
+    save_dir = Path(f"ztest_folder")
+    sc.settings.figdir = save_dir
+    sc.set_figure_params(dpi_save=300, figsize=(10, 10), fontsize=14,  vector_friendly=True)
+    sc.pp.neighbors(adata, use_rep=osbmkey)
     sc.tl.umap(adata)
 
-    ax = sc.pl.umap(adata, show=False)
-    sc.pl.umap(adata[adata.obs[batch_key] == "Arima_Pre1_con"], color=label_key, ax=ax ,show=True)
+
+    for batch in adata.obs[batch_key].unique():
+        ax = sc.pl.umap(adata, show=False)
+        sc.pl.umap(adata[adata.obs[batch_key] == batch].copy(),
+                   color=label_key,
+                   ax=ax,
+                   title=f"Umap {batch} batch highlighted",
+                   save=f"_after_integration_{batch}_highlighted.png")
+
 
 def main():
     # h5ad_file = "processed_data/Shibata_Karvas_Shannon_Baltayeva_merged_hvg.h5ad"
