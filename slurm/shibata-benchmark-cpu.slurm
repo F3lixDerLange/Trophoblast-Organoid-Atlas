@@ -1,7 +1,7 @@
 #!/bin/bash
 # Job metadata
 #SBATCH --job-name shib-benchmark_integration
-#SBATCH --time=01:00:00
+#SBATCH --time=04:00:00
 #SBATCH --no-requeue
 # Working directory
 #SBATCH --chdir=/nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
