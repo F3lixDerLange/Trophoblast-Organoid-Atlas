@@ -33,5 +33,5 @@ def plot_umap_after_integration(adata, osbm_key, method, outdir, batch_key, labe
         sc.pl.umap(adata[adata.obs[batch_key] == batch].copy(),
                    color=label_key,
                    ax=ax,
-                   title=f"{method} Umap {batch} batch highlighted",
-                   save=f"_after_integration_{method}_{batch}_highlighted.png")
+                   title=f"{method} Umap {batch} batch highlighted {method}",
+                   save=f"_after_integration_{method}_{batch}_highlighted_{method}.png")

@@ -6,7 +6,7 @@ filename="${sample_sheet##*/}"
 methods=("scvi" "harmony" "bbknn" "combat")
 
 for tool in "${methods[@]}"; do
-  outpath="$output_dir/${filename%.*}_${tool}"
+  outpath="$output_dir/${filename%.*}_${tool}" # important: last part of the name is the tool. needed for benchmark
   report_path="$output_dir/report"
   mkdir -p "$outpath"
   mkdir -p "$report_path"

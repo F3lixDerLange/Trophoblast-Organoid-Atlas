@@ -19,7 +19,7 @@
 
 conda activate test-env
 
-srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/proj/tropho_org_atlas/database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad -output /nfs/home/students/f.lang/torg/slurm_result/ArutyunyanPTO -bk sample -lk cell_annotation
+srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/proj/tropho_org_atlas/database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad -output /nfs/home/students/f.lang/torg/benchmark/ArutyunyanPTO -bk sample -lk cell_annotation
 
 conda deactivate
 
