@@ -5,7 +5,7 @@ from scib_metrics.benchmark import *
 import tro_org.integration.scGLUE_integration
 import tro_org.integration.py_liger_integration
 import tro_org.integration.scanorama_integration
-import utils
+import tro_org.benchmark.utils as utils
 
 def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
     osbm_keys = ["Unintegrated"]
