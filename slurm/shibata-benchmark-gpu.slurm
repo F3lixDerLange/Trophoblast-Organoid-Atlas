@@ -22,7 +22,7 @@
 
 conda activate test-env
 
-srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/benchmark/shibata -bk sample -lk celltype
+srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad -output /nfs/home/students/f.lang/torg/benchmark/shibata -bk sample -lk celltype -m /nfs/home/students/f.lang/nf-core_out/pipline_single
 
 conda deactivate
 

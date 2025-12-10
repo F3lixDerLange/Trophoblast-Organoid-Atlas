@@ -1,11 +1,11 @@
 import argparse
 import os
-
+import scanpy as sc
 from scib_metrics.benchmark import *
 import tro_org.integration.scGLUE_integration
 import tro_org.integration.py_liger_integration
 import tro_org.integration.scanorama_integration
-import scanpy as sc
+import utils
 
 def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
     osbm_keys = ["Unintegrated"]
@@ -25,7 +25,7 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
 
     integrated_adata = base_adata.copy()
 
-    integrated_adata.obsm["X_scglue"] = scGlue_adata.obsm["X_scglue"]
+    integrated_adata.obsm["scGlue"] = scGlue_adata.obsm["X_scglue"]
     integrated_adata.obsm["Scanorama"] = scanorama_adata.obsm["Scanorama"]
     integrated_adata.obsm["LIGER"] = liger_adata.obsm["LIGER"]
 
@@ -38,9 +38,34 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
     return osbm_keys, integrated_adata
 
 
-def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir):
+def get_data_from_scdownstream_merged(merged_dir, integrated_adata, obsm_keys):
+    merged_files = utils.find_file(merged_dir, "merged.h5ad" )
+    print(merged_files)
+    for tool, file in merged_files:
+        merged_scdownstream = sc.read_h5ad(file)
+
+        if tool == "scvi":
+            integrated_adata.obsm["scVI"] = merged_scdownstream.obsm["X_scvi"]
+            obsm_keys.append("scVI")
+        elif tool == "harmony":
+            integrated_adata.obsm["Harmony"] = merged_scdownstream.obsm["X_harmony"]
+            obsm_keys.append("Harmony")
+        elif tool == "combat":
+            integrated_adata.obsm['Combat'] = merged_scdownstream.obsm['X_combat']
+            obsm_keys.append("Combat")
+        elif tool == "bbknn":
+            integrated_adata.obsm["BBKNN"] = merged_scdownstream.obsm["X_bbknn-global_umap"] #TBD TODO
+            obsm_keys.append("BBKNN") #TBD TODO
+
+    return obsm_keys, integrated_adata
+
+
+def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adata):
 
     osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key, modeldir)
+    if merged_adata is not None:
+        osbm_keys, integrated_adata = get_data_from_scdownstream_merged(merged_adata, integrated_adata, osbm_keys)
+
     integrated_adata.obsm["Unintegrated"] = integrated_adata.obsm["X_pca"]
 
     print("benchmark")
@@ -66,14 +91,30 @@ def main():
     parser.add_argument("-output", required=True)
     parser.add_argument("-bk", "--batch_key", required=True, help="batch_key")
     parser.add_argument("-lk", "--label_key", required=True, help="label_key")
+    parser.add_argument("-m", "--mergeddir", required=False, help="dir with merged scdownstream h5ad file")
     args = parser.parse_args()
     input_file = args.input
     out_dir = args.output
     batch_key = args.batch_key
     label_key = args.label_key
+    merged_dir = args.mergeddir
     base_name = os.path.basename(input_file)
     filename = os.path.splitext(base_name)[0]
-    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename)
+
+    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename, merged_dir)
+
+    """
+    -input
+    database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad
+    -output
+    ztest_folder
+    -bk
+    sample
+    -lk
+    celltype
+    -m
+    /Users/felixlang/Downloads/pipline_single/
+    """
 
 if __name__ == '__main__':
     main()
