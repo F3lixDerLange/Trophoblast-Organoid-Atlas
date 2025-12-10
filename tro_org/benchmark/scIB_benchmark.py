@@ -13,7 +13,7 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
 
     print("scGlue integration")
     scGlue_adata = tro_org.integration.scGLUE_integration.scg_integration(base_adata.copy(), output_dir, batchkey, labelkey, modeldir)
-    osbm_keys.append("X_scglue")
+    osbm_keys.append("scGlue")
 
     print("PyLiger integration")
     liger_adata = tro_org.integration.py_liger_integration.pyl_integration(base_adata.copy(), output_dir, batchkey, labelkey)
