@@ -9,24 +9,26 @@ import utils
 
 fontsize = 16
 
-def parse_data(log_path):
+def parse_data(log_path, tsv):
     usage_data = {}
-    log_files = utils.find_file_w_pattern(log_path, "*_usage.log")
+    pattern = "*_usage.tsv" if tsv else "*_usage.log"
+    log_files = utils.find_file_w_pattern(log_path, pattern)
     print("log_files:", log_files)
 
     for log_file in log_files:
         with open(log_file, "r") as file:
             next(file)
             tool = log_file.split("/")[-1].split("_")[0]
-            print(tool)
+            # print(tool)
             usage_data[tool] = []
             for line in file:
-                usage_data[tool].append(line.strip().split(" "))
+                separator = "\t" if tsv else " "
+                usage_data[tool].append(line.strip().split(separator))
                 # print(usage_data[tool])
 
     return usage_data
 
-def calculate_metrics(usage_data, adata, plot_dir):
+def calculate_metrics(usage_data, tsv):
     FMT = "%Y-%m-%d %H:%M:%S"
 
     # bar plot
@@ -42,26 +44,39 @@ def calculate_metrics(usage_data, adata, plot_dir):
     max_usage = {}
     ram_usage = {}
 
-    for tool in usage_data:
-        time_tmp = [x[0] for x in usage_data[tool]]
-        tdelta = datetime.strptime(utils.unit_conversion_time(max(time_tmp)), FMT) - datetime.strptime(utils.unit_conversion_time(min(time_tmp)), FMT)
-        cpu_tmp = [float(x[2]) for x in usage_data[tool]]
-        cpu_max = max(cpu_tmp)
-        ram_tmp = [float(x[4]) / (1024 ** 2) for x in usage_data[tool]]
-        ram_max = max(ram_tmp) # / 1e6  # MB = 1e3 but also change unit in plot
-        vram_tmp = [float(x[5]) for x in usage_data[tool]]
-        vram_max = max(vram_tmp) / (1024 ** 2)  # MB = 1e3 but also change unit in plot
+    if tsv:
+        for tool in usage_data:
+            time_tmp = [float(x[2]) for x in usage_data[tool]]
+            tdelta = int(time_tmp[-1] + 1)
+            ram_tmp = [float(x[3]) / 1024 for x in usage_data[tool]]
+            ram_max = max(ram_tmp)
+            vram_tmp = [float(x[4]) / 1024 for x in usage_data[tool]]
+            vram_max = max(vram_tmp)
+            cpu_tmp = [float(x[5]) for x in usage_data[tool]]
+            cpu_max = max(cpu_tmp)
 
-        print(tool , tdelta)
-        max_usage[tool] = {"time_min": tdelta.total_seconds() / 60, "cpu": cpu_max, "rss": ram_max, "vsz": vram_max}
-        ram_usage[tool] = ram_tmp
+            max_usage[tool] = {"time_min": tdelta / 60, "cpu": cpu_max, "rss": ram_max, "vsz": vram_max}
+            ram_usage[tool] = ram_tmp
 
-    n_cells = adata.n_obs
-    n_genes = adata.n_vars
+            print(tool, tdelta)
 
-    resources_normalized_plot(max_usage, [n_cells, n_genes], plot_dir)
-    resources_plot(max_usage, [n_cells, n_genes], plot_dir)
-    mem_line_plot(ram_usage, [n_cells, n_genes], plot_dir)
+    else:
+        for tool in usage_data:
+            time_tmp = [x[0] for x in usage_data[tool]]
+            tdelta = datetime.strptime(utils.unit_conversion_time(max(time_tmp)), FMT) - datetime.strptime(utils.unit_conversion_time(min(time_tmp)), FMT)
+            cpu_tmp = [float(x[2]) for x in usage_data[tool]]
+            cpu_max = max(cpu_tmp)
+            ram_tmp = [float(x[4]) / (1024 ** 2) for x in usage_data[tool]]
+            ram_max = max(ram_tmp) # / 1e6  # MB = 1e3 but also change unit in plot
+            vram_tmp = [float(x[5]) for x in usage_data[tool]]
+            vram_max = max(vram_tmp) / (1024 ** 2)  # MB = 1e3 but also change unit in plot
+
+            print(tool , tdelta)
+            max_usage[tool] = {"time_min": tdelta.total_seconds() / 60, "cpu": cpu_max, "rss": ram_max, "vsz": vram_max}
+            ram_usage[tool] = ram_tmp
+
+    return max_usage, ram_usage
+
 
 def resources_normalized_plot(data_dir, adata_shape, plot_dir):
     methods = list(data_dir.keys())
@@ -71,12 +86,14 @@ def resources_normalized_plot(data_dir, adata_shape, plot_dir):
     data = np.array([[data_dir[m][metric] for m in methods] for metric in metrics])
     data_norm = data / data.max(axis=1, keepdims=True)
     x = np.arange(len(metrics))
-    width = 0.18
+    n_methods = len(methods)
+    group_width = 0.8
+    width = group_width / n_methods
 
     plt.figure(figsize=(12, 6))
 
     for i, method in enumerate(methods):
-        plt.bar(x + (i - 1.5) * width, data_norm[:, i], width, label=method)
+        plt.bar(x + (i - (n_methods - 1) / 2) * width, data_norm[:, i], width, label=method)
 
     title = "Computational Requirement Metrics Normalized"
 
@@ -151,20 +168,51 @@ def mem_line_plot(mem_data, adata_shape, plot_dir):
     plt.savefig(f"{plot_dir}/computational_requirement_metrics_ram_usage.png", dpi=300)
     plt.show()
 
+def plot_metrics(max_usage, ram_usage, adata, plot_dir):
+    n_cells = adata.n_obs
+    n_genes = adata.n_vars
+
+    resources_normalized_plot(max_usage, [n_cells, n_genes], plot_dir)
+    resources_plot(max_usage, [n_cells, n_genes], plot_dir)
+    mem_line_plot(ram_usage, [n_cells, n_genes], plot_dir)
+
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-h5ad", required=False, help="h5ad file")
-    parser.add_argument("-log", required=True, help="resource_usage dir scdownstream")
-    parser.add_argument("-out", required=True, help="plot dir")
+    parser.add_argument("-log", required=False, help="resource_usage dir scdownstream")
+    parser.add_argument("-out", required=False, help="plot dir")
+    parser.add_argument("-tsv", required=False, help="tsv file")
 
     args = parser.parse_args()
     h5ad = args.h5ad
     resource_usage_dir = args.log
     output_dir = args.out
+    tsv_path = args.tsv
 
-    data = parse_data(resource_usage_dir)
-    calculate_metrics(data, sc.read_h5ad(h5ad), output_dir)
+
+    tsv_data = parse_data(tsv_path, True)
+    print(1)
+    log_data = parse_data(resource_usage_dir, False)
+    print(2)
+    log_usage, log_ram = calculate_metrics(log_data, False)
+    print(3)
+    tsv_usage, tsv_ram = calculate_metrics(tsv_data, True)
+    print(4)
+
+    if resource_usage_dir is None and tsv_path is None:
+        print("You must specify a resource usage directory or a tsv file")
+    elif resource_usage_dir is not None and tsv_path is None:
+        max_usage, ram_usage = log_usage, log_ram
+    elif resource_usage_dir is None and tsv_path is not None:
+        max_usage, ram_usage = tsv_usage, tsv_ram
+    elif resource_usage_dir is not None and tsv_path is not None:
+        max_usage = tsv_usage | log_usage
+        ram_usage = tsv_ram | log_ram
+
+    print("Max usage:", max_usage)
+    print("Ram usage:", ram_usage)
+    plot_metrics(max_usage, ram_usage, sc.read_h5ad(h5ad), output_dir)
 
 if __name__ == '__main__':
     main()
