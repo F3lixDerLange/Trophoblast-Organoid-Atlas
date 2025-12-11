@@ -19,7 +19,7 @@
 
 conda activate test-env
 
-srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/pipline_fixed/annotated_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/shibata -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/pipline_fixed
+srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/pipline_fixed/annotated_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/ann_merged -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/pipline_fixed
 
 conda deactivate
 
