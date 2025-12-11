@@ -47,10 +47,10 @@ def calculate_metrics(usage_data, adata, plot_dir):
         tdelta = datetime.strptime(utils.unit_conversion_time(max(time_tmp)), FMT) - datetime.strptime(utils.unit_conversion_time(min(time_tmp)), FMT)
         cpu_tmp = [float(x[2]) for x in usage_data[tool]]
         cpu_max = max(cpu_tmp)
-        ram_tmp = [float(x[4]) / 1e6 for x in usage_data[tool]]
+        ram_tmp = [float(x[4]) / (1024 ** 2) for x in usage_data[tool]]
         ram_max = max(ram_tmp) # / 1e6  # MB = 1e3 but also change unit in plot
         vram_tmp = [float(x[5]) for x in usage_data[tool]]
-        vram_max = max(vram_tmp) / 1e6  # MB = 1e3 but also change unit in plot
+        vram_max = max(vram_tmp) / (1024 ** 2)  # MB = 1e3 but also change unit in plot
 
         print(tool , tdelta)
         max_usage[tool] = {"time_min": tdelta.total_seconds() / 60, "cpu": cpu_max, "rss": ram_max, "vsz": vram_max}

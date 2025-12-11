@@ -7,22 +7,44 @@ import tro_org.integration.py_liger_integration
 import tro_org.integration.scanorama_integration
 import tro_org.benchmark.utils as utils
 import tro_org.utils.plot_utils as pu
+from tro_org.benchmark.usage_profiler import profile_resources
 
-def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
+def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir, usage):
     osbm_keys = ["Unintegrated"]
     print("Running integrations")
 
-    print("scGlue integration")
-    scGlue_adata = tro_org.integration.scGLUE_integration.scg_integration(base_adata.copy(), output_dir, batchkey, labelkey, modeldir)
-    osbm_keys.append("scGlue")
+    if usage:
+        print("scGlue integration")
+        run_scglue = (profile_resources("scGlue", f"{output_dir}/resource_usage/scglue_usage.tsv")
+                      (tro_org.integration.scGLUE_integration.scg_integration))
+        scGlue_adata = run_scglue(base_adata.copy(), output_dir, batchkey, labelkey, modeldir)
+        osbm_keys.append("scGlue")
 
-    print("PyLiger integration")
-    liger_adata = tro_org.integration.py_liger_integration.pyl_integration(base_adata.copy(), output_dir, batchkey, labelkey)
-    osbm_keys.append("LIGER")
+        print("PyLiger integration")
+        run_liger = (profile_resources("LIGER", f"{output_dir}/resource_usage/liger_usage.tsv")
+                     (tro_org.integration.py_liger_integration.pyl_integration))
+        liger_adata = run_liger(base_adata.copy(), output_dir, batchkey, labelkey)
+        osbm_keys.append("LIGER")
 
-    print("scanorama_integration")
-    scanorama_adata = tro_org.integration.scanorama_integration.scn_integration(base_adata.copy(), output_dir, batchkey, labelkey)
-    osbm_keys.append("Scanorama")
+        print("scanorama_integration")
+        run_scanorama = (profile_resources("Scanorama",
+                                          f"{output_dir}/resource_usage/scanorama_usage.tsv")
+                         (tro_org.integration.scanorama_integration.scn_integration))
+        scanorama_adata = run_scanorama(base_adata.copy(), output_dir, batchkey, labelkey)
+        osbm_keys.append("Scanorama")
+
+    else:
+        print("scGlue integration")
+        scGlue_adata = tro_org.integration.scGLUE_integration.scg_integration(base_adata.copy(), output_dir, batchkey, labelkey, modeldir)
+        osbm_keys.append("scGlue")
+
+        print("PyLiger integration")
+        liger_adata = tro_org.integration.py_liger_integration.pyl_integration(base_adata.copy(), output_dir, batchkey, labelkey)
+        osbm_keys.append("LIGER")
+
+        print("scanorama_integration")
+        scanorama_adata = tro_org.integration.scanorama_integration.scn_integration(base_adata.copy(), output_dir, batchkey, labelkey)
+        osbm_keys.append("Scanorama")
 
     integrated_adata = base_adata.copy()
 
@@ -69,9 +91,9 @@ def get_data_from_scdownstream_merged(merged_dir, integrated_adata, obsm_keys, o
     return obsm_keys, integrated_adata
 
 
-def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adata):
+def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adata, usage):
 
-    osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key, modeldir)
+    osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key, modeldir, usage)
     if merged_adata is not None:
         osbm_keys, integrated_adata = get_data_from_scdownstream_merged(merged_adata, integrated_adata, osbm_keys, output_dir, batch_key, label_key)
 
@@ -101,16 +123,18 @@ def main():
     parser.add_argument("-bk", "--batch_key", required=True, help="batch_key")
     parser.add_argument("-lk", "--label_key", required=True, help="label_key")
     parser.add_argument("-m", "--mergeddir", required=False, help="dir with merged scdownstream h5ad file")
+    parser.add_argument("-u", "--usage", required=False, action="store_true" ,help="log resource usage")
     args = parser.parse_args()
     input_file = args.input
     out_dir = args.output
     batch_key = args.batch_key
     label_key = args.label_key
     merged_dir = args.mergeddir
+    usage = args.usage
     base_name = os.path.basename(input_file)
     filename = os.path.splitext(base_name)[0]
 
-    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename, merged_dir)
+    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename, merged_dir, usage)
 
     """
     -input
