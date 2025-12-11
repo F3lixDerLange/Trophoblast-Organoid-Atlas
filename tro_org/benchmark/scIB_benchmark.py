@@ -6,6 +6,7 @@ import tro_org.integration.scGLUE_integration
 import tro_org.integration.py_liger_integration
 import tro_org.integration.scanorama_integration
 import tro_org.benchmark.utils as utils
+import tro_org.utils.plot_utils as pu
 
 def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
     osbm_keys = ["Unintegrated"]
@@ -38,7 +39,7 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir):
     return osbm_keys, integrated_adata
 
 
-def get_data_from_scdownstream_merged(merged_dir, integrated_adata, obsm_keys):
+def get_data_from_scdownstream_merged(merged_dir, integrated_adata, obsm_keys, output_dir, batchkey, labelkey):
     merged_files = utils.find_file(merged_dir, "merged.h5ad" )
     print(merged_files)
     for tool, file in merged_files:
@@ -47,15 +48,23 @@ def get_data_from_scdownstream_merged(merged_dir, integrated_adata, obsm_keys):
         if tool == "scvi":
             integrated_adata.obsm["scVI"] = merged_scdownstream.obsm["X_scvi"]
             obsm_keys.append("scVI")
+            pu.plot_umap_before_integration(merged_scdownstream, "scVI", output_dir, batchkey, labelkey)
+            pu.plot_umap_after_integration(integrated_adata, "scVI", "scVI", output_dir, batchkey, labelkey)
         elif tool == "harmony":
             integrated_adata.obsm["Harmony"] = merged_scdownstream.obsm["X_harmony"]
             obsm_keys.append("Harmony")
+            pu.plot_umap_before_integration(merged_scdownstream, "Harmony", output_dir, batchkey, labelkey)
+            pu.plot_umap_after_integration(integrated_adata, "Harmony", "Harmony", output_dir, batchkey, labelkey)
         elif tool == "combat":
             integrated_adata.obsm['Combat'] = merged_scdownstream.obsm['X_combat']
             obsm_keys.append("Combat")
+            pu.plot_umap_before_integration(merged_scdownstream, "Combat", output_dir, batchkey, labelkey)
+            pu.plot_umap_after_integration(integrated_adata, "Combat", "Combat", output_dir, batchkey, labelkey)
         elif tool == "bbknn":
             integrated_adata.obsm["BBKNN"] = merged_scdownstream.obsm["X_bbknn-global_umap"] #TBD TODO
             obsm_keys.append("BBKNN") #TBD TODO
+            pu.plot_umap_before_integration(merged_scdownstream, "BBKNN", output_dir, batchkey, labelkey)
+            pu.plot_umap_after_integration(integrated_adata, "BBKNN", "BBKNN", output_dir, batchkey, labelkey)
 
     return obsm_keys, integrated_adata
 
@@ -64,7 +73,7 @@ def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adat
 
     osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key, modeldir)
     if merged_adata is not None:
-        osbm_keys, integrated_adata = get_data_from_scdownstream_merged(merged_adata, integrated_adata, osbm_keys)
+        osbm_keys, integrated_adata = get_data_from_scdownstream_merged(merged_adata, integrated_adata, osbm_keys, output_dir, batch_key, label_key)
 
     integrated_adata.obsm["Unintegrated"] = integrated_adata.obsm["X_pca"]
 
