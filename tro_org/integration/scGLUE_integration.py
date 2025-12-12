@@ -18,7 +18,7 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir):
     scg.models.configure_dataset(
         adata,
         prob_model="Normal",
-        use_highly_variable=True,
+        use_highly_variable=False,
         use_rep="X_pca",
         use_batch=str(batch_key),
         #use_cell_type=label_key
