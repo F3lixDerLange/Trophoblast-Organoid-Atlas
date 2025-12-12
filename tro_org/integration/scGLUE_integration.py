@@ -8,8 +8,8 @@ import tro_org.utils.plot_utils as pu
 
 def scg_integration(adata, out_dir, batch_key, label_key, modeldir):
 
-    sc.pp.highly_variable_genes(adata, batch_key=batch_key) # , n_top_genes=4000, flavor="seurat_v3")
-    adata = adata[:, adata.var["highly_variable"]].copy()
+    # sc.pp.highly_variable_genes(adata, batch_key=batch_key) # , n_top_genes=4000, flavor="seurat_v3")
+    # adata = adata[:, adata.var["highly_variable"]].copy()
     sc.pp.scale(adata, max_value=10)
     sc.tl.pca(adata, n_comps=50)
 

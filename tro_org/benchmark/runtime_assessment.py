@@ -1,4 +1,5 @@
 import argparse
+import os
 from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
@@ -78,7 +79,7 @@ def calculate_metrics(usage_data, tsv):
     return max_usage, ram_usage
 
 
-def resources_normalized_plot(data_dir, adata_shape, plot_dir):
+def resources_normalized_plot(data_dir, adata_shape, plot_dir, dataset_ident):
     methods = list(data_dir.keys())
     metrics = ["time_min", "cpu", "rss", "vsz"]
     metric_labels = ["Time", "max CPU", "max RSS", "max VSZ"]
@@ -105,10 +106,10 @@ def resources_normalized_plot(data_dir, adata_shape, plot_dir):
     plt.title(title, fontsize=fontsize)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"{plot_dir}/computational_requirement_metrics_norm_comparison.png", dpi=300)
+    plt.savefig(f"{plot_dir}/{dataset_ident}_computational_requirement_metrics_norm_comparison.png", dpi=300)
     plt.show()
 
-def resources_plot(data_dir, adata_shape, plot_dir):
+def resources_plot(data_dir, adata_shape, plot_dir, dataset_ident):
     dataset = {}
     for tool in data_dir:
         dataset[tool] = [x for x in data_dir[tool].values()]
@@ -134,10 +135,10 @@ def resources_plot(data_dir, adata_shape, plot_dir):
 
     fig.suptitle(title, fontsize=fontsize)
     plt.tight_layout()
-    plt.savefig(f"{plot_dir}/computational_requirement_metrics_comparison.png", dpi=300)
+    plt.savefig(f"{plot_dir}/{dataset_ident}_computational_requirement_metrics_comparison.png", dpi=300)
     plt.show()
 
-def mem_line_plot(mem_data, adata_shape, plot_dir):
+def mem_line_plot(mem_data, adata_shape, plot_dir, dataset_ident):
     plt.figure(figsize=(10, 6))
 
     colors = {
@@ -165,16 +166,16 @@ def mem_line_plot(mem_data, adata_shape, plot_dir):
     plt.legend()
     plt.grid(alpha=0.3)
     plt.tight_layout()
-    plt.savefig(f"{plot_dir}/computational_requirement_metrics_ram_usage.png", dpi=300)
+    plt.savefig(f"{plot_dir}/{dataset_ident}_computational_requirement_metrics_ram_usage.png", dpi=300)
     plt.show()
 
-def plot_metrics(max_usage, ram_usage, adata, plot_dir):
+def plot_metrics(max_usage, ram_usage, adata, plot_dir, dataset_ident):
     n_cells = adata.n_obs
     n_genes = adata.n_vars
 
-    resources_normalized_plot(max_usage, [n_cells, n_genes], plot_dir)
-    resources_plot(max_usage, [n_cells, n_genes], plot_dir)
-    mem_line_plot(ram_usage, [n_cells, n_genes], plot_dir)
+    resources_normalized_plot(max_usage, [n_cells, n_genes], plot_dir, dataset_ident)
+    resources_plot(max_usage, [n_cells, n_genes], plot_dir, dataset_ident)
+    mem_line_plot(ram_usage, [n_cells, n_genes], plot_dir, dataset_ident)
 
 
 def main():
@@ -192,13 +193,9 @@ def main():
 
 
     tsv_data = parse_data(tsv_path, True)
-    print(1)
     log_data = parse_data(resource_usage_dir, False)
-    print(2)
     log_usage, log_ram = calculate_metrics(log_data, False)
-    print(3)
     tsv_usage, tsv_ram = calculate_metrics(tsv_data, True)
-    print(4)
 
     if resource_usage_dir is None and tsv_path is None:
         print("You must specify a resource usage directory or a tsv file")
@@ -210,9 +207,8 @@ def main():
         max_usage = tsv_usage | log_usage
         ram_usage = tsv_ram | log_ram
 
-    print("Max usage:", max_usage)
-    print("Ram usage:", ram_usage)
-    plot_metrics(max_usage, ram_usage, sc.read_h5ad(h5ad), output_dir)
+    dataset_identifier = os.path.basename(tsv_path)
+    plot_metrics(max_usage, ram_usage, sc.read_h5ad(h5ad), output_dir, dataset_identifier)
 
 if __name__ == '__main__':
     main()

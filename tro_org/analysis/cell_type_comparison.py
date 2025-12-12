@@ -7,7 +7,7 @@ from tro_org.analysis import utils
 import plot_analysis
 import scanpy as sc
 
-def compute_cosign_similarity(datasets):
+def compute_cosign_similarity(datasets, savedir):
     results = {}
 
     print("Running cosine comparison")
@@ -33,7 +33,7 @@ def compute_cosign_similarity(datasets):
             results[(ref_ds_name, target_ds_name)] = cosine_similarity
 
             print(cosine_similarity.shape)
-            plot_analysis.similarity_df_heatmap(cosine_similarity, f"ref:{ref_ds_name}_target:{target_ds_name}", "Cosine Similarity")
+            plot_analysis.similarity_df_heatmap(cosine_similarity, f"ref:{ref_ds_name}_target:{target_ds_name}", "Cosine Similarity", savedir, f"{ref_ds_name}_{target_ds_name}")
 
 
 def pairwise_cosine_similarity(profiles1, profiles2):
@@ -56,7 +56,7 @@ def compute_celltype_profiles(adata, label_col):   # mean expression vectors of 
 
     return pd.DataFrame(profiles, index=celltypes)
 
-def jaccard_similarity(datasets, method, top_n):
+def jaccard_similarity(datasets, method, top_n, savedir):
     for i, ref_ds in enumerate(datasets):
         for j, target_ds in enumerate(datasets):
             if i <= j:
@@ -75,7 +75,7 @@ def jaccard_similarity(datasets, method, top_n):
             print(f"Computing Jaccard similarity -> {ref_ds_name} -> {target_ds_name}")
             jaccard_scors = calculate_jaccard_score(markerA, markerB)
 
-            plot_analysis.similarity_df_heatmap(jaccard_scors, f"ref:{ref_ds_name}_target:{target_ds_name}, gene select: {method}", "Jaccard Similarity")
+            plot_analysis.similarity_df_heatmap(jaccard_scors, f"ref:{ref_ds_name}_target:{target_ds_name}, gene select: {method}", "Jaccard_Similarity", savedir, f"{ref_ds_name}_{target_ds_name}_methods:{method}")
 
 
 
@@ -133,13 +133,14 @@ def generate_marker_genes(adata, label_col, methods: Literal["wilcoxon","t-test"
 
 
 def main():
+    save_dir = "tro_org/analysis/analysis_plots"
     config = utils.load_config("tro_org/analysis/cosine_comp_config.yaml")
     print("Loaded datasets:", [d["name"] for d in config])
     datasets = utils.load_data(config)
-    compute_cosign_similarity(datasets)
+    #compute_cosign_similarity(datasets, save_dir)
     method: Literal["wilcoxon", "t-test", None] = "wilcoxon"
     top_n = 100
-    jaccard_similarity(datasets, method, top_n)
+    jaccard_similarity(datasets, method, top_n, save_dir)
 
 
 if __name__ == '__main__':

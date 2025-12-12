@@ -10,13 +10,14 @@ def scn_integration(adata, output_dir, batch_key, label_key):
 
     pu.plot_umap_before_integration(adata, "scanorama", output_dir, batch_key, label_key)
 
-    sc.pp.highly_variable_genes(adata, batch_key=batch_key)
+    #sc.pp.highly_variable_genes(adata, batch_key=batch_key)
     # Select all genes that are variable in at least 2 batches
-    var_select = adata.var.highly_variable_nbatches > 2
-    var_genes = var_select.index[var_select]
-    adatas = [adata[adata.obs[batch_key] == batch_value][:, var_genes].copy() for batch_value in adata.obs[batch_key].unique()]
+    #var_select = adata.var.highly_variable_nbatches > 2
+    #var_genes = var_select.index[var_select]
+    #adatas = [adata[adata.obs[batch_key] == batch_value][:, var_genes].copy() for batch_value in adata.obs[batch_key].unique()]
+    # No HVG selection: keep all genes
 
-    #adatas = [adata[adata.obs[batch_key] == batch_value].copy() for batch_value in adata.obs[batch_key].unique()]
+    adatas = [adata[adata.obs[batch_key] == batch_value].copy() for batch_value in adata.obs[batch_key].unique()]
     scn.integrate_scanpy(adatas)
 
     adata_sc = adata.copy()
