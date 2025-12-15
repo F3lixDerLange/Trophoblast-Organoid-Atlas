@@ -76,7 +76,7 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir, gtf):
         skip_balance=True,
         fit_kws={
             "directory": f"glue_batch/{modeldir}",
-            "max_epochs": 10,
+            "max_epochs": 200,
         }
     )
 
