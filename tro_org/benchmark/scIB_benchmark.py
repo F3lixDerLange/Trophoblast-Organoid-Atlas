@@ -9,7 +9,7 @@ import tro_org.benchmark.utils as utils
 import tro_org.utils.plot_utils as pu
 from tro_org.benchmark.usage_profiler import profile_resources
 
-def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir, usage):
+def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir, usage, gtf):
     osbm_keys = ["Unintegrated"]
     print("Running integrations")
 
@@ -17,7 +17,7 @@ def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir, usage
         print("scGlue integration")
         run_scglue = (profile_resources("scGlue", f"{output_dir}/resource_usage/scglue_usage.tsv")
                       (tro_org.integration.scGLUE_integration.scg_integration))
-        scGlue_adata = run_scglue(base_adata.copy(), output_dir, batchkey, labelkey, modeldir)
+        scGlue_adata = run_scglue(base_adata.copy(), output_dir, batchkey, labelkey, modeldir, gtf)
         osbm_keys.append("scGlue")
 
         print("PyLiger integration")
@@ -91,9 +91,9 @@ def get_data_from_scdownstream_merged(merged_dir, integrated_adata, obsm_keys, o
     return obsm_keys, integrated_adata
 
 
-def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adata, usage):
+def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adata, usage, gtf):
 
-    osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key, modeldir, usage)
+    osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key, modeldir, usage, gtf)
     if merged_adata is not None:
         osbm_keys, integrated_adata = get_data_from_scdownstream_merged(merged_adata, integrated_adata, osbm_keys, output_dir, batch_key, label_key)
 
@@ -124,6 +124,7 @@ def main():
     parser.add_argument("-lk", "--label_key", required=True, help="label_key")
     parser.add_argument("-m", "--mergeddir", required=False, help="dir with merged scdownstream h5ad file")
     parser.add_argument("-u", "--usage", required=False, action="store_true" ,help="log resource usage")
+    parser.add_argument("-gtf", required=True, help="path to gtf annotation file")
     args = parser.parse_args()
     input_file = args.input
     out_dir = args.output
@@ -131,10 +132,11 @@ def main():
     label_key = args.label_key
     merged_dir = args.mergeddir
     usage = args.usage
+    gtf_path = args.gtf
     base_name = os.path.basename(input_file)
     filename = os.path.splitext(base_name)[0]
 
-    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename, merged_dir, usage)
+    benchmark(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename, merged_dir, usage, gtf_path)
 
     """
     -input
@@ -147,6 +149,9 @@ def main():
     celltype
     -m
     /Users/felixlang/Downloads/pipline_single/
+    -u
+    -gtf
+    path to gtf file
     """
 
 if __name__ == '__main__':

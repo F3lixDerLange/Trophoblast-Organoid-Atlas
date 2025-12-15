@@ -6,7 +6,7 @@ import scanpy as sc
 import scglue as scg
 import tro_org.utils.plot_utils as pu
 
-def scg_integration(adata, out_dir, batch_key, label_key, modeldir):
+def scg_integration(adata, out_dir, batch_key, label_key, modeldir, gtf):
 
     # sc.pp.highly_variable_genes(adata, batch_key=batch_key) # , n_top_genes=4000, flavor="seurat_v3")
     # adata = adata[:, adata.var["highly_variable"]].copy()
@@ -19,7 +19,7 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir):
     pu.plot_umap_before_integration(adata, "scglue", out_dir, batch_key, label_key)
 
     scg.data.get_gene_annotation(
-        adata, gtf="/Users/felixlang/Downloads/gencode.v49.chr_patch_hapl_scaff.annotation.gtf",
+        adata, gtf=gtf,
         gtf_by="gene_name"
     )
 
@@ -92,14 +92,16 @@ def main():
     parser.add_argument("-output", required=True)
     parser.add_argument("-bk", "--batch_key", required=True, help="batch_key")
     parser.add_argument("-lk", "--label_key", required=True, help="label_key")
+    parser.add_argument("-gtf", required=True, help="path to gtf annotation file")
     args = parser.parse_args()
     input_file = args.input
     out_dir = args.output
     batch_key = args.batch_key
     label_key = args.label_key
+    gtf_path = args.gtf
     base_name = os.path.basename(input_file)
     filename = os.path.splitext(base_name)[0]
-    scg_integration(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename)
+    scg_integration(sc.read_h5ad(input_file), out_dir, batch_key, label_key, filename, gtf_path)
 
 if __name__ == '__main__':
     main()
