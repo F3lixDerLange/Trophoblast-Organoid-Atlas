@@ -10,9 +10,8 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir):
 
     # sc.pp.highly_variable_genes(adata, batch_key=batch_key) # , n_top_genes=4000, flavor="seurat_v3")
     # adata = adata[:, adata.var["highly_variable"]].copy()
-    if adata.raw.X is not None:
-        adata.layers["counts"] = adata.raw.X.copy()
-        print("raw")
+    # if adata.raw.X is not None:
+    #     adata.layers["counts"] = adata.raw.X.copy()
 
     sc.pp.scale(adata)
     sc.tl.pca(adata, n_comps=100, svd_solver='auto')
@@ -35,24 +34,15 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir):
     guidance = scg.genomics.rna_anchored_guidance_graph(adata, adata, propagate_highly_variable=False)
     scg.graph.check_graph(guidance, adata)
 
-    if adata.raw.X is None:
-        scg.models.configure_dataset(
-            adata,
-            prob_model="Normal",
-            use_highly_variable=False,
-            use_rep="X_pca",
-            use_batch=str(batch_key),
-            #use_cell_type=label_key
-        )
-    else:
-        scg.models.configure_dataset(
-            adata,
-            prob_model="Normal",
-            use_highly_variable=False,
-            use_rep="X_pca",
-            use_batch=str(batch_key),
-            use_layer="counts"
-        )
+    scg.models.configure_dataset(
+        adata,
+        prob_model="Normal",
+        use_highly_variable=False,
+        use_rep="X_pca",
+        use_batch=str(batch_key),
+        #use_cell_type=label_key
+    )
+
 
     genes = adata.var_names
 
