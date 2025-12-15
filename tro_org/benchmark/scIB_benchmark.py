@@ -83,8 +83,8 @@ def get_data_from_scdownstream_merged(merged_dir, integrated_adata, obsm_keys, o
             pu.plot_umap_before_integration(merged_scdownstream, "Combat", output_dir, batchkey, labelkey)
             pu.plot_umap_after_integration(integrated_adata, "Combat", "Combat", output_dir, batchkey, labelkey)
         elif tool == "bbknn":
-            integrated_adata.obsm["BBKNN"] = merged_scdownstream.obsm["X_bbknn-global_umap"] #TBD TODO
-            obsm_keys.append("BBKNN") #TBD TODO
+            integrated_adata.obsm["BBKNN"] = merged_scdownstream.obsm["X_bbknn-global_umap"]
+            obsm_keys.append("BBKNN")
             pu.plot_umap_before_integration(merged_scdownstream, "BBKNN", output_dir, batchkey, labelkey)
             pu.plot_umap_after_integration(integrated_adata, "BBKNN", "BBKNN", output_dir, batchkey, labelkey)
 

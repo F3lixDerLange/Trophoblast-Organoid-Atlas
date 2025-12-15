@@ -96,7 +96,7 @@ def resources_normalized_plot(data_dir, adata_shape, plot_dir, dataset_ident):
     for i, method in enumerate(methods):
         plt.bar(x + (i - (n_methods - 1) / 2) * width, data_norm[:, i], width, label=method)
 
-    title = "Computational Requirement Metrics Normalized"
+    title = "Computational Resource Usage Metrics Normalized"
 
     if len(adata_shape) > 1:
         title = title + f"  for {adata_shape[0]} cells & {adata_shape[1]} genes"
@@ -128,7 +128,7 @@ def resources_plot(data_dir, adata_shape, plot_dir, dataset_ident):
         ax.tick_params(axis='x', rotation=45)
         ax.grid(axis='y', linestyle='--', alpha=0.4)
 
-    title = "Computational Requirement Metrics"
+    title = "Computational Resource Usage Metrics"
 
     if len(adata_shape) > 1:
         title = title + f" for {adata_shape[0]} cells & {adata_shape[1]} genes"

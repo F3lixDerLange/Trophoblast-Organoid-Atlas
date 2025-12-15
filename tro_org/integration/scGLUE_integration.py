@@ -10,19 +10,49 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir):
 
     # sc.pp.highly_variable_genes(adata, batch_key=batch_key) # , n_top_genes=4000, flavor="seurat_v3")
     # adata = adata[:, adata.var["highly_variable"]].copy()
-    sc.pp.scale(adata, max_value=10)
-    sc.tl.pca(adata, n_comps=50)
+    if adata.raw.X is not None:
+        adata.layers["counts"] = adata.raw.X.copy()
+        print("raw")
+
+    sc.pp.scale(adata)
+    sc.tl.pca(adata, n_comps=100, svd_solver='auto')
 
     pu.plot_umap_before_integration(adata, "scglue", out_dir, batch_key, label_key)
 
-    scg.models.configure_dataset(
-        adata,
-        prob_model="Normal",
-        use_highly_variable=False,
-        use_rep="X_pca",
-        use_batch=str(batch_key),
-        #use_cell_type=label_key
+    scg.data.get_gene_annotation(
+        adata, gtf="/Users/felixlang/Downloads/gencode.v49.chr_patch_hapl_scaff.annotation.gtf",
+        gtf_by="gene_name"
     )
+
+
+    coord_cols = ["chrom", "chromStart", "chromEnd"]
+    print("NaNs per coord column:")
+    print(adata.var[coord_cols].isna().sum())
+    mask = adata.var[coord_cols].notna().all(axis=1)
+    print(f"Keeping {mask.sum()} / {adata.n_vars} genes with valid coordinates")
+    adata = adata[:, mask].copy()
+
+    guidance = scg.genomics.rna_anchored_guidance_graph(adata, adata, propagate_highly_variable=False)
+    scg.graph.check_graph(guidance, adata)
+
+    if adata.raw.X is None:
+        scg.models.configure_dataset(
+            adata,
+            prob_model="Normal",
+            use_highly_variable=False,
+            use_rep="X_pca",
+            use_batch=str(batch_key),
+            #use_cell_type=label_key
+        )
+    else:
+        scg.models.configure_dataset(
+            adata,
+            prob_model="Normal",
+            use_highly_variable=False,
+            use_rep="X_pca",
+            use_batch=str(batch_key),
+            use_layer="counts"
+        )
 
     genes = adata.var_names
 
@@ -52,19 +82,17 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir):
 
     glue = scg.models.fit_SCGLUE(
         {"rna": adata},
-        G,
+        guidance,   #G
         skip_balance=True,
         fit_kws={
             "directory": f"glue_batch/{modeldir}",
-            "max_epochs": 200,
+            "max_epochs": 10,
         }
     )
 
     adata.obsm["X_scglue"] = glue.encode_data("rna", adata)
-
     pu.plot_umap_after_integration(adata,"X_scglue", "scglue", out_dir, batch_key, label_key)
 
-    print(adata)
     return adata
 
 
