@@ -102,11 +102,7 @@ def calculate_jaccard_score(markerA, markerB):
     return jaccard_matrix
 
 
-
-
-
-
-def generate_marker_genes(adata, label_col, methods: Literal["wilcoxon","t-test", None] = None, top_n=50, pval_cutoff=0.05):
+def generate_marker_genes(adata, label_col, methods: Literal["wilcoxon","t-test", None] = None, top_n=100, pval_cutoff=0.05):
     markers = {}
 
     if methods is None:
@@ -121,12 +117,24 @@ def generate_marker_genes(adata, label_col, methods: Literal["wilcoxon","t-test"
     elif methods == "wilcoxon" or methods == "t-test":
         print("warning: normalized data must be in adata.X")
         adata.layers["norm"] = adata.X.copy()
-        sc.tl.rank_genes_groups(adata, method=methods, groupby=label_col, layer="norm", use_raw=False)
-        df = sc.get.rank_genes_groups_df(adata, group=None)
+        sc.tl.rank_genes_groups(adata,
+                                method=methods,
+                                groupby=label_col,
+                                layer="norm",
+                                use_raw=False,
+                                key_added=str(methods)
+        )
+        df = sc.get.rank_genes_groups_df(adata, group=None, key=str(methods))
+
+        print(df)
 
         for ct, subset in df.groupby("group"):
-            sub = subset[subset["pvals_adj"] < pval_cutoff]
+            sub = subset[
+                (subset["logfoldchanges"] > 1.0) &
+                (subset["pvals_adj"] < pval_cutoff)
+                ]
             top = sub.sort_values("scores", ascending=False)["names"].head(top_n)
+            print(ct, top)
             markers[ct] = set(top)
 
     return markers
@@ -137,9 +145,9 @@ def main():
     config = utils.load_config("tro_org/analysis/cosine_comp_config.yaml")
     print("Loaded datasets:", [d["name"] for d in config])
     datasets = utils.load_data(config)
-    #compute_cosign_similarity(datasets, save_dir)
-    method: Literal["wilcoxon", "t-test", None] = "wilcoxon"
-    top_n = 100
+    compute_cosign_similarity(datasets, save_dir)
+    method: Literal["wilcoxon", "t-test", None] = "t-test"
+    top_n = 400
     jaccard_similarity(datasets, method, top_n, save_dir)
 
 

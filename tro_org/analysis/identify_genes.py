@@ -2,11 +2,18 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 from typing import Literal
+import matplotlib.pyplot as plt
+import seaborn as sns
+import matplotlib.colors as colors
+
+
 import plot_analysis
 
 
 def generate_hvg_per_batch(hvg_file, sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "cell_ranger"):
     adata = sc.read_h5ad(hvg_file)
+
+    identify_batch_seqcific_genes(adata)
 
     sc.pp.highly_variable_genes(
         adata,
@@ -94,6 +101,56 @@ def mean_expression_per_gene_per_batch(processed_adata):
     plot_analysis.common_gene_heatmap(batch_mean_df, f"Common Genes ({batch_mean_df.shape[1]}) per dataset")
 
     print(batch_mean_df)
+
+def identify_batch_seqcific_genes(adata):
+    batches = list(set(adata.obs["batch"]))
+    unique_batch_genes = {}
+
+    for batch in batches:
+        adata_b = adata[adata.obs["batch"] == batch]
+
+        mean_expr_b = np.asarray(adata_b.X.mean(axis=0)).ravel()
+
+        adata_other = adata[adata.obs["batch"] != batch]
+        mean_expr_other = np.asarray(adata_other.X.mean(axis=0)).ravel()
+
+        unique = adata.var_names[
+            (mean_expr_b > 0.1) & (mean_expr_other < 0.01)
+            ]
+
+        unique_batch_genes[batch] = list(unique)
+
+    for key, val in unique_batch_genes.items():
+        print(key, val)
+
+    all_genes = []
+    for genes in unique_batch_genes.values():
+        for gene in genes:
+            all_genes.append(gene)
+
+    expr_df = pd.DataFrame(index=unique_batch_genes.keys(), columns=all_genes) # df: rows = batches, cols = genes
+
+    for batch in unique_batch_genes:
+        adata_b = adata[adata.obs["batch"] == batch]
+
+        X = adata_b[:, all_genes].X
+
+        if not isinstance(X, np.ndarray):
+            X = X.toarray()
+
+        expr_df.loc[batch] = X.mean(axis=0)
+
+    # plot heatmap
+    plt.figure(figsize=(14, 6))
+    sns.heatmap(expr_df.astype(float),
+                cmap="viridis",
+                #annot=True
+                )
+    plt.title("Mean expression of batch-specific genes")
+    plt.xlabel("Genes")
+    plt.ylabel("Batch")
+    plt.tight_layout()
+    plt.show()
 
 def main():
     sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "seurat_v3"

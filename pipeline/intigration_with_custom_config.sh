@@ -10,7 +10,7 @@ for tool in "${methods[@]}"; do
   report_path="$output_dir/report"
   mkdir -p "$outpath"
   mkdir -p "$report_path"
-  echo "Starting nf-core/scdonstream with method $tool..."
+  echo "Starting nf-core/scdownstream with method $tool..."
   nextflow run nf-core/scdownstream \
     -r dev \
     --input "$sample_sheet" \
@@ -23,6 +23,7 @@ for tool in "${methods[@]}"; do
     -with-trace "${report_path}/${tool}_trace.txt" \
     -with-timeline "${report_path}/${tool}_timeline.html" \
     2> "${report_path}/${tool}_time.txt" \
-    &
+    --prep_cellxgene
+    # &    # use & if all tools should run in parallel (has maybe an impact on resource usage)
 done
 

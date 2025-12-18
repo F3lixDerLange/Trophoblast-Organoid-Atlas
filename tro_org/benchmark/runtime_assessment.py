@@ -163,6 +163,7 @@ def mem_line_plot(mem_data, adata_shape, plot_dir, dataset_ident):
     plt.xlabel("Time (s)")
     plt.ylabel("RAM usage (GB)")
     plt.title(title, fontsize=fontsize)
+    plt.xscale("log")
     plt.legend()
     plt.grid(alpha=0.3)
     plt.tight_layout()
@@ -183,7 +184,7 @@ def main():
     parser.add_argument("-h5ad", required=False, help="h5ad file")
     parser.add_argument("-log", required=False, help="resource_usage dir scdownstream")
     parser.add_argument("-out", required=False, help="plot dir")
-    parser.add_argument("-tsv", required=False, help="tsv file")
+    parser.add_argument("-tsv", required=False, help="tsv dir")
 
     args = parser.parse_args()
     h5ad = args.h5ad

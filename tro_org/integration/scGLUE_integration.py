@@ -43,7 +43,7 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir, gtf):
         #use_cell_type=label_key
     )
 
-
+    """
     genes = adata.var_names
 
     G = nx.Graph()
@@ -52,7 +52,7 @@ def scg_integration(adata, out_dir, batch_key, label_key, modeldir, gtf):
         G.add_edge(gene, gene, weight=1, sign=1)
 
     print(G)
-    """
+
     if os.path.exists(f"glue_batch/pretrain/pretrain.dill"):
         print("loading pretrain model")
         glue = scg.models.load_model("glue_batch/pretrain/pretrain.dill")
