@@ -19,7 +19,7 @@
 
 conda activate test-env
 
-srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/pipline_fixed/annotated_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/ann_merged_fixG -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/pipline_fixed -u -gtf /nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz
+srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/ann_integration_in_order/annotated_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/ann_merged_inOrder -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/ann_integration_in_order -u -gtf /nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz
 
 conda deactivate
 
