@@ -105,14 +105,16 @@ def generate_srun(input_file, output, bk, lk, m, u, gtf):
 
 def main():
     gtf = "/nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz"
-    datasets = [["/Shibata_single_samplesheet_scvi/finalized/merged.h5ad", "batch", "label", "/nfs/home/students/f.lang/nf-core_out/pipline_single"],
-                ["/annotated_samplesheet_scvi/finalized/merged.h5ad", "batch", "label", "/Users/felixlang/Downloads/ann_integration_in_order"]
+    datasets = [["/Shibata_samplesheet_scvi/finalized/merged.h5ad", "batch", "label", "/nfs/home/students/f.lang/nf-core_out/shibata_single"],
+                ["/PTO_Arutyunyan_samplesheet_scvi/finalized/merged.h5ad", "batch", "label", "/nfs/home/students/f.lang/nf-core_out/PTO_Arutyunyan"],
+                ["/TSC_Arutyunyan_samplesheet_scvi/finalized/merged.h5ad", "batch", "label","/nfs/home/students/f.lang/nf-core_out/TSC_Arutyunyan"],
+                ["/annotated_samplesheet_scvi/finalized/merged.h5ad", "batch", "label","/nfs/home/students/f.lang/nf-core_out/merged_integration"]
                 ]
     out_dir = "/nfs/home/students/f.lang/torg/benchmark/"
     sbatch_time = "8:00:00"
     gpu = False
     monitor_usage = True
-    save_script_dir = "slurm/test"
+    save_script_dir = "slurm"
     for dataset in datasets:
         experiment_name = dataset[3].split("/")[-1]
         print(f"Generating {experiment_name}")
