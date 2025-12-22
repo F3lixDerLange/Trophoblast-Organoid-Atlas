@@ -42,9 +42,9 @@ for tool in "${methods[@]}"; do
   fi
 
   if $bg; then # use & if all tools should run in parallel (has maybe an impact on resource usage)
-    echo "${cmd[@]}" 2> "${report_path}/${tool}_time.txt" &
+    "${cmd[@]}" 2> "${report_path}/${tool}_time.txt" &
   else
-    echo "${cmd[@]}" 2> "${report_path}/${tool}_time.txt"
+    "${cmd[@]}" 2> "${report_path}/${tool}_time.txt"
   fi
 
 done
