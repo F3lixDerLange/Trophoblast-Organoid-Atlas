@@ -4,7 +4,7 @@
 #SBATCH --time=8:00:00
 #SBATCH --no-requeue
 # Working directory
-#SBATCH --chdir /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
+#SBATCH --chdir=/nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
 # Environment
 #SBATCH --export=ALL
 #SBATCH --get-user-env
