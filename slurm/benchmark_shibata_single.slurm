@@ -4,7 +4,7 @@
 #SBATCH --time=8:00:00
 #SBATCH --no-requeue
 # Working directory
-#SBATCH --chdir=/nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
+#SBATCH --chdir /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
 # Environment
 #SBATCH --export=ALL
 #SBATCH --get-user-env
@@ -15,7 +15,6 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=32G
-#SBATCH -p exbio-cpu
+#SBATCH --mem=64G
 
-srun srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/shibata_single/Shibata_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/shibata_single -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/shibata_single -gtf /nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz -u
+srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/shibata_single/Shibata_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/shibata_single -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/shibata_single -gtf /nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz -u

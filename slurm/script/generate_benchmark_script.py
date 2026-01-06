@@ -14,7 +14,7 @@ GPU_NUM = 1
 # Working directory
 WOR_DIR = "/nfs/home/students/f.lang/Trophoblast-Organoid-Atlas"
 
-RUN_COMMAND = f"srun python3 -m tro_org.benchmark.scIB_benchmark"
+RUN_COMMAND = f"python3 -m tro_org.benchmark.scIB_benchmark"
 
 
 def generate_benchmark_script(experiment_name, gpu, time, srun, script_dir):
@@ -92,7 +92,6 @@ def generate_sbatch_template(
 #SBATCH --cpus-per-task={core_limit}
 #SBATCH --mem={memory_limit_gb}G
 {gpu_block}
-
 srun {command}
 """
 
