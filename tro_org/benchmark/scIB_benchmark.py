@@ -114,7 +114,8 @@ def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adat
     print("plotting benchmark")
     bm.plot_results_table(save_dir=output_dir)
     bm.plot_results_table(min_max_scale=False, save_dir=output_dir)
-    plot_dotplot_benchmark(benchmark, output_dir)
+    df = benchmark.get_results(min_max_scale=False)
+    plot_dotplot_benchmark(df, output_dir)
     print("Success")
 
 

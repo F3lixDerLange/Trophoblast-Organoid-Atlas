@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 
-def plot_dotplot_benchmark(benchmark, output_dir):
-    df = benchmark.get_results(min_max_scale=False)
+def plot_dotplot_benchmark(df, output_dir):
     df.transpose()
 
     methods = df.columns.drop("Metric Type", errors="ignore")
