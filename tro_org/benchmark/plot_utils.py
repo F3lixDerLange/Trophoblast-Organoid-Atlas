@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 
 def plot_dotplot_benchmark(df, output_dir):
-    df.transpose()
+    # df.transpose()
 
     print(df)
 
