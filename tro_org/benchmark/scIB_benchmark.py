@@ -8,6 +8,7 @@ import tro_org.integration.scanorama_integration
 import tro_org.benchmark.utils as utils
 import tro_org.utils.plot_utils as pu
 from tro_org.benchmark.usage_profiler import profile_resources
+from tro_org.benchmark.plot_utils import plot_dotplot_benchmark
 
 def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir, usage, gtf):
     osbm_keys = ["Unintegrated"]
@@ -113,6 +114,7 @@ def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adat
     print("plotting benchmark")
     bm.plot_results_table(save_dir=output_dir)
     bm.plot_results_table(min_max_scale=False, save_dir=output_dir)
+    plot_dotplot_benchmark(benchmark, output_dir)
     print("Success")
 
 

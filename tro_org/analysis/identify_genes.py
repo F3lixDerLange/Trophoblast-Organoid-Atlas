@@ -120,6 +120,7 @@ def identify_batch_seqcific_genes(adata):
 
         unique_batch_genes[batch] = list(unique)
 
+    print("true")
     for key, val in unique_batch_genes.items():
         print(key, val)
 
@@ -150,6 +151,7 @@ def identify_batch_seqcific_genes(adata):
     plt.xlabel("Genes")
     plt.ylabel("Batch")
     plt.tight_layout()
+    plt.savefig("figures/batch_specific_genes.png")
     plt.show()
 
 def main():
