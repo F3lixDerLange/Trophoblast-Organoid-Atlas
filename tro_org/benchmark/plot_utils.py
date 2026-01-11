@@ -13,7 +13,7 @@ def plot_dotplot_benchmark(df, output_dir):
     bio_conservation = df.loc["Bio conservation", methods].astype(float)
 
     plt.figure(figsize=(7, 6))
-    plt.scatter(batch_correction, bio_conservation)
+    plt.scatter(batch_correction, bio_conservation, c=["#383a6b"])
 
     for method in methods:
         plt.text(
