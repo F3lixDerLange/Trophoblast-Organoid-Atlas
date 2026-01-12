@@ -2,14 +2,7 @@ import matplotlib.pyplot as plt
 import os
 
 def plot_dotplot_benchmark(df, output_dir):
-
-    print(df)
-
     methods = df.columns.drop("Metric Type", errors="ignore")
-
-    print(methods)
-    print(df.index.tolist())
-
     batch_correction = df.loc["Batch correction", methods].astype(float)
     bio_conservation = df.loc["Bio conservation", methods].astype(float)
 

@@ -94,7 +94,7 @@ def resources_normalized_plot(data_dir, adata_shape, plot_dir, dataset_ident):
     plt.figure(figsize=(12, 6))
 
     for i, method in enumerate(methods):
-        plt.bar(x + (i - (n_methods - 1) / 2) * width, data_norm[:, i], width, label=method)
+        plt.bar(x + (i - (n_methods - 1) / 2) * width, data_norm[:, i], width, label=method, color="#383a6b")
 
     title = "Computational Resource Usage Metrics Normalized"
 
@@ -123,7 +123,7 @@ def resources_plot(data_dir, adata_shape, plot_dir, dataset_ident):
     fig, axes = plt.subplots(1, 4, figsize=(14, 5), sharey=False)
 
     for i, ax in enumerate(axes):
-        ax.bar(methods, data[i], color="steelblue")
+        ax.bar(methods, data[i], color="#383a6b")
         ax.set_title(metrics[i], fontsize=12)
         ax.tick_params(axis='x', rotation=45)
         ax.grid(axis='y', linestyle='--', alpha=0.4)
@@ -142,10 +142,13 @@ def mem_line_plot(mem_data, adata_shape, plot_dir, dataset_ident):
     plt.figure(figsize=(10, 6))
 
     colors = {
-        "Harmony": "red",
-        "BBKNN": "blue",
-        "scVI": "green",
-        "Combat": "purple",
+        "harmony": "#3fa7a3",
+        "bbknn": "#fcc72d",
+        "scvi": "#ea6d3d",
+        "combat": "#e03a3c",
+        "liger": "#cb1f73",
+        "scglue": "#6a5fa8",
+        "scanorama": "#383a6b",
     }
 
     for tool, ram_values in mem_data.items():
@@ -197,6 +200,8 @@ def main():
     log_data = parse_data(resource_usage_dir, False)
     log_usage, log_ram = calculate_metrics(log_data, False)
     tsv_usage, tsv_ram = calculate_metrics(tsv_data, True)
+
+    print(log_data)
 
     if resource_usage_dir is None and tsv_path is None:
         print("You must specify a resource usage directory or a tsv file")
