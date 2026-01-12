@@ -6,7 +6,7 @@ def plot_dotplot_benchmark(df, output_dir):
     batch_correction = df.loc["Batch correction", methods].astype(float)
     bio_conservation = df.loc["Bio conservation", methods].astype(float)
 
-    plt.figure(figsize=(7, 6))
+    plt.figure(figsize=(8, 6))
     plt.scatter(batch_correction, bio_conservation, c=["#cb1f73"])
 
     for method in methods:
