@@ -17,4 +17,4 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-srun python3 -m tro_org.trajectory_analysis.trajectory -adata /nfs/home/students/f.lang/nf-core_out/shibata_single/Shibata_samplesheet_scvi/finalized -lk label
+srun python3 -m tro_org.trajectory_analysis.trajectory -adata /nfs/home/students/f.lang/nf-core_out/shibata_single/Shibata_samplesheet_scvi/finalized/merged.h5ad -lk label
