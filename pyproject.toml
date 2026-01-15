@@ -26,6 +26,7 @@ dependencies = [
     "wandb>=0.23.0",
     "psutil>=7.1.3",
     "cytetype>=0.12.0",
+    "phlowerpy>=0.1.5",
 ]
 
 [tool.uv.sources]

@@ -216,5 +216,16 @@ def main():
     dataset_identifier = os.path.basename(tsv_path)
     plot_metrics(max_usage, ram_usage, sc.read_h5ad(h5ad), output_dir, dataset_identifier)
 
+    """
+    -h5ad
+    /Users/felixlang/Downloads/pipline_fixed/annotated_samplesheet_scvi/finalized/merged.h5ad
+    -log
+    /Users/felixlang/Downloads/ann_integration_in_order
+    -out
+    tro_org/benchmark/benchmark_plots
+    -tsv
+    /Users/felixlang/Downloads/ann_merged_inOrder/resource_usage
+    """
+
 if __name__ == '__main__':
     main()
