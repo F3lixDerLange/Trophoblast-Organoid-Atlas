@@ -1,6 +1,5 @@
 import phlower
 from matplotlib import pyplot as plt
-from scipy import constants
 from collections import Counter
 
 
