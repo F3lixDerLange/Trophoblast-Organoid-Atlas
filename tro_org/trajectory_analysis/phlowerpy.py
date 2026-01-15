@@ -33,6 +33,8 @@ def phlower_traj(adata):
     phlower.tl.construct_delaunay(adata, cluster_name='label', node_attr='u', start_n=10, end_n=10, circle_quant=0.1,
                                   calc_layout=True)
 
+    print(adata)
+
     fig, ax = plt.subplots(1, 2, figsize=(10, 3), constrained_layout=True)
     phlower.pl.nxdraw_group(adata, graph_name="X_pca_ddhodge_g_triangulation_circle", node_size=5, show_edges=True,
                             show_legend=True, label=False, ax=ax[0])
