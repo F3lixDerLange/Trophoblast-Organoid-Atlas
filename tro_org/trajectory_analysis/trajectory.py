@@ -2,12 +2,18 @@ import argparse
 import scanpy as sc
 from tro_org.trajectory_analysis import PAGA
 from tro_org.trajectory_analysis import phlowerpy
+from tro_org.trajectory_analysis import palantir_py
+from tro_org.trajectory_analysis import scFates_py
 
 def analysis(adata_file, output_dir, label_key):
     adata = sc.read_h5ad(adata_file)
     print(adata)
     # PAGA.sc_paga(adata, output_dir, label_key)
-    phlowerpy.phlower_traj(adata)
+    # phlowerpy.phlower_traj(adata)
+    # palantir_py.palantir_traj(adata, "X_scvi")
+    scFates_py.scfates_traj(adata, "X_scvi")
+
+
 
 
 def main():
