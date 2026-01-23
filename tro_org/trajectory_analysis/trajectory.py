@@ -5,15 +5,13 @@ from tro_org.trajectory_analysis import phlowerpy
 from tro_org.trajectory_analysis import palantir_py
 from tro_org.trajectory_analysis import scFates_py
 
-def analysis(adata_file, output_dir, label_key):
+def analysis(adata_file, output_dir, label_key, emb_key, startcluster):
     adata = sc.read_h5ad(adata_file)
     print(adata)
-    # PAGA.sc_paga(adata, output_dir, label_key)
-    # phlowerpy.phlower_traj(adata)
-    # palantir_py.palantir_traj(adata, "X_scvi")
-    scFates_py.scfates_traj(adata, "X_scvi")
-
-
+    PAGA.sc_paga(adata, emb_key, startcluster, label_key, output_dir)
+    phlowerpy.phlower_traj(adata, emb_key, startcluster, label_key, output_dir)
+    palantir_py.palantir_traj(adata, emb_key, startcluster, label_key,output_dir)
+    scFates_py.scfates_traj(adata, emb_key, startcluster, label_key, output_dir)
 
 
 def main():
@@ -26,7 +24,7 @@ def main():
     out_dir = args.output
     label_key = args.label_key
 
-    analysis(adata_file, out_dir, label_key)
+    analysis(adata_file, out_dir, label_key, "X_scvi", "Proliferative")
 
     """
     -adata

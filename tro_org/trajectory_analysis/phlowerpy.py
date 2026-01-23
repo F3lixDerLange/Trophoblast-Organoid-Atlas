@@ -1,14 +1,27 @@
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import phlower
 from matplotlib import pyplot as plt
 from collections import Counter
+import scanpy as sc
+import tro_org.trajectory_analysis.plot_utils as pu
+import tro_org.utils.utils as utils
 
 # Followed https://phlower.readthedocs.io/en/latest/notebooks/fib2neuron.html and
 # https://phlower.readthedocs.io/en/latest/notebooks/kidney.html
 
-def phlower_traj(adata):
+def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
+    sc.set_figure_params(dpi_save=300, figsize=(10, 8), fontsize=14, vector_friendly=True)
+    save_dir = Path(f"{output}/phlower")
+    sc.settings.figdir = save_dir
+    utils.ensure_dir(f"{output}/phlower")
 
+    sc.pp.neighbors(adata, use_rep=emb_key, n_neighbors=n_neighbors)
+    sc.tl.umap(adata, min_dist=0.3)
+    adata.obsm[f"{emb_key}_umap"] = adata.obsm["X_umap"].copy()
+
+    # TODO remove just for smaller sample
     cells_per_type = 200  # cap per cell type
 
     groups = []
@@ -20,83 +33,60 @@ def phlower_traj(adata):
 
     adata = adata[groups].copy()
 
-    """print(adata.obs[["clusters", "label"]])
-    cluster_label_map = (
-        adata.obs
-        .groupby("clusters")["label"]
-        .agg(lambda x: x.value_counts().idxmax())
-    )
 
-    print(cluster_label_map)"""
-
-    print(adata)
 
     # load kidney anndata with MOJITOO reduction and clustering
-    phlower.ext.ddhodge(adata, basis="X_scvi", roots=(adata.obs.label=="Lgr5"), k=7, npc=100, ndc=40, s=2,
+    phlower.ext.ddhodge(adata, basis=emb_key, roots=(adata.obs.label=="Lgr5"), k=7, npc=100, ndc=40, s=2,
                         lstsq_method='cholesky', verbose=True)
 
     figs = []
     fig, ax = plt.subplots(1, 1, figsize=(4, 3))
-    phlower.pl.nxdraw_group(adata, group_name="label",node_size=5, show_edges=False, label=True, ax=ax)
+    phlower.pl.nxdraw_group(adata, group_name=cluster_key,node_size=5, show_edges=False, label=True, ax=ax)
+    plt.savefig(f"{output}/phlower/ddhog_group_{emb_key}.png")
     plt.show()
     phlower.pl.nxdraw_score(adata, color='u', node_size=10)
+    plt.savefig(f"{output}/phlower/pseudotime_{emb_key}.png")
     plt.show()
 
+    sc.pl.umap(adata, color=['u', cluster_key], legend_loc='on data', save=f"_phlower_pseudotime_{emb_key}.png")
+
     # Delaunay triangulation to construct graph with holes
-    phlower.tl.construct_delaunay(adata, cluster_name='label', node_attr='u', start_n=10, end_n=10, circle_quant=0.1,
+    phlower.tl.construct_delaunay(adata, cluster_name=cluster_key, node_attr='u', start_n=10, end_n=10, circle_quant=0.1,
                                   calc_layout=True)
 
     print(adata)
 
+    # TODO FIX if necessary
     fig, ax = plt.subplots(1, 2, figsize=(10, 3), constrained_layout=True)
-    phlower.pl.nxdraw_group(adata, group_name="label", graph_name="X_scvi_ddhodge_g_triangulation_circle", node_size=5, show_edges=True,
+    phlower.pl.nxdraw_group(adata, group_name=cluster_key, graph_name=f"{emb_key}_ddhodge_g_triangulation_circle", node_size=5, show_edges=True,
                             show_legend=True, label=False, ax=ax[0])
-    phlower.pl.nxdraw_score(adata, graph_name="X_scvi_ddhodge_g_triangulation_circle", node_size=5, ax=ax[1],
+    phlower.pl.nxdraw_score(adata, graph_name=f"{emb_key}_ddhodge_g_triangulation_circle", node_size=5, ax=ax[1],
                             colorbar=True)
+    plt.savefig(f"{output}/phlower/_cluster_pseudotime_{emb_key}.png")
     plt.show()
 
+    # TODO FIX if necessary
     fig, ax = plt.subplots(1, 2, figsize=(10, 3), constrained_layout=True)
-    phlower.pl.nxdraw_group(adata, group_name="label", graph_name='X_scvi_ddhodge_g_triangulation_circle',
-                            layout_name='X_scvi_ddhodge_g_triangulation_circle', node_size=5, show_edges=True,
+    phlower.pl.nxdraw_group(adata, group_name=cluster_key, graph_name=f"{emb_key}_ddhodge_g_triangulation_circle",
+                            layout_name=f"{emb_key}_ddhodge_g_triangulation_circle", node_size=5, show_edges=True,
                             labelstyle='text', labelsize=8, show_legend=True, ax=ax[0])
-    phlower.pl.nxdraw_score(adata, graph_name='X_scvi_ddhodge_g_triangulation_circle',
-                            layout_name='X_scvi_ddhodge_g_triangulation_circle', colorbar=True, node_size=5, label=False,
+    phlower.pl.nxdraw_score(adata, graph_name=f"{emb_key}_ddhodge_g_triangulation_circle",
+                            layout_name=f"{emb_key}_ddhodge_g_triangulation_circle", colorbar=True, node_size=5, label=False,
                             ax=ax[1])
+    plt.savefig(f"{output}/phlower/phlower_cluster_pseudotime_{emb_key}.png")
     plt.show()
 
     fig, ax = plt.subplots(1, 1, figsize=(5, 3))
-    phlower.pl.plot_triangle_density(adata, "X_scvi_ddhodge_g_triangulation_circle",
-                                     "X_scvi_ddhodge_g_triangulation_circle", colorbar=True, edge_color='gray', ax=ax,
+    phlower.pl.plot_triangle_density(adata, f"{emb_key}_ddhodge_g_triangulation_circle",
+                                     f"{emb_key}_ddhodge_g_triangulation_circle", colorbar=True, edge_color='gray', ax=ax,
                                      node_size=5)
+    plt.savefig(f"{output}/phlower/triangle_density_{emb_key}.png")
     plt.show()
 
-    df = adata.obs[["label", "u"]].copy()
-    df = df.dropna()
-    order = df.groupby("label")["u"].median().sort_values().index.tolist()
-    df["label"] = pd.Categorical(df["label"], categories=order, ordered=True)
+    pu.plot_scatter_cluster_pseudotime(adata, 'u', output, "phlower", emb_key)
 
-    colors = ["#3fa7a3", "#fcc72d", "#ea6d3d", "#e03a3c", "#cb1f73", "#6a5fa8",
-              "#383a6b", "#f89c1c", "#b33a2b", "#7a1e3a", "#1f2a44", "#5c8d89"]
-
-    color_map = dict(zip(order, colors))
-
-    plt.figure(figsize=(10, 5))
-    for lab, sub in df.groupby("label", observed=True):
-        y = sub["label"].cat.codes.values
-        y_jit = y + np.random.uniform(-0.15, 0.15, size=len(sub))
-        plt.scatter(sub["u"], y_jit, s=6, color=color_map[lab], label=str(lab))
-    plt.yticks(range(len(order)), order)
-    plt.xlabel("Phlower pseudotime")
-    plt.ylabel("label")
-    plt.title("Cells ordered by Phlower pseudotime")
-    plt.legend(bbox_to_anchor=(1.02, 1), loc="upper left", frameon=False)
-    plt.tight_layout()
-    plt.show()
-
-
-
-
-    # Graph holdge laplacian
+    """
+    # Graph holdge laplacian TODO Debug
     phlower.tl.L1Norm_decomp(adata)
     figs = []
 
@@ -109,7 +99,6 @@ def phlower_traj(adata):
     fig, ax = plt.subplots(1, 1, figsize=(4, 3))
     phlower.pl.plot_eigen_line(adata, n_eig=8, linewidth='2', markersize=8, show_legend=False, ax=ax)
 
-    plt.show
 
     phlower.tl.knee_eigen(adata)
 
@@ -165,3 +154,4 @@ def phlower_traj(adata):
     phlower.ext.plot_stream_sc(adata, fig_size=(8, 5), color=['group_str'], show_legend=False, dist_scale=1, s=10)
     plt.show()
 
+    """
