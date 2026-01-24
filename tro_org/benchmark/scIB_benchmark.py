@@ -1,5 +1,7 @@
 import argparse
 import os
+from pathlib import Path
+
 import scanpy as sc
 from scib_metrics.benchmark import *
 import tro_org.integration.scGLUE_integration
@@ -116,6 +118,11 @@ def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adat
     bm.plot_results_table(min_max_scale=False, save_dir=output_dir)
     df = bm.get_results(min_max_scale=False)
     plot_dotplot_benchmark(df.transpose(), output_dir)
+
+    path = Path(output_dir)
+    dataset = path.name
+    integrated_adata.copy().write(f"{dataset}_integrated.h5ad")
+
     print("Success")
 
 
