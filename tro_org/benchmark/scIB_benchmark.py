@@ -121,7 +121,7 @@ def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adat
 
     path = Path(output_dir)
     dataset = path.name
-    integrated_adata.copy().write(f"{dataset}_integrated.h5ad")
+    integrated_adata.copy().write(f"{output_dir}/{dataset}_integrated.h5ad")
 
     print("Success")
 
