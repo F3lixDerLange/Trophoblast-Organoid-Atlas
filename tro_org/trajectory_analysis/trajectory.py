@@ -18,8 +18,7 @@ def setup_traj_analysis(adata_file, output_dir, label_key, dataset=None, startcl
 
             print(f"Loading {name} from {path}")
             adata = sc.read_h5ad(path)
-            # traj_analysis(adata, output_dir, label_key, root, name)
-            print(adata, output_dir, label_key, root, name)
+            traj_analysis(adata, output_dir, label_key, root, name)
 
     elif isinstance(adata_file, ad.AnnData):
         print(adata_file)
