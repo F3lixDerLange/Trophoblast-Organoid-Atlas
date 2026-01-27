@@ -1,11 +1,11 @@
 datasets:
   - name: PTO_Arutyunyan
     path: /nfs/home/students/f.lang/torg/benchmark/PTO_Arutyunyan/PTO_Arutyunyan_integrated.h5ad
-    root: Vct_tsc
+    root: Vct_p
 
   - name: TSC_Arutyunyan
     path: /nfs/home/students/f.lang/torg/benchmark/TSC_Arutyunyan/TSC_Arutyunyan_integrated.h5ad
-    root: Vct_tsc
+    root: Vct_p_tsc
 
   - name: shibata
     path: /nfs/home/students/f.lang/torg/benchmark/shibata_single/shibata_single_integrated.h5ad
