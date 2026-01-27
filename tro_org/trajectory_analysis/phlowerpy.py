@@ -43,10 +43,10 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
     fig, ax = plt.subplots(1, 1, figsize=(4, 3))
     phlower.pl.nxdraw_group(adata, group_name=cluster_key,node_size=5, show_edges=False, label=True, ax=ax)
     plt.savefig(f"{output}/phlower/ddhog_group_{emb_key}.png")
-    plt.show()
+
     phlower.pl.nxdraw_score(adata, color='u', node_size=10)
     plt.savefig(f"{output}/phlower/pseudotime_{emb_key}.png")
-    plt.show()
+
 
     sc.pl.umap(adata,
                color=['u', cluster_key],
@@ -68,7 +68,7 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
     phlower.pl.nxdraw_score(adata, graph_name=f"{emb_key}_ddhodge_g_triangulation_circle", node_size=5, ax=ax[1],
                             colorbar=True)
     plt.savefig(f"{output}/phlower/_cluster_pseudotime_{emb_key}.png")
-    plt.show()
+
 
     # TODO FIX if necessary
     fig, ax = plt.subplots(1, 2, figsize=(10, 3), constrained_layout=True)
@@ -79,14 +79,13 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                             layout_name=f"{emb_key}_ddhodge_g_triangulation_circle", colorbar=True, node_size=5, label=False,
                             ax=ax[1])
     plt.savefig(f"{output}/phlower/phlower_cluster_pseudotime_{emb_key}.png")
-    plt.show()
+
 
     fig, ax = plt.subplots(1, 1, figsize=(5, 3))
     phlower.pl.plot_triangle_density(adata, f"{emb_key}_ddhodge_g_triangulation_circle",
                                      f"{emb_key}_ddhodge_g_triangulation_circle", colorbar=True, edge_color='gray', ax=ax,
                                      node_size=5)
     plt.savefig(f"{output}/phlower/triangle_density_{emb_key}.png")
-    plt.show()
 
     pu.plot_scatter_cluster_pseudotime(adata, 'u', output, "phlower", emb_key)
 

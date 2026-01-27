@@ -25,7 +25,6 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
 
     palantir.plot.plot_diffusion_components(adata, embedding_basis=emb_key)
     plt.savefig(f"{output}/palantir/diffusion_components_{emb_key}.png")
-    plt.show()
 
     ms_data = palantir.utils.determine_multiscale_space(adata, n_eigs=5)
 
@@ -53,7 +52,6 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
     try:
         palantir.plot.highlight_cells_on_umap(adata, terminal_states, embedding_basis=f"{emb_key}_umap")
         plt.savefig(f"{output}/palantir/terminal_states_highlight_cells_on_umap{emb_key}.png")
-        plt.show()
 
         pr_res = palantir.core.run_palantir(adata,
                                             early_cell=start_cell,
@@ -67,12 +65,10 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
 
         palantir.plot.plot_palantir_results(adata, s=3)
         plt.savefig(f"{output}/palantir/palantir_results_{emb_key}.png")
-        plt.show()
 
         masks = palantir.presults.select_branch_cells(adata, q=.02, eps=.02)
         palantir.plot.plot_branch_selection(adata, s=1)
         plt.savefig(f"{output}/palantir/branch_selection_{emb_key}.png")
-        plt.show()
 
         print(adata)
 

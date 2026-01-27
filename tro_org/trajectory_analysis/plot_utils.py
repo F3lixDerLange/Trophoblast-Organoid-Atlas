@@ -34,4 +34,3 @@ def plot_scatter_cluster_pseudotime(adata, pseudotime_key, output_dir, method, e
     plt.legend(bbox_to_anchor=(1.02, 1), loc="upper left", frameon=False)
     plt.tight_layout()
     plt.savefig(f"{output_dir}/{method}/scatter_cluster_pseudotime_{emb_key}.png")
-    plt.show()

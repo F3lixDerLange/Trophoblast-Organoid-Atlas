@@ -35,7 +35,7 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                 device="cpu", seed=1, ppt_lambda=100, ppt_sigma=0.025, ppt_nsteps=200)
 
     # projecting results onto ForceAtlas2 embedding
-    scf.pl.graph(adata, save=f"_scf_tree_{emb_key}.png") #, basis=f"{emb_key}_umap", save=f"_scf_tree_{emb_key}.png")
+    scf.pl.graph(adata, save=f"_scf_tree_{emb_key}.png", show=False) #, basis=f"{emb_key}_umap", save=f"_scf_tree_{emb_key}.png")
     # Selecting a root and computing pseudotime
     adata.obs["is_root_cell"] = adata.obs_names == start_cell
 
@@ -45,19 +45,20 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
         scf.tl.root(adata,"is_root_cell")  # TODO get correct root
 
         scf.tl.pseudotime(adata, n_jobs=20, n_map=100, seed=42)
-        scf.pl.trajectory(adata, save=f"_pseudotime_tree_{emb_key}.png")
+        scf.pl.trajectory(adata, save=f"_pseudotime_tree_{emb_key}.png", show=False)
 
         #as a dendrogram representation
         scf.tl.dendrogram(adata)
 
-        scf.pl.dendrogram(adata, color="seg", save=f"_dendrogram_seg_{emb_key}.png")
-        scf.pl.dendrogram(adata, color="t", show_info=False, cmap="viridis", save=f"_dendrogram_pseudotime_{emb_key}.png")
+        scf.pl.dendrogram(adata, color="seg", save=f"_dendrogram_seg_{emb_key}.png", show=False)
+        scf.pl.dendrogram(adata, color="t", show_info=False, cmap="viridis", save=f"_dendrogram_pseudotime_{emb_key}.png", show=False)
         scf.pl.dendrogram(adata,
                           color=cluster_key,
                           legend_loc="on data",
                           color_milestones=True,
                           legend_fontoutline=True,
-                          save=f"_dendrogram_label_{emb_key}.png")
+                          save=f"_dendrogram_label_{emb_key}.png",
+                          show=False)
 
         sc.pl.umap(
             adata,

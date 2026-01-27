@@ -50,7 +50,6 @@ def sc_paga(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
 
     plt.tight_layout()
     plt.savefig(f"{output}/PAGA/paga_{emb_key}.png")
-    plt.show()
 
     sc.pl.umap(adata, color=[cluster_key], edges=True, save=f"_with_edges_{emb_key}.png")
 
