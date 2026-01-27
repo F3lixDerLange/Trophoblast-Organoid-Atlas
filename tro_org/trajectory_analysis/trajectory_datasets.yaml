@@ -1,10 +1,10 @@
 datasets:
   - name: PTO_Arutyunyan
-    path: /Users/felixlang/Downloads/merged_integration_integrated.h5ad # /nfs/home/students/f.lang/torg/benchmark/PTO_Arutyunyan/PTO_Arutyunyan_integrated.h5ad
+    path: /nfs/home/students/f.lang/torg/benchmark/PTO_Arutyunyan/PTO_Arutyunyan_integrated.h5ad
     root: Vct_tsc
 
   - name: TSC_Arutyunyan
-    path: /Users/felixlang/Downloads/merged_integration_integrated.h5ad # /nfs/home/students/f.lang/torg/benchmark/TSC_Arutyunyan/TSC_Arutyunyan_integrated.h5ad
+    path: /nfs/home/students/f.lang/torg/benchmark/TSC_Arutyunyan/TSC_Arutyunyan_integrated.h5ad
     root: Vct_tsc
 
   - name: shibata
