@@ -15,6 +15,6 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=64G
+#SBATCH --mem=128G
 
 srun python3 -m tro_org.trajectory_analysis.trajectory -adata /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas/tro_org/trajectory_analysis/trajectory_datasets.yaml -output /nfs/home/students/f.lang/torg/trajectory_analysis -lk label
