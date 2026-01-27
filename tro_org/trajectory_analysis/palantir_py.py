@@ -50,38 +50,42 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
     print("Terminal states:", terminal_states)
     print("Excluded boundaries:", excluded_boundaries)
 
-    palantir.plot.highlight_cells_on_umap(adata, terminal_states, embedding_basis=f"{emb_key}_umap")
-    plt.savefig(f"{output}/palantir/terminal_states_highlight_cells_on_umap{emb_key}.png")
-    plt.show()
+    try:
+        palantir.plot.highlight_cells_on_umap(adata, terminal_states, embedding_basis=f"{emb_key}_umap")
+        plt.savefig(f"{output}/palantir/terminal_states_highlight_cells_on_umap{emb_key}.png")
+        plt.show()
 
-    pr_res = palantir.core.run_palantir(adata,
-                                        start_cell,
-                                        num_waypoints=500,
-                                        terminal_states=terminal_states,
-                                        n_jobs=1,
-                                        knn=20,
-                                        use_early_cell_as_start=False,
+        pr_res = palantir.core.run_palantir(adata,
+                                            early_cell=start_cell,
+                                            num_waypoints=500,
+                                            terminal_states=terminal_states,
+                                            n_jobs=1,
+                                            knn=20,
+                                            use_early_cell_as_start=False,
 
-    )
+        )
 
-    palantir.plot.plot_palantir_results(adata, s=3)
-    plt.savefig(f"{output}/palantir/palantir_results_{emb_key}.png")
-    plt.show()
+        palantir.plot.plot_palantir_results(adata, s=3)
+        plt.savefig(f"{output}/palantir/palantir_results_{emb_key}.png")
+        plt.show()
 
-    masks = palantir.presults.select_branch_cells(adata, q=.02, eps=.02)
-    palantir.plot.plot_branch_selection(adata, s=1)
-    plt.savefig(f"{output}/palantir/branch_selection_{emb_key}.png")
-    plt.show()
+        masks = palantir.presults.select_branch_cells(adata, q=.02, eps=.02)
+        palantir.plot.plot_branch_selection(adata, s=1)
+        plt.savefig(f"{output}/palantir/branch_selection_{emb_key}.png")
+        plt.show()
 
-    print(adata)
+        print(adata)
 
-    sc.pl.umap(
-        adata,
-        color=["palantir_pseudotime", cluster_key],  # change key if needed
-        cmap="viridis",
-        size=10,
-        legend_loc='on data',
-        save=f"_palantir_pseudotime_{emb_key}.png"
-    )
+        sc.pl.umap(
+            adata,
+            color=["palantir_pseudotime", cluster_key],  # change key if needed
+            cmap="viridis",
+            legend_loc='on data',
+            save=f"_palantir_pseudotime_{emb_key}.png"
+        )
 
-    pu.plot_scatter_cluster_pseudotime(adata, "palantir_pseudotime", output, "palantir", emb_key)
+        pu.plot_scatter_cluster_pseudotime(adata, "palantir_pseudotime", output, "palantir", emb_key)
+
+    except Exception as e:
+        print(f"Something went wrong {e}")
+        print(f"Error in  scFates {output}")

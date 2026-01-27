@@ -1,11 +1,10 @@
 # based on https://scfates.readthedocs.io/en/latest/Tree_Analysis_Bone_marrow_fates.html
 from pathlib import Path
-import numpy as np
 import palantir
-import pandas as pd
 import scFates as scf
 import scanpy as sc
 from matplotlib import pyplot as plt
+
 import tro_org.trajectory_analysis.plot_utils as pu
 import tro_org.utils.utils as utils
 
@@ -19,7 +18,7 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
 
     sc.pp.neighbors(adata, use_rep=emb_key)
     sc.tl.umap(adata, min_dist=0.3)
-    adata.obsm[f"{emb_key}_umap"] = adata.obsm["X_umap"].copy() # TODO check if necessary
+    adata.obsm[f"X_{emb_key}_umap"] = adata.obsm["X_umap"].copy() # TODO check if necessary
 
     # Run Palantir to obtain multiscale diffusion space
     dm_res = palantir.utils.run_diffusion_maps(adata, pca_key=emb_key, n_components=30)
@@ -36,29 +35,40 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                 device="cpu", seed=1, ppt_lambda=100, ppt_sigma=0.025, ppt_nsteps=200)
 
     # projecting results onto ForceAtlas2 embedding
-    scf.pl.graph(adata, basis="scvi_umap", save=f"_scf_tree_{emb_key}.png")
-    sc.pl.umap(adata, color=cluster_key, size=20, save=f"_label_clusters_{emb_key}.png")
-
+    scf.pl.graph(adata, save=f"_scf_tree_{emb_key}.png") #, basis=f"{emb_key}_umap", save=f"_scf_tree_{emb_key}.png")
     # Selecting a root and computing pseudotime
     adata.obs["is_root_cell"] = adata.obs_names == start_cell
 
     scf.tl.cleanup(adata)
 
-    scf.tl.root(adata,"is_root_cell")  # TODO get correct root
+    try:
+        scf.tl.root(adata,"is_root_cell")  # TODO get correct root
 
-    scf.tl.pseudotime(adata, n_jobs=20, n_map=100, seed=42)
-    scf.pl.trajectory(adata, save=f"_pseudotime_tree_{emb_key}.png")
+        scf.tl.pseudotime(adata, n_jobs=20, n_map=100, seed=42)
+        scf.pl.trajectory(adata, save=f"_pseudotime_tree_{emb_key}.png")
 
-    #as a dendrogram representation
-    scf.tl.dendrogram(adata)
-    scf.pl.dendrogram(adata, color="seg", save=f"_dendrogram_seg_{emb_key}.png")
-    scf.pl.dendrogram(adata, color="t", show_info=False, cmap="viridis", save=f"_dendrogram_pseudotime_{emb_key}.png")
-    scf.pl.dendrogram(adata,
-                      color=cluster_key,
-                      legend_loc="on data",
-                      color_milestones=True,
-                      legend_fontoutline=True,
-                      save=f"_dendrogram_label_{emb_key}.png")
+        #as a dendrogram representation
+        scf.tl.dendrogram(adata)
 
-    pu.plot_scatter_cluster_pseudotime(adata, 't', output, "scFates", emb_key)
+        scf.pl.dendrogram(adata, color="seg", save=f"_dendrogram_seg_{emb_key}.png")
+        scf.pl.dendrogram(adata, color="t", show_info=False, cmap="viridis", save=f"_dendrogram_pseudotime_{emb_key}.png")
+        scf.pl.dendrogram(adata,
+                          color=cluster_key,
+                          legend_loc="on data",
+                          color_milestones=True,
+                          legend_fontoutline=True,
+                          save=f"_dendrogram_label_{emb_key}.png")
 
+        sc.pl.umap(
+            adata,
+            color=["t", cluster_key],
+            cmap="viridis",
+            legend_loc='on data',
+            save=f"_scFates_pseudotime_{emb_key}.png"
+        )
+
+        pu.plot_scatter_cluster_pseudotime(adata, 't', output, "scFates", emb_key)
+
+    except Exception as e:
+        print(f"Something went wrong {e}")
+        print(f"Error in  scFates {output}")

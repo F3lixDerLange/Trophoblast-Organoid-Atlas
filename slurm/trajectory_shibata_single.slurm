@@ -1,7 +1,7 @@
 #!/bin/bash
 # Metadata
 #SBATCH --job-name trajectory
-#SBATCH --time=2:00:00
+#SBATCH --time=8:00:00
 #SBATCH --no-requeue
 # Working directory
 #SBATCH --chdir /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
@@ -17,4 +17,4 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-srun python3 -m tro_org.trajectory_analysis.trajectory -adata /nfs/home/students/f.lang/nf-core_out/shibata_single/Shibata_samplesheet_scvi/finalized/merged.h5ad -lk label
+srun python3 -m tro_org.trajectory_analysis.trajectory -adata /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas/tro_org/trajectory_analysis/trajectory_datasets.yaml -output /nfs/home/students/f.lang/torg/trajectory_analysis -lk label

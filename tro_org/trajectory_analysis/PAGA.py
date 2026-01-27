@@ -63,6 +63,11 @@ def sc_paga(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
 
     adata.uns['iroot'] = np.flatnonzero(adata.obs[cluster_key] == startcluster)[0]
     sc.tl.dpt(adata)
-    sc.pl.umap(adata, color=['dpt_pseudotime', cluster_key], legend_loc='on data', save=f"_dpt_pseudotime_{emb_key}.png")
+    sc.pl.umap(adata,
+               color=['dpt_pseudotime', cluster_key],
+               cmap="viridis",
+               legend_loc='on data',
+               save=f"_dpt_pseudotime_{emb_key}.png"
+               )
 
     pu.plot_scatter_cluster_pseudotime(adata, 'dpt_pseudotime', output, "PAGA", emb_key)
