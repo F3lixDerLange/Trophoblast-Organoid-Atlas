@@ -16,11 +16,13 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
     utils.ensure_dir(f"{output}/scFates")
     sc.set_figure_params(figsize=(10, 10))
 
+    print(f"Running scFates trajectory analysis")
     sc.pp.neighbors(adata, use_rep=emb_key)
     sc.tl.umap(adata, min_dist=0.3)
     adata.obsm[f"X_{emb_key}_umap"] = adata.obsm["X_umap"].copy() # TODO check if necessary
 
     # Run Palantir to obtain multiscale diffusion space
+    print("diffusion")
     dm_res = palantir.utils.run_diffusion_maps(adata, pca_key=emb_key, n_components=30)
     ms_data = palantir.utils.determine_multiscale_space(dm_res, n_eigs=10)
     start_cell = adata.obs_names[adata.obs[cluster_key] == startcluster][0]
@@ -35,7 +37,7 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                 device="cpu", seed=1, ppt_lambda=100, ppt_sigma=0.025, ppt_nsteps=200)
 
     # projecting results onto ForceAtlas2 embedding
-    scf.pl.graph(adata, save=f"_scf_tree_{emb_key}.png", show=False) #, basis=f"{emb_key}_umap", save=f"_scf_tree_{emb_key}.png")
+    scf.pl.graph(adata, save=f"_scf_tree_{emb_key}.png") #, basis=f"{emb_key}_umap", save=f"_scf_tree_{emb_key}.png")
     # Selecting a root and computing pseudotime
     adata.obs["is_root_cell"] = adata.obs_names == start_cell
 
@@ -45,20 +47,20 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
         scf.tl.root(adata,"is_root_cell")  # TODO get correct root
 
         scf.tl.pseudotime(adata, n_jobs=20, n_map=100, seed=42)
-        scf.pl.trajectory(adata, save=f"_pseudotime_tree_{emb_key}.png", show=False)
+        scf.pl.trajectory(adata, save=f"_pseudotime_tree_{emb_key}.png")
 
         #as a dendrogram representation
         scf.tl.dendrogram(adata)
 
-        scf.pl.dendrogram(adata, color="seg", save=f"_dendrogram_seg_{emb_key}.png", show=False)
-        scf.pl.dendrogram(adata, color="t", show_info=False, cmap="viridis", save=f"_dendrogram_pseudotime_{emb_key}.png", show=False)
+        scf.pl.dendrogram(adata, color="seg", save=f"_dendrogram_seg_{emb_key}.png")
+        scf.pl.dendrogram(adata, color="t", show_info=False, cmap="viridis", save=f"_dendrogram_pseudotime_{emb_key}.png")
         scf.pl.dendrogram(adata,
                           color=cluster_key,
                           legend_loc="on data",
                           color_milestones=True,
                           legend_fontoutline=True,
-                          save=f"_dendrogram_label_{emb_key}.png",
-                          show=False)
+                          save=f"_dendrogram_label_{emb_key}.png"
+                          )
 
         sc.pl.umap(
             adata,

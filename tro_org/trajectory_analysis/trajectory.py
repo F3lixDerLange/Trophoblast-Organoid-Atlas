@@ -7,7 +7,7 @@ from tro_org.trajectory_analysis import palantir_py
 from tro_org.trajectory_analysis import scFates_py
 from tro_org.analysis.utils import load_config
 
-def setup_traj_analysis(adata_file, output_dir, label_key, dataset=None, startcluster=None):
+def setup_traj_analysis(adata_file, output_dir, label_key, sub_cluster=None, dataset=None, startcluster=None):
 
     if adata_file.endswith(".yaml") or adata_file.endswith(".yml"):
         datasets_config = load_config(adata_file)
@@ -18,11 +18,27 @@ def setup_traj_analysis(adata_file, output_dir, label_key, dataset=None, startcl
 
             print(f"Loading {name} from {path}")
             adata = sc.read_h5ad(path)
-            traj_analysis(adata, output_dir, label_key, root, name)
+            if "sub" in dc.keys():
+                for cluster in dc["sub"].keys():
+                    print(f"Loading {cluster} from {path} containing: {dc["sub"][cluster]}")
+                    adata_sub = adata[adata.obs["label"].isin(dc["sub"][cluster])].copy()
+                    print(adata_sub)
+                    traj_analysis(adata_sub, output_dir, label_key, dc["sub"][cluster][0], f"Sub_cluster_{cluster}")
+                    # root is saved in the dict form the config -> root is the first item in the dict
+            elif "sub" not in dc.keys():
+                pass
+                # traj_analysis(adata, output_dir, label_key, root, name)
 
     elif isinstance(adata_file, ad.AnnData):
-        print(adata_file)
-        traj_analysis(adata_file, output_dir, label_key, startcluster, dataset)
+        if sub_cluster is not None:
+            adata_file_sub = adata_file[adata_file.obs["label"].isin(sub_cluster)].copy()
+            if adata_file_sub.shape[0] == 0:
+                raise ValueError("Anndata Object is empty")
+            print(adata_file_sub)
+            traj_analysis(adata_file_sub, output_dir, label_key, startcluster, dataset)
+        else:
+            print(adata_file)
+            traj_analysis(adata_file, output_dir, label_key, startcluster, dataset)
 
 
 def traj_analysis(adata, output_dir, label_key, startcluster, dataset):
@@ -57,6 +73,11 @@ def main():
     -output tro_org/trajectory_analysis/figures 
     -lk label 
     # -d shibata
+    """
+
+    """
+    if called with command line only with config file
+    if called in python with setup_traj_analysis
     """
 
 if __name__ == '__main__':

@@ -30,7 +30,7 @@ def plot_scatter_cluster_pseudotime(adata, pseudotime_key, output_dir, method, e
     plt.yticks(range(len(order)), order)
     plt.xlabel(f"{emb_key} pseudotime")
     plt.ylabel("label")
-    plt.title(f"Cells ordered by {emb_key} pseudotime")
+    plt.title(f"Cells ordered by {emb_key}/{method} pseudotime")
     plt.legend(bbox_to_anchor=(1.02, 1), loc="upper left", frameon=False)
     plt.tight_layout()
     plt.savefig(f"{output_dir}/{method}/scatter_cluster_pseudotime_{emb_key}.png")
