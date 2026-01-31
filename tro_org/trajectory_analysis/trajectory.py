@@ -14,7 +14,7 @@ def setup_traj_analysis(adata_file, output_dir, label_key, sub_cluster=None, dat
         for dc in datasets_config:
             name = dc["name"]
             path = dc["path"]
-            root = dc["root"]
+            # root = dc["root"]
 
             print(f"Loading {name} from {path}")
             adata = sc.read_h5ad(path)
