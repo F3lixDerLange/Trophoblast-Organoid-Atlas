@@ -3,8 +3,10 @@ from pathlib import Path
 import scanpy as sc
 import pandas as pd
 import os
+import scib
 
 from matplotlib import pyplot as plt
+from scib.metrics import isolated_labels, isolated_labels_f1, lisi_graph
 
 
 def print_h5ad_info(h5ad_file):
@@ -52,7 +54,7 @@ def print_h5ad_info(h5ad_file):
 
     # utils.normalize_data(adata)
 
-    print("check for raw counts and normalized counts:")
+    """print("check for raw counts and normalized counts:")
     raw_count_matrix_df = pd.DataFrame(
         adata.raw.X.toarray().T,
         index=adata.var_names,  # Set gene names as the rows names
@@ -63,7 +65,7 @@ def print_h5ad_info(h5ad_file):
     print(raw_count_matrix_df.iloc[:5, :5])
     print(f"\nDataFrame-Dimensionen: {raw_count_matrix_df.shape}")
     print("Global min:", raw_count_matrix_df.values.min())
-    print("Global max:", raw_count_matrix_df.values.max())
+    print("Global max:", raw_count_matrix_df.values.max())"""
 
     count_matrix_df = pd.DataFrame(
         adata.X.toarray().T,
@@ -91,8 +93,37 @@ def plot(adata, label_key, batch_key, osbmkey):
     sc.settings.figdir = save_dir
     sc.set_figure_params(dpi_save=300, figsize=(10, 10), fontsize=14,  vector_friendly=True)
     sc.pp.neighbors(adata, use_rep=osbmkey)
+    sc.pp.pca(adata)
     sc.tl.umap(adata)
 
+    print("----------------------")
+    print(adata)
+    score = scib.metrics.ari(adata, label_key=label_key, cluster_key="clusters")
+    print(score)
+    test = scib.metrics.metrics(adata,
+                                    adata_int=adata,
+                                    batch_key=batch_key,
+                                    label_key=label_key,
+                                    embed="X_pca",
+                                    cluster_nmi=True,
+                                    ari_=True,
+                                    nmi_=True,
+                                    silhouette_=True,
+                                    pcr_=True,
+                                    hvg_score_=True,
+                                    isolated_labels_=True,
+                                    isolated_labels_f1_=True,
+                                    isolated_labels_asw_=True,
+                                    graph_conn_=True,
+                                    trajectory_=True,
+                                    kBET_=True,
+                                    lisi_graph_=True,
+                                    ilisi_=True,
+                                    clisi_=True
+                                    )
+    print(test)
+    sil = scib.metrics.silhouette_batch(adata, label_key=label_key, batch_key=batch_key, embed="X_pca")
+    print(sil)
 
     for batch in adata.obs[batch_key].unique():
         ax = sc.pl.umap(adata, show=False)
@@ -108,11 +139,13 @@ def main():
     # h5ad_file = "database/Shibata/Shibata_EMO6_hESC/GSM7714458_EMO6_hor_merged.h5ad"
     # h5ad_file = "database/Shibata/GSE241052_ari_org.annotated.h5ad"
     h5ad_file = "database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad"
+    # h5ad_file = "/Users/felixlang/Downloads/shibata_single_integrated.h5ad"
     # h5ad_file = "database/Shannon_McNeil/Shannon_McNeil_TBp_EVT_D/GSM6664615_DPT_merged.h5ad"
     # h5ad_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad"
     # h5ad_file = "database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene.h5ad"
     # h5ad_file = "/Users/felixlang/Downloads/merged.h5ad"
-    # h5ad_file = "/Users/felixlang/Downloads/pipeline_w_report/annotated_samplesheet_bbknn/finalized/merged.h5ad"
+    # h5ad_file = "/Users/felixlang/Downloads/pipline_fixed/annotated_samplesheet_scvi/finalized/merged.h5ad"
+    # h5ad_file = "/Users/felixlang/Downloads/pipline_single/Shibata_single_samplesheet_scvi/finalized/merged.h5ad"
     print_h5ad_info(h5ad_file)
 
 if __name__ == '__main__':
