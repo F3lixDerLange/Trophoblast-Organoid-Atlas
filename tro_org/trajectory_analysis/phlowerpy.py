@@ -21,8 +21,9 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
     sc.tl.umap(adata, min_dist=0.3)
     adata.obsm[f"{emb_key}_umap"] = adata.obsm["X_umap"].copy()
 
+    """
     # TODO remove just for smaller sample
-    cells_per_type = 200  # cap per cell type
+    cells_per_type = 5000  # cap per cell type
 
     groups = []
     for ct, idx_ct in adata.obs.groupby("label").groups.items():
@@ -32,7 +33,7 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
         groups.extend(idx_ct)
 
     adata = adata[groups].copy()
-
+    """
 
     # load kidney anndata with MOJITOO reduction and clustering
     phlower.ext.ddhodge(adata, basis=emb_key, roots=(adata.obs.label==startcluster), k=7, npc=100, ndc=40, s=2,

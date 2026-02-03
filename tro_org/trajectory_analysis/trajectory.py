@@ -1,4 +1,6 @@
 import argparse
+from pathlib import Path
+
 import scanpy as sc
 import anndata as ad
 from tro_org.trajectory_analysis import PAGA
@@ -14,7 +16,7 @@ def setup_traj_analysis(adata_file, output_dir, label_key, sub_cluster=None, dat
         for dc in datasets_config:
             name = dc["name"]
             path = dc["path"]
-            # root = dc["root"]
+            root = dc["root"]
 
             print(f"Loading {name} from {path}")
             adata = sc.read_h5ad(path)
@@ -25,9 +27,12 @@ def setup_traj_analysis(adata_file, output_dir, label_key, sub_cluster=None, dat
                     print(adata_sub)
                     traj_analysis(adata_sub, output_dir, label_key, dc["sub"][cluster][0], f"Sub_cluster_{cluster}")
                     # root is saved in the dict form the config -> root is the first item in the dict
+                    out_path = Path(output_dir) / "adata"
+                    out_path.mkdir(parents=True, exist_ok=True)
+                    adata_sub.copy().write(out_path / f"subcluster_{cluster}_integrated.h5ad")
+
             elif "sub" not in dc.keys():
-                pass
-                # traj_analysis(adata, output_dir, label_key, root, name)
+                traj_analysis(adata, output_dir, label_key, root, name)
 
     elif isinstance(adata_file, ad.AnnData):
         if sub_cluster is not None:
