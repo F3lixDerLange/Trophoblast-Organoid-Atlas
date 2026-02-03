@@ -25,35 +25,40 @@ def adata2loom(adata, loom_path):
     lp.create(loom_path, adata.X.transpose(), row_attrs, col_attrs)
 
 
-def create_grn(adata, loom_path_scenic, data_dir, dataset):
+def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None):
     adata2loom(adata, loom_path_scenic)
 
+    # STEP 1: Gene regulatory network inference, and generation of co-expression modules
     run_dir = Path(data_dir).resolve()
-    img = "aertslab/pyscenic:0.12.1"
     scenic_grn = [
         "pyscenic", "grn",
         f"/data/{dataset}_filtered_scenic.loom",
         "/data/allTFs_hg38.txt",
         "--method", "grnboost2",
-        "--num_workers", "6",
+        "--num_workers", "20",
         # "--sparse",
-        "-o", "/data/adj.tsv",
-
+        "-o", f"/data/{dataset}_adj.tsv",
     ]
-    cmd_docker = [
-              "docker", "run", "--rm",
-              "--platform", "linux/amd64",
-              "-v", f"{run_dir}:/data",
-              img
-          ] + scenic_grn
 
-    cmd_singularity = [   "singularity", "run",
-                          "-B", f"{run_dir}:/data",
-                          f"{run_dir}/aertslab-pyscenic-0.12.1.sif",
-                      ] + scenic_grn
+    if image == "docker":
+        img = "aertslab/pyscenic:0.12.1"
+        cmd = [
+                         "docker", "run", "--rm",
+                         "--platform", "linux/amd64",
+                         "-v", f"{run_dir}:/data",
+                         img
+                     ] + scenic_grn
+
+    elif image == "singularity":
+        cmd = [   "singularity", "run",
+                              "-B", f"{run_dir}:/data",
+                              f"{run_dir}/aertslab-pyscenic-0.12.1.sif",
+                          ] + scenic_grn
+    else:
+        raise SystemExit(f"Unknown image {image}")
 
     print("Running pyscenic command")
-    subprocess.run(cmd_singularity, check=True)
+    subprocess.run(cmd, check=True)
     print("Done")
 
     adjacencies = pd.read_csv("tro_org/GRN/data/adj.tsv", index_col=False, sep='\t')
@@ -62,10 +67,12 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset):
 
 def main():
     parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--image", required=True, help="docker or sigularity image")
     parser.add_argument("-a", "--adata", required=True, help="h5ad file")
     parser.add_argument("-d", "--data_dir", required=True, help="data dir for docker")
     #parser.add_argument("-o", "--output", required=True)
     args = parser.parse_args()
+    image = args.image
     data_path = args.data_dir
     adata_path = args.adata
     #out_dir = args.output
@@ -78,7 +85,7 @@ def main():
 
 
     adata = sc.read_h5ad(adata_path)
-    create_grn(adata, loom_path_scenic, data_path, dataset)
+    create_grn(adata, loom_path_scenic, data_path, dataset, image)
 
 
 

@@ -17,4 +17,4 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-srun python3 -m tro_org.GRN.pyscenic -a /nfs/home/students/f.lang/torg/GRN/data/subcluster_Stromal_integrated.h5ad -d /nfs/home/students/f.lang/torg/GRN/data/
+srun python3 -m tro_org.GRN.pyscenic -i singularity -a /nfs/home/students/f.lang/torg/GRN/data/subcluster_Stromal_integrated.h5ad -d /nfs/home/students/f.lang/torg/GRN/data/
