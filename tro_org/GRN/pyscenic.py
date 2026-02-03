@@ -29,40 +29,41 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None):
     adata2loom(adata, loom_path_scenic)
 
     # STEP 1: Gene regulatory network inference, and generation of co-expression modules
-    run_dir = Path(data_dir).resolve()
-    scenic_grn = [
-        "pyscenic", "grn",
-        f"/data/{dataset}_filtered_scenic.loom",
-        "/data/allTFs_hg38.txt",
-        "--method", "grnboost2",
-        "--num_workers", "30",
-        # "--sparse",
-        "-o", f"/data/{dataset}_adj.tsv",
-    ]
+    if not os.path.exists(os.path.join(data_dir, f"{dataset}_adj.tsv")):
+        run_dir = Path(data_dir).resolve()
+        scenic_grn = [
+            "pyscenic", "grn",
+            f"/data/{dataset}_filtered_scenic.loom",
+            "/data/allTFs_hg38.txt",
+            "--method", "grnboost2",
+            "--num_workers", "30",
+            # "--sparse",
+            "-o", f"/data/{dataset}_adj.tsv",
+        ]
 
-    if image == "docker":
-        img = "aertslab/pyscenic:0.12.1"
-        cmd = [
-                         "docker", "run", "--rm",
-                         "--platform", "linux/amd64",
-                         "-v", f"{run_dir}:/data",
-                         img
-                     ] + scenic_grn
+        if image == "docker":
+            img = "aertslab/pyscenic:0.12.1"
+            cmd = [
+                             "docker", "run", "--rm",
+                             "--platform", "linux/amd64",
+                             "-v", f"{run_dir}:/data",
+                             img
+                         ] + scenic_grn
 
-    elif image == "singularity":
-        cmd = [   "singularity", "run",
-                              "-B", f"{run_dir}:/data",
-                              f"{run_dir}/aertslab-pyscenic-0.12.1.sif",
-                          ] + scenic_grn
-    else:
-        raise SystemExit(f"Unknown image {image}")
+        elif image == "singularity":
+            cmd = [   "singularity", "run",
+                                  "-B", f"{run_dir}:/data",
+                                  f"{run_dir}/aertslab-pyscenic-0.12.1.sif",
+                              ] + scenic_grn
+        else:
+            raise SystemExit(f"Unknown image {image}")
 
-    print("Running pyscenic command")
-    subprocess.run(cmd, check=True)
-    print("Done")
+        print("Running pyscenic command")
+        subprocess.run(cmd, check=True)
+        print("Done")
 
-    adjacencies = pd.read_csv("tro_org/GRN/data/adj.tsv", index_col=False, sep='\t')
-    adjacencies.head()
+    adjacencies = pd.read_csv(f"{data_dir}/{dataset}_adj.tsv", index_col=False, sep='\t')
+    print(adjacencies.head())
 
 
 def main():
