@@ -48,9 +48,8 @@ def create_grn(adata, loom_path_scenic, data_dir):
           ] + scenic_grn
 
     cmd_singularity = [
-                          "singularity", "exec",
+                          "singularity", "run", f"{run_dir}/aertslab-pyscenic-0.12.1.sif"
                           "-B", f"{run_dir}:/data",
-                          f"{run_dir}/aertslab-pyscenic-0.12.1.sif"
                       ] + scenic_grn
 
     print("Running pyscenic command")
