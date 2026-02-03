@@ -25,14 +25,14 @@ def adata2loom(adata, loom_path):
     lp.create(loom_path, adata.X.transpose(), row_attrs, col_attrs)
 
 
-def create_grn(adata, loom_path_scenic, data_dir):
+def create_grn(adata, loom_path_scenic, data_dir, dataset):
     adata2loom(adata, loom_path_scenic)
 
     run_dir = Path(data_dir).resolve()
     img = "aertslab/pyscenic:0.12.1"
     scenic_grn = [
         "pyscenic", "grn",
-        "/data/adata_filtered_scenic.loom",
+        f"/data/{dataset}_filtered_scenic.loom",
         "/data/allTFs_hg38.txt",
         "--method", "grnboost2",
         "--num_workers", "6",
@@ -47,9 +47,9 @@ def create_grn(adata, loom_path_scenic, data_dir):
               img
           ] + scenic_grn
 
-    cmd_singularity = [
-                          "singularity", "run", f"{run_dir}/aertslab-pyscenic-0.12.1.sif",
+    cmd_singularity = [   "singularity", "run",
                           "-B", f"{run_dir}:/data",
+                          f"{run_dir}/aertslab-pyscenic-0.12.1.sif",
                       ] + scenic_grn
 
     print("Running pyscenic command")
@@ -78,7 +78,7 @@ def main():
 
 
     adata = sc.read_h5ad(adata_path)
-    create_grn(adata, loom_path_scenic, data_path)
+    create_grn(adata, loom_path_scenic, data_path, dataset)
 
 
 
