@@ -48,10 +48,10 @@ def create_grn(adata, loom_path_scenic, data_dir):
           ] + scenic_grn
 
     cmd_singularity = [
-        "apptainer", "exec",
-        "-B", f"{run_dir}:/data",
-        f"{run_dir}/aertslab-pyscenic-0.12.1.sif"
-    ] + scenic_grn
+                          "singularity", "exec",
+                          "-B", f"{run_dir}:/data",
+                          f"{run_dir}/aertslab-pyscenic-0.12.1.sif"
+                      ] + scenic_grn
 
     print("Running pyscenic command")
     subprocess.run(cmd_singularity, check=True)
