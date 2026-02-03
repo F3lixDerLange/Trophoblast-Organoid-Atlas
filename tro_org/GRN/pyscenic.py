@@ -35,7 +35,7 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None):
         f"/data/{dataset}_filtered_scenic.loom",
         "/data/allTFs_hg38.txt",
         "--method", "grnboost2",
-        "--num_workers", "20",
+        "--num_workers", "30",
         # "--sparse",
         "-o", f"/data/{dataset}_adj.tsv",
     ]
