@@ -1,7 +1,7 @@
 #!/bin/bash
 # Metadata
 #SBATCH --job-name scenic_sync
-#SBATCH --time=12:00:00
+#SBATCH --time=1-12:00:00
 #SBATCH --no-requeue
 # Working directory
 #SBATCH --chdir /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
