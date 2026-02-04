@@ -1,6 +1,6 @@
 #!/bin/bash
 # Metadata
-#SBATCH --job-name grn_stomal
+#SBATCH --job-name scenic_stomal
 #SBATCH --time=12:00:00
 #SBATCH --no-requeue
 # Working directory

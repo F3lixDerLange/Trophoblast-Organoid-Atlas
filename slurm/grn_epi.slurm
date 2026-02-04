@@ -1,7 +1,7 @@
 #!/bin/bash
 # Metadata
-#SBATCH --job-name grn_epi
-#SBATCH --time=24:00:00
+#SBATCH --job-name scenic_epi
+#SBATCH --time=4-00:00:00
 #SBATCH --no-requeue
 # Working directory
 #SBATCH --chdir /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas

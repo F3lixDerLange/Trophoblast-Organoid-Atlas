@@ -1,6 +1,6 @@
 #!/bin/bash
 # Metadata
-#SBATCH --job-name grn_sync
+#SBATCH --job-name scenic_sync
 #SBATCH --time=12:00:00
 #SBATCH --no-requeue
 # Working directory

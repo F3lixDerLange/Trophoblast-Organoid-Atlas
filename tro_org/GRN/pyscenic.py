@@ -1,4 +1,5 @@
 # based on https://github.com/aertslab/SCENICprotocol/blob/master/notebooks/PBMC10k_SCENIC-protocol-CLI.ipynb
+# https://www.sc-best-practices.org/mechanisms/gene_regulatory_networks.html#preparation-of-scenic
 import argparse
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ import loompy as lp
 import seaborn as sns
 import matplotlib.pyplot as plt
 import subprocess
+import anndata as ad
 
 # all TFs from https://resources.aertslab.org/cistarget/tf_lists/
 # all files downloaded from https://resources.aertslab.org/cistarget/
@@ -129,6 +131,52 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
         print("Done")
     else:
         print(f"Skip ctx generation ---- {dataset}_pyscenic_output.loom already exists")
+
+    lf = lp.connect(f"{data_dir}/{dataset}_pyscenic_output.loom", mode="r+", validate=False)
+    auc_mtx = pd.DataFrame(lf.ca.RegulonsAUC, index=lf.ca.CellID)
+    lf.close()
+
+    ad_auc_mtx = ad.AnnData(auc_mtx)
+    sc.pp.neighbors(ad_auc_mtx, n_neighbors=10, metric="correlation")
+    sc.tl.umap(ad_auc_mtx)
+
+    adata.obsm["X_umap_aucell"] = ad_auc_mtx.obsm["X_umap"]
+
+    sc.pl.embedding(adata, basis="X_umap_aucell", color="label")
+
+    auc_mtx["label"] = adata.obs["label"]
+    mean_auc_by_cell_type = auc_mtx.groupby("label").mean()
+
+    top_n = 50
+    top_tfs = mean_auc_by_cell_type.max(axis=0).sort_values(ascending=False).head(top_n)
+    mean_auc_by_cell_type_top_n = mean_auc_by_cell_type[
+        [c for c in mean_auc_by_cell_type.columns if c in top_tfs]
+    ]
+
+    sns.clustermap(
+        mean_auc_by_cell_type_top_n,
+        figsize=[15, 6.5],
+        cmap="Blues",
+        xticklabels=True,
+        yticklabels=True,
+    )
+    plt.show()
+
+    tf_names = top_tfs.index.str.replace(r"\(\+\)", "", regex=True)
+    print(tf_names)
+    adata_batch_top_tfs = adata[:, adata.var_names.isin(tf_names)]
+
+    sc.pl.matrixplot(
+        adata_batch_top_tfs,
+        tf_names,
+        groupby="label",
+        cmap="Reds",
+        dendrogram=False,
+        figsize=[15, 5.5],
+        standard_scale="group",
+    )
+
+    plt.show()
 
 
 def main():
