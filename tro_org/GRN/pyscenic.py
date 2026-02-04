@@ -29,7 +29,7 @@ def adata2loom(adata, loom_path):
     lp.create(loom_path, adata.X.transpose(), row_attrs, col_attrs)
 
 
-def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_workers=20):
+def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_workers=8):
 
     if not os.path.exists(os.path.join(data_dir, f"{dataset}_filtered_scenic.loom")):
         adata2loom(adata, loom_path_scenic)
