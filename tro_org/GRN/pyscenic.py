@@ -119,8 +119,8 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
         scenic_aucell = [
             "pyscenic", "aucell",
             f"/data/{dataset}_filtered_scenic.loom",
-            f"{dataset}_reg.csv",
-            "--output", f"{dataset}_pyscenic_output.loom",
+            f"/data/{dataset}_reg.csv",
+            "--output", f"/data/{dataset}_pyscenic_output.loom",
             "--num_workers", f"{num_workers}",
         ]
 
