@@ -9,6 +9,7 @@ import pandas as pd
 import scanpy as sc
 import loompy as lp
 import subprocess
+import time
 import tro_org.GRN.plot_utils as pu
 
 # all files downloaded from https://resources.aertslab.org/cistarget/
@@ -24,16 +25,43 @@ def adata2loom(adata, loom_path):
         "nUMI": np.array(np.sum(adata.X.transpose(), axis=0)).flatten(),
     }
     lp.create(loom_path, adata.X.transpose(), row_attrs, col_attrs)
+    print("Loom created")
 
 
-def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_workers=8):
+def filter_adata(adata):
+    # filtering steps from https://www.nature.com/articles/s41596-020-0336-2
+    if "percent_mito" in adata.obs.columns:
+        percent_mito = "percent_mito"
+    elif "pct_counts_mt" in adata.obs.columns:
+        percent_mito = "pct_counts_mt"
+    else:
+        raise LookupError
+
+    print(f"Adata shape pre filtering {adata.shape}")
+    sc.pp.filter_cells(adata, min_genes=200)
+    sc.pp.filter_genes(adata, min_cells=3)
+    adata = adata[adata.obs['n_genes'] < 4000, :]
+    adata = adata[adata.obs[percent_mito] < 0.15, :]
+    print(f"Adata shape post filtering {adata.shape}")
+
+    return adata
+
+
+def create_grn(adata, data_dir, dataset, image=None, num_workers=8, adata_filter=False):
     scenic_dir = os.path.split(data_dir)[0]
     save_dir = Path(f"{scenic_dir}/figure")
 
-    if not os.path.exists(os.path.join(data_dir, f"{dataset}_filtered_scenic.loom")):
+    if adata_filter:
+        adata = filter_adata(adata)
+        dataset = f"{dataset}_filtered"
+
+    loom_path_scenic = f"{data_dir}/{dataset}_scenic.loom"
+
+    if not os.path.exists(os.path.join(data_dir, f"{dataset}_scenic.loom")):
         adata2loom(adata, loom_path_scenic)
     else:
-        print(f"Skip loom generation ---- {dataset}_filtered_scenic.loom already exists")
+        print(f"Skip loom generation ---- {dataset}_scenic.loom already exists")
+
 
     run_dir = Path(data_dir).resolve()
     if image == "docker":
@@ -50,11 +78,11 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
     if not os.path.exists(os.path.join(data_dir, f"{dataset}_adj.tsv")):
         scenic_grn = [
             "pyscenic", "grn",
-            f"/data/{dataset}_filtered_scenic.loom",
+            f"/data/{dataset}_scenic.loom",
             "/data/allTFs_hg38.txt",
             "--method", "grnboost2",
             "--num_workers", f"{num_workers}",
-            # "--sparse",
+            "--sparse",
             "-o", f"/data/{dataset}_adj.tsv",
         ]
 
@@ -82,7 +110,7 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
             f"/data/{dataset}_adj.tsv",
             f"{f_db_names}",
             f"--annotations_fname", f"{f_motif_path}",
-            "--expression_mtx_fname", f"/data/{dataset}_filtered_scenic.loom",
+            "--expression_mtx_fname", f"/data/{dataset}_scenic.loom",
             "--output", f"/data/{dataset}_reg.csv",
             "--mask_dropouts",
             "--num_workers", f"{num_workers}",
@@ -101,7 +129,7 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
     if not os.path.exists(os.path.join(data_dir, f"{dataset}_pyscenic_output.loom")):
         scenic_aucell = [
             "pyscenic", "aucell",
-            f"/data/{dataset}_filtered_scenic.loom",
+            f"/data/{dataset}_scenic.loom",
             f"/data/{dataset}_reg.csv",
             "--output", f"/data/{dataset}_pyscenic_output.loom",
             "--num_workers", f"{num_workers}",
@@ -121,18 +149,22 @@ def main():
     parser.add_argument("-i", "--image", required=True, help="docker or sigularity image")
     parser.add_argument("-a", "--adata", required=True, help="h5ad file")
     parser.add_argument("-d", "--data_dir", required=True, help="data dir for docker")
+    parser.add_argument("-f", "--adata_filter", required=False, action="store_true", help="filter adata")
     #parser.add_argument("-o", "--output", required=True)
     args = parser.parse_args()
     image = args.image
     data_path = args.data_dir
     adata_path = args.adata
+    adata_f = args.adata_filter
     #out_dir = args.output
 
     dataset = "_".join(os.path.basename(adata_path).split("_")[:2])
-    loom_path_scenic = f"{data_path}/{dataset}_filtered_scenic.loom"
 
+    start = time.time()
     adata = sc.read_h5ad(adata_path)
-    create_grn(adata, loom_path_scenic, data_path, dataset, image)
+    create_grn(adata, data_path, dataset, image, adata_filter=adata_f)
+    end = time.time()
+    print(f"{dataset} pyscenic GRN took {end-start} seconds -- {(end-start)//60} minutes")
 
     """
     -i docker

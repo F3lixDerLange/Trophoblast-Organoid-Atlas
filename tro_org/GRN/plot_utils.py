@@ -8,6 +8,11 @@ import scanpy as sc
 import anndata as ad
 import tro_org.utils.utils as utils
 
+COLORS = ["#fcc72d", "#383a6b", "#cb1f73", "#e03a3c", "#ea6d3d", "#6a5fa8",
+            "#f89c1c", "#b33a2b", "#7a1e3a", "#1f2a44", "#5c8d89", "#8a7bd1",
+              "#2b7f7a", "#ffe07a", "#3fa7a3","#f05a28", "#ff6f61", "#d64aa0",
+              "#2f2f5f", "#ffb347", "#8e2c2c", "#4b1630", "#0f1629"]
+
 def quantile_histplot(adata, dataset, outdir):
     utils.ensure_dir(f"{outdir}/{dataset}")
 
@@ -72,7 +77,6 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir):
     plt.show()
 
     tf_names = top_tfs.index.str.replace(r"\(\+\)", "", regex=True)
-    print(tf_names)
     adata_batch_top_tfs = adata[:, adata.var_names.isin(tf_names)]
 
     sc.pl.matrixplot(
@@ -87,6 +91,52 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir):
         save=f"{dataset}_tf_regulon_celltpye.png",
     )
     plt.show()
+
+    top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir)
+    top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir)
+
+
+def top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir):
+    celltypes = adata_batch_top_tfs.obs["label"].astype(str).unique()
+
+    for ct in celltypes:
+        expr_df = adata_batch_top_tfs.to_df()
+        mean_expr = expr_df.mean(axis=0).sort_values(ascending=False)
+        tf_order = mean_expr.sort_values(ascending=True)
+        tf_order_len = np.arange(len(tf_order))
+
+        fig, ax = plt.subplots(figsize=(5, 10), dpi=150)
+        ax.scatter(tf_order.values, tf_order_len, color="#383a6b")
+        ax.set_yticks(tf_order_len)
+        ax.set_yticklabels(tf_order.index)
+        ax.set_xlabel("Mean TF expression")
+        ax.set_title(f"Top 50 mean expressed TFs in \n{ct} - {dataset}")
+        ax.grid(True, axis="x", alpha=0.3)
+        fig.tight_layout()
+        plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_mean_expression_in_{ct}", dpi=150)
+        plt.show()
+
+def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir):
+    expr_df = adata_batch_top_tfs.to_df()
+    expr_df["label"] = adata_batch_top_tfs.obs["label"].values
+    print(expr_df.head())
+
+    mean_expr = expr_df.groupby("label").mean()
+    tf_order = mean_expr.mean(axis=0).sort_values(ascending=False).index
+    mean_expr = mean_expr[tf_order]
+
+    plot_df = (mean_expr.reset_index().melt(id_vars="label", var_name="TF", value_name="mean_expression"))
+
+    plt.figure(figsize=(5,10), dpi=150)
+    sns.scatterplot(plot_df, x="mean_expression", y="TF", hue="label", s=90, palette=COLORS)
+    plt.xlabel("Mean TF expression")
+    plt.title(f"TF expression across cell types \n{dataset}")
+    plt.legend(title="label", bbox_to_anchor=(1.02, 1), loc="upper left")
+    plt.grid(True, axis="x", alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_mean_expression_celltype_allinone.png", dpi=150)
+    plt.show()
+
 
 def tf_target_importance(adjacencies, dataset, outdir):
     plt.figure(figsize=(7, 5), dpi=150)
