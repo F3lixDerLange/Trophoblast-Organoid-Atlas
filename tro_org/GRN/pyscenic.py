@@ -8,12 +8,9 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import loompy as lp
-import seaborn as sns
-import matplotlib.pyplot as plt
 import subprocess
-import anndata as ad
+import tro_org.GRN.plot_utils as pu
 
-# all TFs from https://resources.aertslab.org/cistarget/tf_lists/
 # all files downloaded from https://resources.aertslab.org/cistarget/
 # there is also an explanation which files to use
 
@@ -30,6 +27,8 @@ def adata2loom(adata, loom_path):
 
 
 def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_workers=8):
+    scenic_dir = os.path.split(data_dir)[0]
+    save_dir = Path(f"{scenic_dir}/figure")
 
     if not os.path.exists(os.path.join(data_dir, f"{dataset}_filtered_scenic.loom")):
         adata2loom(adata, loom_path_scenic)
@@ -67,11 +66,9 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
 
     adjacencies = pd.read_csv(f"{data_dir}/{dataset}_adj.tsv", index_col=False, sep='\t')
     print(adjacencies.tail())
-    print(f"Number of associations: {adjacencies.shape[0]}")
+    print(f"shape: {adjacencies.shape}")
 
-    #plt.hist(np.log10(adjacencies["importance"]), bins=100)
-    #plt.xlim([-10, 10])
-    #plt.show()
+    pu.tf_target_importance(adjacencies, dataset, save_dir)
 
 
     # STEP 2-3: Regulon prediction aka cisTarget from CLI
@@ -99,23 +96,7 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
 
 
     #STEP 4: Cellular enrichment (aka AUCell) from CLI
-    n_genes_detected_per_cell = np.sum(adata.X > 0, axis=1)
-    percentiles = pd.Series(n_genes_detected_per_cell.flatten().A.flatten()).quantile(
-        [0.01, 0.05, 0.10, 0.50, 1]
-    )
-    print(percentiles)
-
-    fig, ax = plt.subplots(1, 1, figsize=(8, 5), dpi=150)
-    sns.histplot(n_genes_detected_per_cell, bins='fd', ax=ax, legend=False)
-    for i, x in enumerate(percentiles):
-        fig.gca().axvline(x=x, ymin=0, ymax=1, color='red')
-        ax.text(x=x, y=ax.get_ylim()[1], s=f'{int(x)} ({percentiles.index.values[i] * 100}%)', color='red', rotation=30,
-                size='x-small', rotation_mode='anchor')
-    ax.set_xlabel('# of genes')
-    ax.set_ylabel('# of cells')
-    fig.suptitle(f"Distribution of genes per cell in {dataset}", y=0.95)
-    fig.tight_layout()
-    plt.show()
+    pu.quantile_histplot(adata, dataset, save_dir)
 
     if not os.path.exists(os.path.join(data_dir, f"{dataset}_pyscenic_output.loom")):
         scenic_aucell = [
@@ -132,51 +113,7 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
     else:
         print(f"Skip ctx generation ---- {dataset}_pyscenic_output.loom already exists")
 
-    lf = lp.connect(f"{data_dir}/{dataset}_pyscenic_output.loom", mode="r+", validate=False)
-    auc_mtx = pd.DataFrame(lf.ca.RegulonsAUC, index=lf.ca.CellID)
-    lf.close()
-
-    ad_auc_mtx = ad.AnnData(auc_mtx)
-    sc.pp.neighbors(ad_auc_mtx, n_neighbors=10, metric="correlation")
-    sc.tl.umap(ad_auc_mtx)
-
-    adata.obsm["X_umap_aucell"] = ad_auc_mtx.obsm["X_umap"]
-
-    sc.pl.embedding(adata, basis="X_umap_aucell", color="label")
-
-    auc_mtx["label"] = adata.obs["label"]
-    mean_auc_by_cell_type = auc_mtx.groupby("label").mean()
-
-    top_n = 50
-    top_tfs = mean_auc_by_cell_type.max(axis=0).sort_values(ascending=False).head(top_n)
-    mean_auc_by_cell_type_top_n = mean_auc_by_cell_type[
-        [c for c in mean_auc_by_cell_type.columns if c in top_tfs]
-    ]
-
-    sns.clustermap(
-        mean_auc_by_cell_type_top_n,
-        figsize=[15, 6.5],
-        cmap="Blues",
-        xticklabels=True,
-        yticklabels=True,
-    )
-    plt.show()
-
-    tf_names = top_tfs.index.str.replace(r"\(\+\)", "", regex=True)
-    print(tf_names)
-    adata_batch_top_tfs = adata[:, adata.var_names.isin(tf_names)]
-
-    sc.pl.matrixplot(
-        adata_batch_top_tfs,
-        tf_names,
-        groupby="label",
-        cmap="Reds",
-        dendrogram=False,
-        figsize=[15, 5.5],
-        standard_scale="group",
-    )
-
-    plt.show()
+    pu.pyscenic_heatmaps(adata, data_dir, dataset, save_dir)
 
 
 def main():
@@ -191,16 +128,17 @@ def main():
     adata_path = args.adata
     #out_dir = args.output
 
-    #adata_path = "tro_org/trajectory_analysis/figures/adata/subcluster_Epithelial_integrated.h5ad"
-    #data_path = "/Users/felixlang/Documents/Uni/Master/master-thesis/tro_org/GRN/data"
-    # all_tfs = f"{adata_path}/allTFs_hg38.txt"
     dataset = "_".join(os.path.basename(adata_path).split("_")[:2])
     loom_path_scenic = f"{data_path}/{dataset}_filtered_scenic.loom"
-
 
     adata = sc.read_h5ad(adata_path)
     create_grn(adata, loom_path_scenic, data_path, dataset, image)
 
+    """
+    -i docker
+    -a tro_org/trajectory_analysis/figures/adata/subcluster_Stromal_integrated.h5ad
+    -d /Users/felixlang/Documents/Uni/Master/master-thesis/tro_org/GRN/data
+    """
 
 
 if __name__ == '__main__':

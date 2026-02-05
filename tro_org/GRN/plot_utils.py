@@ -1,0 +1,99 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.colors import LinearSegmentedColormap
+import pandas as pd
+import seaborn as sns
+import loompy as lp
+import scanpy as sc
+import anndata as ad
+import tro_org.utils.utils as utils
+
+def quantile_histplot(adata, dataset, outdir):
+    utils.ensure_dir(f"{outdir}/{dataset}")
+
+    n_genes_detected_per_cell = np.sum(adata.X > 0, axis=1)
+    percentiles = pd.Series(n_genes_detected_per_cell.flatten().A.flatten()).quantile(
+        [0.01, 0.05, 0.10, 0.50, 1]
+    )
+    print(percentiles)
+
+    fig, ax = plt.subplots(1, 1, figsize=(8, 5), dpi=150)
+    sns.histplot(n_genes_detected_per_cell, palette=["#383a6b"], bins='fd', ax=ax, legend=False, alpha=1.0)
+    for i, x in enumerate(percentiles):
+        fig.gca().axvline(x=x, ymin=0, ymax=1, color='red')
+        ax.text(x=x, y=ax.get_ylim()[1], s=f'{int(x)} ({percentiles.index.values[i] * 100}%)', color='red', rotation=30,
+                size='x-small', rotation_mode='anchor')
+    ax.set_xlabel('# of genes')
+    ax.set_ylabel('# of cells')
+    fig.suptitle(f"Distribution of expressed genes per cell in {dataset} (adata.X > 0)", y=0.95)
+    fig.tight_layout()
+    plt.savefig(f"{outdir}/{dataset}/{dataset}_quantile_histplot.png", dpi=150)
+    plt.show()
+
+def pyscenic_heatmaps(adata, data_dir, dataset, outdir):
+    sc.set_figure_params(dpi_save=300, figsize=(10, 8), fontsize=14, vector_friendly=True)
+    utils.ensure_dir(f"{outdir}/{dataset}")
+    sc.settings.figdir = f"{outdir}/{dataset}"
+
+
+    lf = lp.connect(f"{data_dir}/{dataset}_pyscenic_output.loom", mode="r+", validate=False)
+    auc_mtx = pd.DataFrame(lf.ca.RegulonsAUC, index=lf.ca.CellID)
+    lf.close()
+
+    ad_auc_mtx = ad.AnnData(auc_mtx)
+    sc.pp.neighbors(ad_auc_mtx, n_neighbors=10, metric="correlation")
+    sc.tl.umap(ad_auc_mtx)
+
+    adata.obsm["X_umap_aucell"] = ad_auc_mtx.obsm["X_umap"]
+
+    sc.pl.embedding(adata, basis="X_umap_aucell", color="label")
+
+    auc_mtx["label"] = adata.obs["label"]
+    mean_auc_by_cell_type = auc_mtx.groupby("label").mean()
+
+    top_n = 50
+    top_tfs = mean_auc_by_cell_type.max(axis=0).sort_values(ascending=False).head(top_n)
+    mean_auc_by_cell_type_top_n = mean_auc_by_cell_type[
+        [c for c in mean_auc_by_cell_type.columns if c in top_tfs]
+    ]
+
+    #spezi_colors = ["#fcc72d", "#ea6d3d", "#e03a3c", "#cb1f73", "#383a6b"]
+    #spezi_cmap = LinearSegmentedColormap.from_list("spezi", spezi_colors)
+
+    fig = sns.clustermap(
+        mean_auc_by_cell_type_top_n,
+        figsize=(15, 6.5),
+        cmap=LinearSegmentedColormap.from_list("single_color",["#ffffff", "#cb1f73"]),
+        xticklabels=True,
+        yticklabels=True,
+    )
+    fig.figure.suptitle(f"Top {top_n} tf-regulons per cell-type", y=1.0)
+    plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_regulon_celltpye_heatmap.png", dpi=150)
+    plt.show()
+
+    tf_names = top_tfs.index.str.replace(r"\(\+\)", "", regex=True)
+    print(tf_names)
+    adata_batch_top_tfs = adata[:, adata.var_names.isin(tf_names)]
+
+    sc.pl.matrixplot(
+        adata_batch_top_tfs,
+        tf_names,
+        groupby="label",
+        cmap=LinearSegmentedColormap.from_list("single_color",["#ffffff", "#383a6b"]),
+        dendrogram=False,
+        figsize=(15, 5.5),
+        standard_scale="group",
+        title=f"Top {top_n} TFs associated to cell types",
+        save=f"{dataset}_tf_regulon_celltpye.png",
+    )
+    plt.show()
+
+def tf_target_importance(adjacencies, dataset, outdir):
+    plt.figure(figsize=(7, 5), dpi=150)
+    plt.hist(np.log10(adjacencies["importance"]), bins=100)
+    plt.xlim([-10, 10])
+    plt.xlabel("log10(importance)")
+    plt.ylabel("frequency")
+    plt.title(f"Distribution TF-target importance")
+    plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_target_importance.png", dpi=150)
+    plt.show()

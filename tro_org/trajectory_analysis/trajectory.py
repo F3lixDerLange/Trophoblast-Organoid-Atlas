@@ -21,8 +21,6 @@ def setup_traj_analysis(adata_file, output_dir, label_key, sub_cluster=None, dat
             print(f"Loading {name} from {path}")
             adata = sc.read_h5ad(path)
 
-            print(adata.raw is not None)
-
             if "sub" in dc.keys():
                 for cluster in dc["sub"].keys():
                     print(f"Loading {cluster} from {path} containing: {dc["sub"][cluster]}")
