@@ -41,7 +41,7 @@ def create_grn(adata, loom_path_scenic, data_dir, dataset, image=None, num_worke
         cmd = ["docker","run","--rm","--platform","linux/amd64","-v",f"{run_dir}:/data","aertslab/pyscenic:0.12.1"]
 
     elif image == "singularity":
-        cmd = ["singularity", "run", "-B", f"{run_dir}:/data", f"{run_dir}/aertslab-pyscenic-0.12.1.sif"]
+        cmd = ["singularity", "run", "--cleanenv","-B", f"{run_dir}:/data", f"{run_dir}/aertslab-pyscenic-0.12.1.sif"]
 
     else:
         raise SystemExit(f"Unknown image {image}")

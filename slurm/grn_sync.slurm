@@ -6,8 +6,7 @@
 # Working directory
 #SBATCH --chdir /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
 # Environment
-#SBATCH --export=ALL
-#SBATCH --get-user-env
+#SBATCH --export=NONE
 # Output and error
 #SBATCH --output /nfs/home/students/f.lang/torg/logs/%j/%u_%x.out
 #SBATCH --error /nfs/home/students/f.lang/torg/logs/%j/%u_%x.err
