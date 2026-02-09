@@ -30,18 +30,18 @@ def adata2loom(adata, loom_path):
 
 def filter_adata(adata):
     # filtering steps from https://www.nature.com/articles/s41596-020-0336-2
-    if "percent_mito" in adata.obs.columns:
-        percent_mito = "percent_mito"
-    elif "pct_counts_mt" in adata.obs.columns:
-        percent_mito = "pct_counts_mt"
-    else:
-        raise LookupError
-
     print(f"Adata shape pre filtering {adata.shape}")
     sc.pp.filter_cells(adata, min_genes=200)
     sc.pp.filter_genes(adata, min_cells=3)
     adata = adata[adata.obs['n_genes'] < 4000, :]
-    adata = adata[adata.obs[percent_mito] < 0.15, :]
+
+    if "percent_mito" in adata.obs.columns:
+        adata = adata[adata.obs["percent_mito"] < 0.15, :]
+    elif "pct_counts_mt" in adata.obs.columns:
+        adata = adata[adata.obs["pct_counts_mt"] < 15.0, :]
+    else:
+        raise LookupError
+
     print(f"Adata shape post filtering {adata.shape}")
 
     return adata
