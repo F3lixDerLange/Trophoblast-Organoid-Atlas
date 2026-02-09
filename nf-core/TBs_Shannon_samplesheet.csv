@@ -1,0 +1,2 @@
+sample, filtered, batch_col, label_col
+Shannon_TBs, /nfs/proj/tropho_org_atlas/database/Shannon_McNeil/annotated_files/shannon_TBsOrg.h5ad, Batch, cell_annotation
