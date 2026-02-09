@@ -139,6 +139,7 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir):
 
 
 def tf_target_importance(adjacencies, dataset, outdir):
+    utils.ensure_dir(f"{outdir}/{dataset}")
     plt.figure(figsize=(7, 5), dpi=150)
     plt.hist(np.log10(adjacencies["importance"]), bins=100)
     plt.xlim([-10, 10])
