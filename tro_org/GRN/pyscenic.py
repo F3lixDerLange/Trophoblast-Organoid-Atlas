@@ -36,13 +36,14 @@ def filter_adata(adata):
     adata = adata[adata.obs['n_genes'] < 4000, :]
 
     if "percent_mito" in adata.obs.columns:
-        adata = adata[adata.obs["percent_mito"] < 0.15, :]
+        adata = adata[adata.obs["percent_mito"] < 15.0, :]
     elif "pct_counts_mt" in adata.obs.columns:
-        adata = adata[adata.obs["pct_counts_mt"] < 15.0, :]
+        adata = adata[adata.obs["pct_counts_mt"] < 0.15, :]
     else:
         raise LookupError
 
     print(f"Adata shape post filtering {adata.shape}")
+    print(adata.obs["pct_counts_mt"])
 
     return adata
 
