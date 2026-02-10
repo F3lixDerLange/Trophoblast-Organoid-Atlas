@@ -1,2 +1,2 @@
 sample, filtered, batch_col, label_col
-Shannon_inVivo, /nfs/proj/tropho_org_atlas/database/Shannon_McNeil/annotated_files/shannon_in_vivo.h5ad, Batch, cell_annotation
+Shannon_inVivo, /nfs/proj/tropho_org_atlas/database/Shannon_McNeil/annotated_files/shannon_in_vivo.h5ad, Batch, celltype
