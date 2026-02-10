@@ -10,3 +10,11 @@ datasets:
   - name: Shibata
     path: database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad
     label_col: celltype
+
+  - name: TBs_shannon
+    path: database/Shannon_McNeil/divided_files/shannon_TBsOrg.h5ad
+    label_col: celltype
+
+  - name: TBp_shannon
+    path: database/Shannon_McNeil/divided_files/shannon_TBpOrg.h5ad
+    label_col: celltype

@@ -34,13 +34,12 @@ def filter_adata(adata):
     sc.pp.filter_cells(adata, min_genes=200)
     sc.pp.filter_genes(adata, min_cells=3)
     adata = adata[adata.obs['n_genes'] < 4000, :]
+    mt = adata.obs["pct_counts_mt"]
+    if mt.max() <= 1:
+        adata.obs["pct_counts_mt"] = mt * 100
 
-    if "percent_mito" in adata.obs.columns:
-        adata = adata[adata.obs["percent_mito"] < 15.0, :]
-    elif "pct_counts_mt" in adata.obs.columns:
-        adata = adata[adata.obs["pct_counts_mt"] < 0.15, :]
-    else:
-        raise LookupError
+    adata = adata[adata.obs["pct_counts_mt"] < 15.0, :]
+
 
     print(f"Adata shape post filtering {adata.shape}")
     print(adata.obs["pct_counts_mt"])
