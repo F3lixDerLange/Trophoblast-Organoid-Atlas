@@ -79,7 +79,7 @@ def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filte
         if multiprocessing:
             # Multiprocessing implementation with Arboreto instead of Dask https://pyscenic.readthedocs.io/en/latest/faq.html
             arboreto_grn = [
-                "python3", "arboreto_with_multiprocessing.py",
+                "arboreto_with_multiprocessing.py",
                 f"/data/{dataset}_scenic.loom",
                 "/data/allTFs_hg38.txt",
                 "--method", "grnboost2",
