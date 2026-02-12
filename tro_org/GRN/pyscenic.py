@@ -47,7 +47,7 @@ def filter_adata(adata):
     return adata
 
 
-def create_grn(adata, data_dir, dataset, image=None, num_workers=8, adata_filter=False):
+def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filter=False):
     scenic_dir = os.path.split(data_dir)[0]
     save_dir = Path(f"{scenic_dir}/figure")
 
