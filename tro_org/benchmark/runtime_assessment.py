@@ -201,7 +201,6 @@ def main():
     log_usage, log_ram = calculate_metrics(log_data, False)
     tsv_usage, tsv_ram = calculate_metrics(tsv_data, True)
 
-    print(log_data)
 
     if resource_usage_dir is None and tsv_path is None:
         print("You must specify a resource usage directory or a tsv file")
@@ -225,6 +224,10 @@ def main():
     tro_org/benchmark/benchmark_plots
     -tsv
     /Users/felixlang/Downloads/ann_merged_inOrder/resource_usage
+    """
+
+    """
+    python3 Trophoblast-Organoid-Atlas/tro_org/benchmark/runtime_assessment.py -h5ad nf-core_out/merged_integration/merged_samplesheet_scvi/finalized/merged.h5ad -out torg/runtime/ -log nf-core_out/merged_integration/ -tsv torg/benchmark/merged_integration_V2/resource_usage
     """
 
 if __name__ == '__main__':

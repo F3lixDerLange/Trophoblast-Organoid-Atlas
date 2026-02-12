@@ -16,7 +16,6 @@ for tool in "${methods[@]}"; do
     --input "$sample_sheet" \
     --outdir "$outpath" \
     --integration_methods "$tool" \
-    --integration_hvgs 0 \
     -profile daisybio,apptainer \
     -c /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas/nf-core/custom_config/mem_profile.config \
     -with-report "${report_path}/${tool}_report.html" \

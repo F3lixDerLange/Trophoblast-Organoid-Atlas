@@ -65,8 +65,16 @@ def sc_paga(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
     sc.pl.umap(adata,
                color=['dpt_pseudotime', cluster_key],
                cmap="viridis",
-               legend_loc='on data',
+               #legend_loc='on data',
                save=f"_dpt_pseudotime_{emb_key}.png"
                )
+
+    #Debugging and decision making
+    if "Cctb_2" in adata.obs[cluster_key].unique():
+        ax = sc.pl.umap(adata, show=False)
+        sc.pl.umap(adata[adata.obs[cluster_key] == "Cctb_2"].copy(),
+                   color=cluster_key,
+                   ax=ax,
+                   )
 
     pu.plot_scatter_cluster_pseudotime(adata, 'dpt_pseudotime', output, "PAGA", emb_key)

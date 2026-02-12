@@ -12,7 +12,10 @@ def plot_scatter_cluster_pseudotime(adata, pseudotime_key, output_dir, method, e
     colors = ["#3fa7a3", "#fcc72d", "#ea6d3d", "#e03a3c", "#cb1f73", "#6a5fa8",
               "#383a6b", "#f89c1c", "#b33a2b", "#7a1e3a", "#1f2a44", "#5c8d89",
               "#2b7f7a", "#ffe07a", "#f05a28", "#ff6f61", "#d64aa0", "#8a7bd1",
-              "#2f2f5f", "#ffb347", "#8e2c2c", "#4b1630", "#0f1629"]
+              "#2f2f5f", "#ffb347", "#8e2c2c", "#4b1630", "#0f1629", "#4cc9f0",
+              "#4895ef", "#4361ee", "#3a0ca3", "#7209b7", "#b5179e", "#f72585",
+              "#43aa8b", "#90be6d", "#f9844a", "#00b4d8", "#c77dff"]
+
 
     color_map = dict(zip(order, colors))
 

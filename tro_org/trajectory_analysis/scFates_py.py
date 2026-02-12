@@ -66,9 +66,17 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
             adata,
             color=["t", cluster_key],
             cmap="viridis",
-            legend_loc='on data',
+            #legend_loc='on data',
             save=f"_scFates_pseudotime_{emb_key}.png"
         )
+
+        # Debugging and decision making
+        if "Cctb_2" in adata.obs[cluster_key].unique():
+            ax = sc.pl.umap(adata, show=False)
+            sc.pl.umap(adata[adata.obs[cluster_key] == "Cctb_2"].copy(),
+                       color=cluster_key,
+                       ax=ax,
+                       )
 
         pu.plot_scatter_cluster_pseudotime(adata, 't', output, "scFates", emb_key)
 

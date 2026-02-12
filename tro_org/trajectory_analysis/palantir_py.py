@@ -41,47 +41,61 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
     start_cell = adata.obs_names[adata.obs[cluster_key] == startcluster][0]
     print("Start cell:", start_cell)
 
-    terminal_states, excluded_boundaries = palantir.core.identify_terminal_states(ms_data=ms_data,
-                                                                                  early_cell=start_cell,
-                                                                                  n_jobs=1,
-                                                                                  knn=20)
+    for k in range(20, 14, -1):
+        try:
+            terminal_states, excluded_boundaries = palantir.core.identify_terminal_states(ms_data=ms_data,
+                                                                                          early_cell=start_cell,
+                                                                                          n_jobs=1,
+                                                                                          knn=k)
 
-    print("Terminal states:", terminal_states)
-    print("Excluded boundaries:", excluded_boundaries)
+            print("Terminal states:", terminal_states)
+            print("Excluded boundaries:", excluded_boundaries)
 
-    try:
-        palantir.plot.highlight_cells_on_umap(adata, terminal_states, embedding_basis=f"{emb_key}_umap")
-        plt.savefig(f"{output}/palantir/terminal_states_highlight_cells_on_umap{emb_key}.png")
 
-        pr_res = palantir.core.run_palantir(adata,
-                                            early_cell=start_cell,
-                                            num_waypoints=500,
-                                            terminal_states=terminal_states,
-                                            n_jobs=1,
-                                            knn=20,
-                                            use_early_cell_as_start=False,
+            palantir.plot.highlight_cells_on_umap(adata, terminal_states, embedding_basis=f"{emb_key}_umap")
+            plt.savefig(f"{output}/palantir/terminal_states_highlight_cells_on_umap{emb_key}.png")
 
-        )
+            pr_res = palantir.core.run_palantir(adata,
+                                                early_cell=start_cell,
+                                                num_waypoints=500,
+                                                terminal_states=terminal_states,
+                                                n_jobs=1,
+                                                knn=20,
+                                                use_early_cell_as_start=False,
 
-        palantir.plot.plot_palantir_results(adata, s=3)
-        plt.savefig(f"{output}/palantir/palantir_results_{emb_key}.png")
+            )
 
-        masks = palantir.presults.select_branch_cells(adata, q=.02, eps=.02)
-        palantir.plot.plot_branch_selection(adata, s=1)
-        plt.savefig(f"{output}/palantir/branch_selection_{emb_key}.png")
+            palantir.plot.plot_palantir_results(adata, s=3)
+            plt.savefig(f"{output}/palantir/palantir_results_{emb_key}.png")
 
-        print(adata)
+            masks = palantir.presults.select_branch_cells(adata, q=.02, eps=.02)
+            palantir.plot.plot_branch_selection(adata, s=1)
+            plt.savefig(f"{output}/palantir/branch_selection_{emb_key}.png")
 
-        sc.pl.umap(
-            adata,
-            color=["palantir_pseudotime", cluster_key],  # change key if needed
-            cmap="viridis",
-            legend_loc='on data',
-            save=f"_palantir_pseudotime_{emb_key}.png"
-        )
+            print(adata)
 
-        pu.plot_scatter_cluster_pseudotime(adata, "palantir_pseudotime", output, "palantir", emb_key)
+            sc.pl.umap(
+                adata,
+                color=["palantir_pseudotime", cluster_key],  # change key if needed
+                cmap="viridis",
+                #legend_loc='on data',
+                save=f"_palantir_pseudotime_{emb_key}.png"
+            )
 
-    except Exception as e:
-        print(f"Something went wrong {e}")
-        print(f"Error in  scFates {output}")
+            # Debugging and decision making
+            if "Cctb_2" in adata.obs[cluster_key].unique():
+                ax = sc.pl.umap(adata, show=False)
+                sc.pl.umap(adata[adata.obs[cluster_key] == "Cctb_2"].copy(),
+                           color=cluster_key,
+                           ax=ax,
+                           )
+
+            pu.plot_scatter_cluster_pseudotime(adata, "palantir_pseudotime", output, "palantir", emb_key)
+
+            if len(terminal_states) > 0:
+                print(f"Success with knn={k}")
+                break
+
+        except Exception as e:
+            print(f"Something went wrong {e}")
+            print(f"Error in  palantir {output}")

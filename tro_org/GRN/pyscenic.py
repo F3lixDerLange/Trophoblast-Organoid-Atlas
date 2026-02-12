@@ -47,7 +47,7 @@ def filter_adata(adata):
     return adata
 
 
-def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filter=False):
+def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filter=False, multiprocessing=False):
     scenic_dir = os.path.split(data_dir)[0]
     save_dir = Path(f"{scenic_dir}/figure")
 
@@ -76,19 +76,36 @@ def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filte
 
     # STEP 1: Gene regulatory network inference, and generation of co-expression modules
     if not os.path.exists(os.path.join(data_dir, f"{dataset}_adj.tsv")):
-        scenic_grn = [
-            "pyscenic", "grn",
-            f"/data/{dataset}_scenic.loom",
-            "/data/allTFs_hg38.txt",
-            "--method", "grnboost2",
-            "--num_workers", f"{num_workers}",
-            "--sparse",
-            "-o", f"/data/{dataset}_adj.tsv",
-        ]
+        if multiprocessing:
+            # Multiprocessing implementation with Arboreto instead of Dask https://pyscenic.readthedocs.io/en/latest/faq.html
+            arboreto_grn = [
+                "python3", "arboreto_with_multiprocessing.py",
+                f"/data/{dataset}_scenic.loom",
+                "/data/allTFs_hg38.txt",
+                "--method", "grnboost2",
+                "--num_workers", f"{num_workers}",
+                "--sparse",
+                "-o", f"/data/{dataset}_adj.tsv",
+            ]
 
-        print("Running pyscenic GRN")
-        subprocess.run(cmd + scenic_grn, check=True)
-        print("Done")
+            print("Running pyscenic GRN")
+            subprocess.run(cmd + arboreto_grn, check=True)
+            print("Done")
+        else:
+
+            scenic_grn = [
+                "pyscenic", "grn",
+                f"/data/{dataset}_scenic.loom",
+                "/data/allTFs_hg38.txt",
+                "--method", "grnboost2",
+                "--num_workers", f"{num_workers}",
+                "--sparse",
+                "-o", f"/data/{dataset}_adj.tsv",
+            ]
+
+            print("Running pyscenic GRN Dask")
+            subprocess.run(cmd + scenic_grn, check=True)
+            print("Done")
     else:
         print(f"Skip adj generation ---- {dataset}_adj.tsv already exists")
 
@@ -150,19 +167,21 @@ def main():
     parser.add_argument("-a", "--adata", required=True, help="h5ad file")
     parser.add_argument("-d", "--data_dir", required=True, help="data dir for docker")
     parser.add_argument("-f", "--adata_filter", required=False, action="store_true", help="filter adata")
+    parser.add_argument("-m", "--multiprocessing", required=False, action="store_true", help="activate multiprocessing")
     #parser.add_argument("-o", "--output", required=True)
     args = parser.parse_args()
     image = args.image
     data_path = args.data_dir
     adata_path = args.adata
     adata_f = args.adata_filter
+    multipros = args.multiprocessing
     #out_dir = args.output
 
     dataset = "_".join(os.path.basename(adata_path).split("_")[:2])
 
     start = time.time()
     adata = sc.read_h5ad(adata_path)
-    create_grn(adata, data_path, dataset, image, adata_filter=adata_f)
+    create_grn(adata, data_path, dataset, image, adata_filter=adata_f, multiprocessing=multipros)
     end = time.time()
     print(f"{dataset} pyscenic GRN took {end-start} seconds -- {(end-start)//60} minutes")
 
