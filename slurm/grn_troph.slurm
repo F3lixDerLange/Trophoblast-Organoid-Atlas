@@ -26,4 +26,4 @@ export TMPDIR=$SCRATCH/tmp_$SLURM_JOB_ID
 mkdir -p "$TMPDIR"
 export DASK_TEMPORARY_DIRECTORY="$TMPDIR"
 
-srun python3 -m tro_org.GRN.pyscenic -i singularity -a /nfs/home/students/f.lang/torg/GRN/data/subcluster_Trophoblast_integrated.h5ad -d /nfs/home/students/f.lang/torg/GRN/data/ -f
+srun python3 -m tro_org.GRN.pyscenic -i singularity -a /nfs/home/students/f.lang/torg/GRN/data/subcluster_Trophoblast_integrated.h5ad -d /nfs/home/students/f.lang/torg/GRN/data/ -f -m
