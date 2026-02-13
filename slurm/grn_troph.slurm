@@ -17,13 +17,4 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=196G
 
-export OMP_NUM_THREADS=1
-export OPENBLAS_NUM_THREADS=1
-export MKL_NUM_THREADS=1
-export NUMEXPR_NUM_THREADS=1
-
-export TMPDIR=$SCRATCH/tmp_$SLURM_JOB_ID
-mkdir -p "$TMPDIR"
-export DASK_TEMPORARY_DIRECTORY="$TMPDIR"
-
 srun python3 -m tro_org.GRN.pyscenic -i singularity -a /nfs/home/students/f.lang/torg/GRN/data/subcluster_Trophoblast_integrated.h5ad -d /nfs/home/students/f.lang/torg/GRN/data/ -f -m
