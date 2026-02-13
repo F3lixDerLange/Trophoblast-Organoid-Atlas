@@ -35,19 +35,22 @@ def filter_adata(adata):
     sc.pp.filter_genes(adata, min_cells=3)
     adata = adata[adata.obs['n_genes'] < 4000, :]
     mt = adata.obs["pct_counts_mt"]
+    print(f"MT stats pre: min:{mt.min()}, max:{mt.max()} mean:{mt.mean()}, median:{mt.median()}")
     if mt.max() <= 1:
         adata.obs["pct_counts_mt"] = mt * 100
+        print("MT percent fixed")
 
     adata = adata[adata.obs["pct_counts_mt"] < 15.0, :]
 
 
     print(f"Adata shape post filtering {adata.shape}")
-    print(adata.obs["pct_counts_mt"])
+    mt = adata.obs["pct_counts_mt"]
+    print(f"MT stats post: min:{mt.min()}, max:{mt.max()} mean:{mt.mean()}, median:{mt.median()}")
 
     return adata
 
 
-def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filter=False, multiprocessing=False):
+def create_grn(adata, data_dir, dataset, image=None, num_workers=32, adata_filter=False, multiprocessing=False):
     scenic_dir = os.path.split(data_dir)[0]
     save_dir = Path(f"{scenic_dir}/figure")
 
