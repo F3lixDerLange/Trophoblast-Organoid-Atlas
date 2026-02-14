@@ -71,7 +71,8 @@ def create_grn(adata, data_dir, dataset, image=None, num_workers=32, adata_filte
         cmd = ["docker","run","--rm","--platform","linux/amd64","-v",f"{run_dir}:/data","aertslab/pyscenic:0.12.1"]
 
     elif image == "singularity":
-        cmd = ["singularity", "run", "--cleanenv","-B", f"{run_dir}:/data", f"{run_dir}/aertslab-pyscenic-0.12.1.sif"]
+        # cmd = ["singularity", "run", "--cleanenv","-B", f"{run_dir}:/data", f"{run_dir}/aertslab-pyscenic-0.12.1.sif"]
+        cmd = ["singularity", "run", "--cleanenv", "-B", f"{run_dir}:/data", f"{run_dir}/pyscenic.sif"]
 
     else:
         raise SystemExit(f"Unknown image {image}")
@@ -91,7 +92,7 @@ def create_grn(adata, data_dir, dataset, image=None, num_workers=32, adata_filte
                 "-o", f"/data/{dataset}_adj.tsv",
             ]
 
-            print("Running pyscenic GRN")
+            print("Running pyscenic GRN Arboreto")
             subprocess.run(cmd + arboreto_grn, check=True)
             print("Done")
         else:
