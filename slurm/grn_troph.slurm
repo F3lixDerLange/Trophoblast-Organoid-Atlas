@@ -14,7 +14,7 @@
 # CPU specific
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=32
 #SBATCH --mem=196G
 
 srun python3 -m tro_org.GRN.pyscenic -i singularity -a /nfs/home/students/f.lang/torg/GRN/data/subcluster_Trophoblast_integrated.h5ad -d /nfs/home/students/f.lang/torg/GRN/data/ -f -m

@@ -50,7 +50,7 @@ def filter_adata(adata):
     return adata
 
 
-def create_grn(adata, data_dir, dataset, image=None, num_workers=32, adata_filter=False, multiprocessing=False):
+def create_grn(adata, data_dir, dataset, image=None, num_workers=64, adata_filter=False, multiprocessing=False):
     scenic_dir = os.path.split(data_dir)[0]
     save_dir = Path(f"{scenic_dir}/figure")
 
@@ -72,7 +72,7 @@ def create_grn(adata, data_dir, dataset, image=None, num_workers=32, adata_filte
 
     elif image == "singularity":
         # cmd = ["singularity", "run", "--cleanenv","-B", f"{run_dir}:/data", f"{run_dir}/aertslab-pyscenic-0.12.1.sif"]
-        cmd = ["singularity", "run", "--cleanenv", "-B", f"{run_dir}:/data", f"{run_dir}/pyscenic.sif"]
+        cmd = ["apptainer", "run", "--cleanenv", "-B", f"{run_dir}:/data", f"{run_dir}/pyscenic.sif"]
 
     else:
         raise SystemExit(f"Unknown image {image}")
