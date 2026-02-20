@@ -1,5 +1,30 @@
 # Trophoblast Organoid Atlas
 
+## QC and Preprocessing
+```
+preprocessing.py 
+```
+ + Controls the following QC and preprocessing functions
+ + Main function to call 
+ + Dataset input: currently with list Future: use nfcore/scdownstream samplesheet
+ + Just for mapping CLI: -adata: single adata file path
+```
+dataset_analysis.py 
+```
+  * generates  plots for Gene-Level and Cell-Level Quality control metrics
+
+```
+map_genes.py 
+```
++ Map used gene symbols to Ensembl IDs 
++ return preprocessed dataset
+
+```
+gene_venn.py 
+```
++ plot Venn diagram before and after mapping 
+
+
 ## Data Analysis
 + tro_org/analysis/dataset/dataset_analysis.py -> plot dataset related (QC) metrics #
 + tro-org/analysis/cell_type_comparison.py

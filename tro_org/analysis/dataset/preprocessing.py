@@ -8,13 +8,13 @@ import tro_org.analysis.dataset.gene_venn as gene_venn
 def map_gene_symbols(adata_path):
     adata = sc.read_h5ad(adata_path)
 
-    #raw_count_adata = map_genes.raw_counts_2_layer(adata)
-    #mapped_adata = map_genes.genes_2_ens_id(raw_count_adata, os.path.splitext(os.path.basename(adata_path))[0])
-    # processed_adata = map_genes.filter_genes(mapped_adata)
+    raw_count_adata = map_genes.raw_counts_2_layer(adata)
+    mapped_adata = map_genes.genes_2_ens_id(raw_count_adata, os.path.splitext(os.path.basename(adata_path))[0])
+    processed_adata = map_genes.filter_genes(mapped_adata)
 
 
-    outpath = f"/Users/felixlang/Documents/Uni/Master/master-thesis/database/prepros_test/{os.path.splitext(os.path.basename(adata_path))[0]}_preprocessed.h5ad"
-    # outpath = map_genes.generate_out(adata_path)
+    # outpath = f"/Users/felixlang/Documents/Uni/Master/master-thesis/database/prepros_test/{os.path.splitext(os.path.basename(adata_path))[0]}_preprocessed.h5ad"
+    outpath = map_genes.generate_out(adata_path)
     #processed_adata.write_h5ad(outpath)
 
     return outpath
