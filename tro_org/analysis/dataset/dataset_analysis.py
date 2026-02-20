@@ -8,11 +8,12 @@ def manage_data(h5ad_file, outdir):
 
     dataset_dict = merge_dataset_from_same_study(h5ad_file)
     for dataset_name in dataset_dict.keys():
+        print(f"Processing {dataset_name}")
         if len(dataset_dict[dataset_name]) == 1:
             save_dir = Path(f"{outdir}/{dataset_name}")
             sc.settings.figdir = save_dir
             adata = sc.read_h5ad(dataset_dict[dataset_name][0])
-            #plot_data(adata, save_dir, dataset_name)
+            plot_data(adata, save_dir, dataset_name)
 
         elif len(dataset_dict[dataset_name]) >= 2:
             save_dir = Path(f"{outdir}/{dataset_name}")
@@ -20,7 +21,6 @@ def manage_data(h5ad_file, outdir):
             temp_adata = []
             temp_names = []
             for i, ds in enumerate(dataset_dict[dataset_name]):
-                print(ds)
                 temp_adata.append(sc.read_h5ad(ds))
                 temp_names.append(f"{dataset_name}_{i}")
             adata_qc = sc.concat(
@@ -32,8 +32,6 @@ def manage_data(h5ad_file, outdir):
                 merge="same"
             )
             plot_data(adata_qc, save_dir, dataset_name)
-
-
 
 
 def plot_data(adata, save_dir, dataset_name):

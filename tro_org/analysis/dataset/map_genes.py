@@ -181,17 +181,6 @@ def check_expresison(adata, name):
     plt.show()
 
     print(adata)
-    sc.pl.violin(
-        adata,
-        keys=["n_genes_by_counts", "total_counts", "pct_counts_mt"],
-        jitter=0.4,  # show dots
-        multi_panel=True,  # 3 panels side-by-side
-        stripplot=True,  # ensure dots are drawn
-        size=1.5,  # dot size
-    )
-
-    plt.show()
-
     print("Min cells per gene:", gene_cell_counts.min())
     print("Median cells per gene:", np.median(gene_cell_counts))
     print("Max cells per gene:", gene_cell_counts.max())
@@ -208,7 +197,7 @@ def genes_2_ens_id(adata, name):
 
     mg = mygene.MyGeneInfo()
 
-    genes = adata.var_names.tolist()[:40]
+    genes = adata.var_names.tolist() #[:40]
     res = mg.querymany(genes,
                        scopes=["symbol", "alias", "name", "retired"],
                        fields=["symbol", "ensembl.gene", "entrezgene", "type_of_gene", "alias"],
