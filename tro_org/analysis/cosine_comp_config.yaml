@@ -8,7 +8,7 @@ datasets:
     label_col: cell_annotation
 
   - name: Shibata
-    path: database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad
+    path: database/Shibata/Shibata_fixed_normalized.h5ad
     label_col: celltype
 
   - name: TBs_shannon

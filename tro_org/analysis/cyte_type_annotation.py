@@ -50,7 +50,7 @@ def cytetype_annotation(adata_file, clusters):
 
 
 def main():
-    input_file_shibata = "database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad"
+    input_file_shibata = "database/Shibata/Shibata_fixed_normalized.h5ad"
     input_file_PTO = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad"
     input_file_TSC = "database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene.h5ad"
     clusters_shi = "celltype"

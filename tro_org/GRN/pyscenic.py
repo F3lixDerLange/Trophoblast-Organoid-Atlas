@@ -50,7 +50,7 @@ def filter_adata(adata):
     return adata
 
 
-def create_grn(adata, data_dir, dataset, image=None, num_workers=64, adata_filter=False, multiprocessing=False):
+def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filter=False, multiprocessing=False):
     scenic_dir = os.path.split(data_dir)[0]
     save_dir = Path(f"{scenic_dir}/figure")
 
@@ -172,6 +172,7 @@ def main():
     parser.add_argument("-d", "--data_dir", required=True, help="data dir for docker")
     parser.add_argument("-f", "--adata_filter", required=False, action="store_true", help="filter adata")
     parser.add_argument("-m", "--multiprocessing", required=False, action="store_true", help="activate multiprocessing")
+    parser.add_argument("-n", "--num_workers", required=False, help="Number of workers")
     #parser.add_argument("-o", "--output", required=True)
     args = parser.parse_args()
     image = args.image
@@ -179,13 +180,16 @@ def main():
     adata_path = args.adata
     adata_f = args.adata_filter
     multipros = args.multiprocessing
+    num_workers = args.num_workers
     #out_dir = args.output
+
+    print(num_workers)
 
     dataset = "_".join(os.path.basename(adata_path).split("_")[:2])
 
     start = time.time()
     adata = sc.read_h5ad(adata_path)
-    create_grn(adata, data_path, dataset, image, adata_filter=adata_f, multiprocessing=multipros)
+    create_grn(adata, data_path, dataset, image, num_workers=num_workers, adata_filter=adata_f, multiprocessing=multipros)
     end = time.time()
     print(f"{dataset} pyscenic GRN took {end-start} seconds -- {(end-start)//60} minutes")
 

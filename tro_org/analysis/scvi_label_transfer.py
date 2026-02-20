@@ -70,7 +70,7 @@ def load_h5ad(h5ad_file):
 
 
 def main():
-    ref_file = "database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad"
+    ref_file = "database/Shibata/Shibata_fixed_normalized.h5ad"
     target_file = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad"
     label_transfer(ref_file, target_file)
 

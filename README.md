@@ -1,5 +1,23 @@
 # Trophoblast Organoid Atlas
 
+## Data Analysis
++ tro_org/analysis/dataset/dataset_analysis.py -> plot dataset related (QC) metrics #
++ tro-org/analysis/cell_type_comparison.py
+    * The datasets to be compared are stored in the config: "cosine_comp_config.yaml" with name, path and label column
+    * Calculate cosine similarity
+    * Calculate Jaccard similarity with marker genes (sc.get.ranks_gene_groups) and with HVG (TODO)
+    * Plot Results in Heatmaps
+
+
++ tro-org/analysis/identify_genes.py
+  * Identify batch specific genes and return heatmap
+
+
++ tro-org/analysis/cyte_type.py
+  * Compare celltypes with Cytetype
+
+
+
 ## Workflow
 [scDownstream](https://nf-co.re/scdownstream/dev/) performs quality control, integration, dimensionality reduction and clustering <br>
 Integration methods: 
@@ -78,5 +96,30 @@ benchmark/runtime_assessment.py
 | -out                            |                            output folder                            |
 | -log                            |                resource_usage dir from scdownstream                 |
 | -tsv                            | resource_usage dir from self implemented tools in benchmark out dir |
+
+### Trajectory analysis
+Run trajectory pseudotime analysis with 4 different methods: PAGA, Phlower, Palantir and scFates
+```
+trajectory_analysis/trajectory.py
+```
+| Flags                             |                         input                         |
+|-----------------------------------|:-----------------------------------------------------:|
+| trajectory_analysis/trajectory.py |                run trajectory analysis                |
+| -adata                            | yaml config file containing all datasets for analysis |
+| -output                           |                     output folder                     |
+| -lk                               |                   labelkey in adata                   |
+
+
+### Gene Regulatory Networks
+Construct Gene Reguatory Networks with pyScenic
+```
+trajectory_analysis/trajectory.py
+```
+| Flags                          |                         input                         |
+|--------------------------------|:-----------------------------------------------------:|
+| trajectory_analysis/trajectory.py |                run trajectory analysis                |
+| -adata                         | yaml config file containing all datasets for analysis |
+| -output                        |                     output folder                     |
+| -lk                            |                   labelkey in adata                   |
 
 

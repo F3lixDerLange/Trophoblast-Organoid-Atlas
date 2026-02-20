@@ -69,6 +69,8 @@ def jaccard_similarity(datasets, method, top_n, savedir):
             ref_adata = ref_ds["adata"]
             target_adata = target_ds["adata"]
 
+            # Jaccard with marker genes: Do the same biological cell identities show the same differential signatures
+            # Jaccard with hvg: Do the datasets have similar variance structure / technical + biological heterogeneity
             markerA = generate_marker_genes(ref_adata, ref_label_col, method, top_n)
             markerB = generate_marker_genes(target_adata, target_label_col, method, top_n)
 

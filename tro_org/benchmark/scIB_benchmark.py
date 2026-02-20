@@ -150,7 +150,7 @@ def main():
 
     """
     -input
-    database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad
+    database/Shibata/Shibata_fixed_normalized.h5ad
     -output
     ztest_folder
     -bk
