@@ -2,7 +2,7 @@ from matplotlib_venn import venn3
 import matplotlib.pyplot as plt
 import scanpy as sc
 
-def create_venn(datasets):
+def create_venn(datasets, savedir):
     venn_dict = {}
     after_pre_pros = False
     for dataset in datasets.keys():
@@ -18,7 +18,7 @@ def create_venn(datasets):
 
     v = venn3(tuple(venn_dict.values()), tuple(venn_dict.keys()), set_colors=("#383a6b", "#cb1f73", "#fcc72d"), alpha=0.8)
     plt.title(f"Venn diagram for genes in datasets {state} preprocessing")
-    plt.savefig("/Users/felixlang/Documents/Uni/Master/master-thesis/tro_org/analysis/analysis_plots/venn_diagram_datasets_after.png")
+    plt.savefig(f"{savedir}/venn_diagram_datasets_{state}.png")
     plt.show()
 
 
@@ -32,7 +32,7 @@ def main():
      'Arutyunyan': ['database/prepros_test/Organoid_PTO_cellxgene_preprocessed.h5ad', 'database/prepros_test/Organoid_TSC_cellxgene_preprocessed.h5ad'],
      'Shannon': ['database/prepros_test/shannon_trophoblast_preprocessed.h5ad']}
 
-    create_venn(datasets)
+    create_venn(datasets, "figures")
 
 if __name__ == '__main__':
     main()

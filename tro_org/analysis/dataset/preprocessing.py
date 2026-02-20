@@ -15,7 +15,7 @@ def map_gene_symbols(adata_path):
 
     # outpath = f"/Users/felixlang/Documents/Uni/Master/master-thesis/database/prepros_test/{os.path.splitext(os.path.basename(adata_path))[0]}_preprocessed.h5ad"
     outpath = map_genes.generate_out(adata_path)
-    #processed_adata.write_h5ad(outpath)
+    processed_adata.write_h5ad(outpath)
 
     return outpath
 
@@ -43,8 +43,8 @@ def main():
 
         savedir = "figures"
         dataset_analysis.manage_data(h5ad_files, savedir)
-        gene_venn.create_venn(dataset_analysis.merge_dataset_from_same_study(h5ad_files)) # turn list with multiple files form one study in dict #before
-        gene_venn.create_venn(processed_adata_dict) # after
+        gene_venn.create_venn(dataset_analysis.merge_dataset_from_same_study(h5ad_files), savedir) # turn list with multiple files form one study in dict #before
+        gene_venn.create_venn(processed_adata_dict, savedir) # after
     else:
         map_gene_symbols(adata_file)
 
