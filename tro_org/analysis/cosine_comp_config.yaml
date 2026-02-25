@@ -1,20 +1,20 @@
 datasets:
   - name: Arutyunyan_Organoid_PTO
-    path: database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad
+    path: database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_raw_filter.h5ad
     label_col: cell_annotation
 
   - name: Arutyunyan_Organoid_TSC
-    path: database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene.h5ad
+    path: database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene_raw_filter.h5ad
     label_col: cell_annotation
 
   - name: Shibata
-    path: database/Shibata/Shibata_fixed_normalized.h5ad
+    path: database/Shibata/Shibata_fixed_normalized_raw_filter.h5ad
     label_col: celltype
 
   - name: TBs_shannon
-    path: database/Shannon_McNeil/divided_files/shannon_TBsOrg.h5ad
+    path: database/Shannon_McNeil/divided_files/shannon_TBsOrg_raw_filter.h5ad
     label_col: celltype
 
   - name: TBp_shannon
-    path: database/Shannon_McNeil/divided_files/shannon_TBpOrg.h5ad
+    path: database/Shannon_McNeil/divided_files/shannon_TBpOrg_raw_filter.h5ad
     label_col: celltype

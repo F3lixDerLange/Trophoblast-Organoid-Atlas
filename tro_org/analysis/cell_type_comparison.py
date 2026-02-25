@@ -40,7 +40,7 @@ def pairwise_cosine_similarity(profiles1, profiles2):
     sim = cosine_similarity(profiles1.values, profiles2.values)
     return pd.DataFrame(sim, index=profiles1.index, columns=profiles2.index)
 
-def compute_celltype_profiles(adata, label_col):   # mean expression vectors of each gene per cell
+def compute_celltype_profiles(adata, label_col):   # mean expression vectors of each gene per celltype
     labels = adata.obs[label_col].unique()
     X = adata.X.A if hasattr(adata.X, "A") else adata.X  # ensure dense or csr
 
@@ -104,7 +104,7 @@ def calculate_jaccard_score(markerA, markerB):
     return jaccard_matrix
 
 
-def generate_marker_genes(adata, label_col, methods: Literal["wilcoxon","t-test", None] = None, top_n=100, pval_cutoff=0.05):
+def generate_marker_genes(adata, label_col, methods: Literal["wilcoxon","t-test", None] = None, top_n=200, pval_cutoff=0.05):
     markers = {}
 
     if methods is None:
@@ -146,7 +146,11 @@ def main():
     save_dir = "tro_org/analysis/analysis_plots"
     config = utils.load_config("tro_org/analysis/cosine_comp_config.yaml")
     print("Loaded datasets:", [d["name"] for d in config])
-    datasets = utils.load_data(config)
+    hvg = True
+    datasets = utils.load_data(config, hvg=hvg)
+    if hvg:
+        save_dir = f"{save_dir}_hvg"
+    print(datasets)
     compute_cosign_similarity(datasets, save_dir)
     method: Literal["wilcoxon", "t-test", None] = "t-test"
     top_n = 400

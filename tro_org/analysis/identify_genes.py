@@ -1,128 +1,33 @@
 import numpy as np
 import pandas as pd
 import scanpy as sc
-from typing import Literal
 import matplotlib.pyplot as plt
 import seaborn as sns
-import matplotlib.colors as colors
 
+FS = 20
 
-import plot_analysis
+def identify_batch_specific_genes(adata, batch_key="batch", hi=0.1, lo=0.01):
+    batches = list(pd.unique(adata.obs[batch_key]))
+    genes = adata.var_names
 
-
-def generate_hvg_per_batch(hvg_file, sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "cell_ranger"):
-    adata = sc.read_h5ad(hvg_file)
-
-    identify_batch_seqcific_genes(adata)
-
-    sc.pp.highly_variable_genes(
-        adata,
-        batch_key="batch",
-        n_top_genes=None,  # keep all genes
-        flavor=sc_flavor,
-        # min_mean=0.1
-    )
-    pd.set_option("display.max_columns", None)
-    pd.set_option("display.width", None)
-    print(adata)
-    print(adata.obs.head())
-    print(adata.var.head())
-    #print(adata.uns.values())
-
-    identify_conserved_genes(adata, sc_flavor=sc_flavor)
-    identify_batch_specific_genes(adata, sc_flavor=sc_flavor)
-
-def identify_conserved_genes(processed_adata, sc_flavor):
-    np.random.seed(42)
-    print("Conserved genes:")
-    n_batches = len(set(processed_adata.obs["batch"]))
-    if sc_flavor == "cell_ranger":
-        conserved_hvgs = processed_adata.var.index[processed_adata.var["highly_variable_intersection"]].tolist()
-    else:
-        conserved_hvgs = processed_adata.var.index[
-            (processed_adata.var["highly_variable"]) &
-            (processed_adata.var["highly_variable_nbatches"] == n_batches)
-        ].tolist()
-    print(conserved_hvgs)
-    print(len(conserved_hvgs))
-
-    subsample_common_genes = conserved_hvgs if len(conserved_hvgs) <= 50 else np.random.choice(conserved_hvgs, size=50, replace=True)
-    mean_expr_gene_batch_common_genes = processed_adata[: , subsample_common_genes]
-    mean_expression_per_gene_per_batch(mean_expr_gene_batch_common_genes)
-
-def identify_batch_specific_genes(processed_adata, sc_flavor):
-    print("\nBatch Specific Genes (not in all batches)")
-    n_batches = processed_adata.obs["batch"].nunique()
-
-    batch_specific = processed_adata.var.index[
-        (processed_adata.var["highly_variable"]) &
-        (processed_adata.var["highly_variable_nbatches"] < n_batches)
-        ].tolist()
-    print(batch_specific)
-    print(len(batch_specific))
-
-    print("\nBatch Specific Genes (only in one batche)")
-    strong_batch_specific = processed_adata.var.index[
-        (processed_adata.var["highly_variable"]) & (processed_adata.var["highly_variable_nbatches"] == 1)
-        ].tolist()
-
-    print(strong_batch_specific)
-    print(len(strong_batch_specific))
-
-    print("\nBatch Specific Genes per Batch")
-    batches = set(processed_adata.obs["batch"])
-    batch_hvgs = {}
-    for batch in batches:
-        adata_b = processed_adata[processed_adata.obs["batch"] == batch].copy()
-        sc.pp.highly_variable_genes(adata_b, flavor=sc_flavor)
-        batch_hvgs[batch] = set(adata_b.var.index[adata_b.var["highly_variable"]])
-
-
-    batch_to_genes = {
-        batch: sorted(list(hvgs.intersection(strong_batch_specific)))
-        for batch, hvgs in batch_hvgs.items()
-    }
-
-    for key, val in batch_to_genes.items():
-        print(key, val)
-
-
-def mean_expression_per_gene_per_batch(processed_adata):
-    batches = list(set(processed_adata.obs["batch"]))
-    batch_means = {}
-
+    # mean expression matrix: rows=batches, cols=genes
+    mean_mat = []
     for b in batches:
-        subset_batch = processed_adata[processed_adata.obs["batch"] == b, :]
-        X = subset_batch.X.A if hasattr(subset_batch.X, "A") else subset_batch.X
-        batch_means[b] = np.asarray(X.mean(axis=0)).ravel()
+        Xb = adata[adata.obs[batch_key] == b].X
+        mean_mat.append(np.asarray(Xb.mean(axis=0)).ravel())
 
-    batch_mean_df = pd.DataFrame(batch_means, index=processed_adata.var_names).T
+    mean_df = pd.DataFrame(mean_mat, index=batches, columns=genes)
 
-    plot_analysis.common_gene_heatmap(batch_mean_df, f"Common Genes ({batch_mean_df.shape[1]}) per dataset")
-
-    print(batch_mean_df)
-
-def identify_batch_seqcific_genes(adata):
-    batches = list(set(adata.obs["batch"]))
     unique_batch_genes = {}
-
-    for batch in batches:
-        adata_b = adata[adata.obs["batch"] == batch]
-
-        mean_expr_b = np.asarray(adata_b.X.mean(axis=0)).ravel()
-
-        adata_other = adata[adata.obs["batch"] != batch]
-        mean_expr_other = np.asarray(adata_other.X.mean(axis=0)).ravel()
-
-        unique = adata.var_names[
-            (mean_expr_b > 0.1) & (mean_expr_other < 0.01)
-            ]
-
-        unique_batch_genes[batch] = list(unique)
+    for b in batches:
+        mean_b = mean_df.loc[b]
+        max_other = mean_df.drop(index=b).max(axis=0)  # <-- key change!
+        unique = genes[(mean_b > hi) & (max_other < lo)]
+        unique_batch_genes[b] = list(unique)
 
     print("true")
-    for key, val in unique_batch_genes.items():
-        print(key, val)
+    # for key, val in unique_batch_genes.items():
+        # print(key, val)
 
     all_genes = []
     for genes in unique_batch_genes.values():
@@ -141,24 +46,82 @@ def identify_batch_seqcific_genes(adata):
 
         expr_df.loc[batch] = X.mean(axis=0)
 
-    # plot heatmap
-    plt.figure(figsize=(14, 6))
-    sns.heatmap(expr_df.astype(float),
-                cmap="viridis",
-                #annot=True
-                )
-    plt.title("Mean expression of batch-specific genes")
-    plt.xlabel("Genes")
-    plt.ylabel("Batch")
+    print("batch specific genes")
+    print(expr_df.index.tolist())
+
+    mat = expr_df.astype(float)
+    batch_labels = [str(b).replace("Arutyunyan_", "") for b in mat.index]
+
+    plt.figure(figsize=(12, 6))
+
+    ax = sns.heatmap(
+        mat,
+        cmap="viridis",
+        cbar=True
+    )
+
+    ax.set_yticklabels(batch_labels)
+    ax.set_xticks(np.arange(mat.shape[1]) + 0.5)
+    ax.set_xticklabels(mat.columns, rotation=45, ha="right")
+
+    plt.ylabel("Batch" ,fontsize=FS)
+    plt.xlabel("Genes", fontsize=FS)
+    plt.title(f"Mean expression of batch-specific genes (n={mat.shape[1]})", fontsize=FS)
     plt.tight_layout()
-    plt.savefig("figures/batch_specific_genes.png")
+    plt.savefig("figures/batch_specific_genes.png", dpi=300)
+    plt.show()
+
+def identify_shared_genes_all_batches(adata, batch_key="batch", min_mean=0.2, top_n=80):
+    batches = list(pd.unique(adata.obs[batch_key]))
+    var_names = adata.var_names
+
+    means = []
+    for b in batches:
+        adata_b = adata[adata.obs[batch_key] == b]
+        mean_b = np.asarray(adata_b.X.mean(axis=0)).ravel()
+        means.append(mean_b)
+
+    mean_mat = np.vstack(means)
+    mean_df = pd.DataFrame(mean_mat, index=batches, columns=var_names)
+
+    shared_mask = (mean_df >= min_mean).all(axis=0)
+    shared_genes = mean_df.columns[shared_mask]
+
+    if top_n is not None and len(shared_genes) > top_n:
+        overall = mean_df[shared_genes].mean(axis=0).sort_values(ascending=False)
+        shared_genes = overall.head(top_n).index
+
+    expr_df = mean_df[shared_genes]
+
+    print(f"Shared genes in all batches: {len(shared_genes)}")
+    #print(expr_df.columns.tolist())
+    #print(expr_df)
+
+    mat = expr_df.T.astype(float)
+
+    batch_labels = [str(b).replace("Arutyunyan_", "") for b in mat.columns]
+    plt.figure(figsize=(8, 14))
+    ax = sns.heatmap(
+        mat,
+        cmap="viridis",
+    )
+    plt.title("Mean expression of genes expressed in all batches", fontsize=FS, pad=15)
+    plt.ylabel("Genes", fontsize=FS)
+    plt.xlabel("Batch", fontsize=FS)
+    plt.xticks(rotation=45, ha="right")
+    ax.set_yticks(np.arange(len(expr_df.columns)) + 0.5)
+    ax.set_yticklabels(expr_df.columns)
+    ax.set_xticklabels(batch_labels)
+    plt.tight_layout()
+    plt.savefig("figures/genes_expressed_all_batches.png", dpi=300)
     plt.show()
 
 def main():
-    sc_flavor: Literal["seurat_v3_paper","seurat_v3", "cell_ranger"] = "seurat_v3"
-    # hvg_file = "processed_data/Shibata_Karvas_Shannon_Baltayeva_merged_hvg.h5ad"
-    hvg_file = "processed_data/Shibata_Arutyunyan_merged_hvg.h5ad"
-    generate_hvg_per_batch(hvg_file, sc_flavor)
+    hvg_file = "/Users/felixlang/Documents/Uni/Master/master-thesis/tro_org/benchmark/benchmark_plots/final/merged_integration/merged_integration_V2_integrated.h5ad"
+    adata = sc.read_h5ad(hvg_file)
+
+    identify_batch_specific_genes(adata)
+    identify_shared_genes_all_batches(adata)
 
 if __name__ == '__main__':
     main()

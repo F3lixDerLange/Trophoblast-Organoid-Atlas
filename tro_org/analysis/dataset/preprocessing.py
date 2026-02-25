@@ -19,6 +19,15 @@ def map_gene_symbols(adata_path):
 
     return outpath
 
+def add_raw_2_original(adata_path):
+    adata = sc.read_h5ad(adata_path)
+    raw_count_adata = map_genes.raw_counts_2_layer(adata)
+    processed_adata = map_genes.filter_genes(raw_count_adata)
+    adata_dir = os.path.dirname(adata_path)
+    adata_base = os.path.splitext(os.path.basename(adata_path))[0]
+    print(f"{adata_dir}/{adata_base}_raw_filter.h5ad")
+    processed_adata.write_h5ad(f"{adata_dir}/{adata_base}_raw_filter.h5ad")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-adata", required=False, help="h5ad file")
@@ -32,6 +41,9 @@ def main():
                       ["database/Shannon_McNeil/Seurat/shannon_trophoblast.h5ad", "Shannon"]]
         processed_adata_dict = {}
         for dataset in h5ad_files:
+            # add raw to original file
+            add_raw_2_original(dataset[0])
+
             print(dataset)
             dataset_name = dataset[1].split("_")[0]
             if dataset_name not in processed_adata_dict :
