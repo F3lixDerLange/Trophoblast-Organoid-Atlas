@@ -17,4 +17,4 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/merged_integration/merged_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/merged_integration_V2 -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/merged_integration -gtf /nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz -u
+srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/merged_integration/merged_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/merged_integration_final -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/merged_integration -gtf /nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz -u
