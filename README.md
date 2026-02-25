@@ -89,7 +89,7 @@ Integration methods:
 * Scanorama
 * scGlue 
 
-Is automatically done in the benchmarking step <br>
+Are automatically done in the benchmarking step <br>
 
 ### Benchmark on DaisyBio server
 Run scdownstream before <br>

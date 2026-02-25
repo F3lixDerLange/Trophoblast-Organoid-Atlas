@@ -7,7 +7,7 @@ import numpy as np
 def fix(input_file, output_file):
     adata = sc.read_h5ad(input_file)
 
-    print("Before cleanup:")
+    """print("Before cleanup:")
     print("  obsm keys:", list(adata.obsm.keys()))
     print("  varm keys:", list(adata.varm.keys()))
 
@@ -25,7 +25,11 @@ def fix(input_file, output_file):
 
     print("\nAfter cleanup:")
     print("  obsm keys:", list(adata.obsm.keys()))
-    print("  varm keys:", list(adata.varm.keys()))
+    print("  varm keys:", list(adata.varm.keys()))"""
+
+    if "log1p" in adata.uns:
+        # simplest: drop it entirely (safe for scdownstream QC)
+        del adata.uns["log1p"]
 
     adata.write_h5ad(output_file)
 
