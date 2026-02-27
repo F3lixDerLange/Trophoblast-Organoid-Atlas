@@ -17,4 +17,4 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=64G
 
-srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/inVivo_Shannon/inVivo_Shannon_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/inVivo_shannon -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/inVivo_Shannon -gtf /nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz -u
+srun python3 -m tro_org.benchmark.scIB_benchmark -input /nfs/home/students/f.lang/nf-core_out/invivo_shannon/inVivo_Shannon_samplesheet_scvi/finalized/merged.h5ad -output /nfs/home/students/f.lang/torg/benchmark/inVivo_shannon -bk batch -lk label -m /nfs/home/students/f.lang/nf-core_out/inVivo_Shannon -gtf /nfs/proj/tropho_org_atlas/database/gene_annotation/gencode.v49.chr_patch_hapl_scaff.annotation.gtf.gz -u
