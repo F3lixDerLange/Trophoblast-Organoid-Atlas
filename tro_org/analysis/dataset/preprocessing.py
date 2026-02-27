@@ -42,7 +42,7 @@ def main():
         processed_adata_dict = {}
         for dataset in h5ad_files:
             # add raw to original file
-            add_raw_2_original(dataset[0])
+            #add_raw_2_original(dataset[0])
 
             print(dataset)
             dataset_name = dataset[1].split("_")[0]

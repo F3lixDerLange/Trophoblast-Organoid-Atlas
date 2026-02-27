@@ -138,13 +138,16 @@ trajectory_analysis/trajectory.py
 ### Gene Regulatory Networks
 Construct Gene Reguatory Networks with pyScenic
 ```
-trajectory_analysis/trajectory.py
+GRN/pyscenic.py
 ```
-| Flags                          |                         input                         |
-|--------------------------------|:-----------------------------------------------------:|
-| trajectory_analysis/trajectory.py |                run trajectory analysis                |
-| -adata                         | yaml config file containing all datasets for analysis |
-| -output                        |                     output folder                     |
-| -lk                            |                   labelkey in adata                   |
+| Flags           |                                               input                                                |
+|-----------------|:--------------------------------------------------------------------------------------------------:|
+| GRN/pyscenic.py |                                      run trajectory analysis                                       |
+| -a              |                                 h5ad file of cluster / subcluster                                  |
+| -i              |                                    image (singularity / docker)                                    |
+| -d              |                                        data dir for docker                                         |
+| -f              | filter adata according to [Van de Sande et al.](https://www.nature.com/articles/s41596-020-0336-2) |
+| -m              |                                      activate multiprocessing                                      |
+| -n              |                                         Number of workers                                          |
 
 
