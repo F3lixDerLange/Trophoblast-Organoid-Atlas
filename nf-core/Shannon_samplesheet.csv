@@ -1,0 +1,2 @@
+sample, filtered, batch_col, label_col
+Shannon, /nfs/proj/tropho_org_atlas/database/Shannon_McNeil/annotated_files/shannon_trophoblast_raw_filter.h5ad, Batch, celltype
