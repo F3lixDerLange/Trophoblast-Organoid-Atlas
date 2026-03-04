@@ -15,7 +15,7 @@ def load_config(config_file):
             cfg = yaml.safe_load(f)
     return cfg["datasets"]
 
-def load_data(config):
+def load_data(config, hvg=False):
     datasets_loaded = []
 
     for dataset in config:
@@ -25,6 +25,15 @@ def load_data(config):
 
         print(f"Loading {name} from {path}")
         adata = sc.read_h5ad(path)
+        if hvg:
+            print(adata.layers)
+            sc.pp.highly_variable_genes(
+                adata,
+                layer="raw_counts",
+                flavor="seurat_v3",
+                n_top_genes=5000
+            )
+            adata = adata[:, adata.var["highly_variable"]]
 
         datasets_loaded.append({
             "name": name,

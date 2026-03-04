@@ -21,15 +21,19 @@ def print_h5ad_info(h5ad_file):
     # --- Überprüfung der Hauptstruktur ---
     print("===================================")
     print("AnnData Objekt Struktur:")
+    #print(adata.obs["Model"].unique().tolist())
+    #print(adata.obs["Tissue"].unique().tolist())
     print(adata)
+    print(adata.obs.nunique())
+    print(adata.obs["batch"].unique().tolist())
 
     # --- Überprüfung der Zell-Metadaten (.obs) ---
     print("\nZell-Metadaten (ersten 5 Zeilen):")
     print(adata.obs.head())
-    print(adata.obs["pct_counts_mt"].min(), adata.obs["pct_counts_mt"].max(), adata.obs["pct_counts_mt"].mean())
-
-
-
+    # print(adata.obs["pct_counts_mt"].min(), adata.obs["pct_counts_mt"].max(), adata.obs["pct_counts_mt"].mean())
+    #cellTypes = adata.obs["label"].unique()
+    #print(cellTypes.tolist())
+    #print(adata.layers)
 
     # --- Überprüfung der Gen-Metadaten (.var) ---
     print("\nGen-Metadaten (ersten 5 Zeilen):")
@@ -43,7 +47,7 @@ def print_h5ad_info(h5ad_file):
     print(f"Anzahl Gene (var): {adata.n_vars}")
     print("===================================")
 
-    print(adata.obs['sample'].value_counts())
+    # print(adata.obs['sample'].value_counts())
     print("Unique cell type annotation:")
     if "cell_annotation" in adata.obs:
         label_col = "cell_annotation"
@@ -63,6 +67,7 @@ def print_h5ad_info(h5ad_file):
     print(diagnose_adata_x(adata))
 
     print("check for raw counts and normalized counts:")
+    print(adata.raw.X.toarray())
     raw_count_matrix_df = pd.DataFrame(
         adata.raw.X.toarray().T,
         index=adata.var_names,  # Set gene names as the rows names
@@ -177,23 +182,24 @@ def main():
     # h5ad_file = "processed_data/Shibata_Karvas_Shannon_Baltayeva_merged_hvg.h5ad"
     # h5ad_file = "database/Shibata/Shibata_EMO6_hESC/GSM7714458_EMO6_hor_merged.h5ad"
     # h5ad_file = "database/Shibata/GSE241052_ari_org.annotated.h5ad"
-    h5ad_file = "database/Shibata/GSE241052_ari_org_annotated_fixed_normalized.h5ad"
+    h5ad_file = "database/Shibata/Shibata_fixed_normalized.h5ad"
     # h5ad_file = "/Users/felixlang/Documents/Uni/Master/master-thesis/tro_org/trajectory_analysis/figures/adata/subcluster_Stromal_integrated.h5ad"
     # h5ad_file = "database/Shannon_McNeil/Shannon_McNeil_TBp_EVT_D/GSM6664615_DPT_merged.h5ad"
-    h5ad_file = "tro_org/GRN/data/adata/subcluster_Trophoblast_integrated.h5ad"
+    # h5ad_file = "tro_org/GRN/data/adata/subcluster_Trophoblast_integrated.h5ad"
     # h5ad_file = "tro_org/GRN/data/adata/subcluster_Epithelial_integrated.h5ad"
     # h5ad_file = "tro_org/GRN/data/adata/subcluster_Syncytiotrophoblast_integrated.h5ad"
     #h5ad_file = "tro_org/GRN/data/adata/subcluster_Stromal_integrated.h5ad"
     #h5ad_file = "/Users/felixlang/Downloads/shannon_trophoblast.h5ad"
-    #h5ad_file = "database/Shannon_McNeil/divided_files/shannon_in_vivo.h5ad"
-    #h5ad_file = "database/Shannon_McNeil/divided_files/shannon_TBpOrg.h5ad"
-    #h5ad_file = "database/Shannon_McNeil/divided_files/shannon_TBsOrg.h5ad"
-    h5ad_file = "database/integrated_data/TBp_shannon_integrated.h5ad"
-    h5ad_file = "processed_data/Shibata_Arutyunyan_merged_hvg.h5ad"
-    # h5ad_file = "database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene.h5ad"
-    # h5ad_file = "/Users/felixlang/Downloads/merged.h5ad"
+    h5ad_file = "database/Shannon_McNeil/divided_files/shannon_in_vivo_raw_filter.h5ad"
+    # h5ad_file = "database/Shannon_McNeil/divided_files/shannon_TBpOrg.h5ad"
+    # h5ad_file = "database/Shannon_McNeil/divided_files/shannon_TBsOrg.h5ad"
+    # h5ad_file = "database/integrated_data/TBp_shannon_integrated.h5ad"
+    # h5ad_file = "processed_data/Shibata_Arutyunyan_merged_hvg.h5ad"
+    # h5ad_file = "tro_org/trajectory_analysis/figures/adata/subcluster_Trophoblast_integrated.h5ad"
+    # h5ad_file = "/Users/felixlang/Documents/Uni/Master/master-thesis/tro_org/benchmark/benchmark_plots/final/merged_integration/merged_integration_V2_integrated.h5ad"
     # h5ad_file = "/Users/felixlang/Downloads/pipline_fixed/annotated_samplesheet_scvi/finalized/merged.h5ad"
-    # h5ad_file = "/Users/felixlang/Downloads/pipline_single/Shibata_single_samplesheet_scvi/finalized/merged.h5ad"
+    h5ad_file = "database/Shannon_McNeil/Seurat/shannon_trophoblast_raw_filter.h5ad"
+    h5ad_file = "database/integrated_data/merged_integration_final_integrated.h5ad"
     print_h5ad_info(h5ad_file)
 
 if __name__ == '__main__':

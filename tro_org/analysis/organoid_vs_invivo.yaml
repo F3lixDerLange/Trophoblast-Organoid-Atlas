@@ -1,0 +1,8 @@
+datasets:
+  - name: Organoid
+    path: database/integrated_data/wo_in_vivo_dataset.h5ad
+    label_col: label
+
+  - name: inVivo
+    path: database/integrated_data/in_vivo_dataset.h5ad
+    label_col: label
