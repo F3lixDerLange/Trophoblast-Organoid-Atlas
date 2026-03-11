@@ -3,6 +3,7 @@ import pandas as pd
 import scanpy as sc
 import matplotlib.pyplot as plt
 import seaborn as sns
+import scipy.sparse as sp
 
 FS = 20
 
@@ -116,12 +117,61 @@ def identify_shared_genes_all_batches(adata, batch_key="batch", min_mean=0.2, to
     plt.savefig("figures/genes_expressed_all_batches.png", dpi=300)
     plt.show()
 
+def batch_genes(adata):
+    batch_means = []
+
+    for batch in adata.obs["batch"].unique():
+        sub = adata[adata.obs["batch"] == batch]
+
+        if sp.issparse(sub.X):
+            mean_expr = np.array(sub.X.mean(axis=0)).ravel()
+        else:
+            mean_expr = sub.X.mean(axis=0)
+
+        batch_means.append(
+            pd.DataFrame({
+                "mean_expression": mean_expr,
+                "batch": batch
+            })
+        )
+
+    df = pd.concat(batch_means)
+
+    plt.figure(figsize=(6, 10))
+    sns.violinplot(data=df, x="batch", y="mean_expression", cut=0)
+    plt.ylim(0, 0.2)
+    plt.xticks(rotation=90, ha="right")
+    plt.title("Mean gene expression per batch")
+    plt.tight_layout()
+    plt.show()
+
+    plt.figure(figsize=(10, 6))
+
+    ax = sns.histplot(
+        data=df,
+        x="mean_expression",
+        hue="batch",
+        bins=1000,
+        element="step",  # clean overlay
+        #stat="density",  # normalize per batch
+        common_norm=False
+    )
+
+    plt.xlim(0, 0.2)  # zoom
+    plt.xlabel("Mean gene expression")
+    plt.ylabel("frequency")
+    plt.title("Distribution of mean gene expression per batch (0–0.2)")
+    sns.move_legend(ax, "center left", bbox_to_anchor=(1, 0.5))
+    plt.tight_layout()
+    plt.show()
+
 def main():
     hvg_file = "/Users/felixlang/Documents/Uni/Master/master-thesis/tro_org/benchmark/benchmark_plots/final/merged_integration/merged_integration_V2_integrated.h5ad"
     adata = sc.read_h5ad(hvg_file)
 
-    identify_batch_specific_genes(adata)
-    identify_shared_genes_all_batches(adata)
+    #identify_batch_specific_genes(adata)
+    #identify_shared_genes_all_batches(adata)
+    batch_genes(adata)
 
 if __name__ == '__main__':
     main()

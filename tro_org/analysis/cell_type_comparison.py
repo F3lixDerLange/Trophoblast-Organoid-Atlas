@@ -33,7 +33,7 @@ def compute_cosign_similarity(datasets, savedir):
             results[(ref_ds_name, target_ds_name)] = cosine_similarity
 
             print(cosine_similarity.shape)
-            plot_analysis.similarity_df_heatmap(cosine_similarity, f"ref:{ref_ds_name}_target:{target_ds_name}", "Cosine Similarity", savedir, f"{ref_ds_name}_{target_ds_name}")
+            plot_analysis.similarity_df_heatmap(cosine_similarity, f"ref:{ref_ds_name}_target:{target_ds_name}", "CosineSimilarity", savedir, f"{ref_ds_name}_{target_ds_name}")
 
 
 def pairwise_cosine_similarity(profiles1, profiles2):
@@ -143,10 +143,11 @@ def generate_marker_genes(adata, label_col, methods: Literal["wilcoxon","t-test"
 
 
 def main():
-    save_dir = "tro_org/analysis/analysis_plots"
-    config = utils.load_config("tro_org/analysis/cosine_comp_config.yaml")
+    save_dir = "tro_org/analysis/analysis_plots_org_vs_inV"
+    #config = utils.load_config("tro_org/analysis/cosine_comp_config.yaml")
+    config = utils.load_config("tro_org/analysis/organoid_vs_invivo.yaml")
     print("Loaded datasets:", [d["name"] for d in config])
-    hvg = True
+    hvg = False
     datasets = utils.load_data(config, hvg=hvg)
     if hvg:
         save_dir = f"{save_dir}_hvg"

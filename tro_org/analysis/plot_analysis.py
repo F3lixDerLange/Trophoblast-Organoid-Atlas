@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-figsize = (10,8)
+figsize = (22,8)
 
 def similarity_df_heatmap(result_df, title, method, savedir, ident):
     plt.figure(figsize=figsize)
