@@ -31,6 +31,7 @@ dependencies = [
     "scvelo>=0.3.3",
     "cellrank>=2.0.7",
     "scfates>=1.2.1",
+    "gprofiler>=1.2.2",
 ]
 
 [tool.uv.sources]

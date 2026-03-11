@@ -1,21 +1,25 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from venny4py.venny4py import venny4py
 from adjustText import adjust_text
+from upsetplot import from_contents, plot
 
 
 
-def adjpvalue_hist(ds, plot_dir):
+def adjpvalue_hist(ds, plot_dir, plot_cond):
     plt.figure(figsize=(7, 4))
     plt.hist(ds["padj"].clip(0, 1), bins=50, color="#383a6b")
     plt.xlabel("Adjusted p-value (padj)")
     plt.ylabel("Number of genes")
-    plt.title("Adjusted p-value distribution")
+    plt.title(f"Adjusted p-value distribution {plot_cond.replace('_', ' ')}")
     plt.tight_layout()
-    plt.savefig(f"{plot_dir}/adjpvalue_hist_organoid_vs_inVivo.png", dpi=300)
+    plt.savefig(f"{plot_dir}/adjpvalue_hist_{plot_cond}.png", dpi=300)
     plt.show()
 
 
-def vulcano_plot(ds, lfc_thr, adjp_thr, plot_dir):
+def vulcano_plot(ds, lfc_thr, adjp_thr, plot_dir, plot_cond):
     df = ds[np.isfinite(ds["log2FoldChange"]) & np.isfinite(ds["padj"])]
 
     padj_safe = np.clip(df["padj"].to_numpy(), np.nextafter(0, 1), 1.0)
@@ -77,9 +81,80 @@ def vulcano_plot(ds, lfc_thr, adjp_thr, plot_dir):
                         shrinkB=5)
     )
 
-    plt.xlabel("log2 fold change (organoid vs in Vivo)")
+    plt.xlabel(f"log2 fold change ({plot_cond.replace('_', ' ')})")
     plt.ylabel("-log10(padj)")
-    plt.title("Volcano plot organoid vs in Vivo")
+    plt.title(f"Volcano plot {plot_cond.replace('_', ' ')}")
     plt.tight_layout()
-    plt.savefig(f"{plot_dir}/volcano_plot_organoid_vs_inVivo.png", dpi=300)
+    plt.savefig(f"{plot_dir}/volcano_plot_{plot_cond}.png", dpi=300)
     plt.show()
+
+
+def upsetplot_dataset_specific_genes(dataset_specific_genes, plot_dir):
+
+    data = from_contents(dataset_specific_genes)
+
+    plot(data)
+    plt.title("Upset plot of dataset specific genes")
+    plt.savefig(f"{plot_dir}/upsetplot_dataset_specific_genes.png")
+    plt.show()
+
+
+def plot_lfc_heatmap(lfc_df, dataset_specific, plot_dir, top_n=20):
+    genes = []
+    for ds in dataset_specific:
+        genes.extend(dataset_specific[ds][:top_n])
+
+    genes = pd.Index(genes).unique()
+    mat = lfc_df.loc[genes]
+
+    # split matrix
+    half = len(mat) // 2
+    mat1 = mat.iloc[:half]
+    mat2 = mat.iloc[half:]
+
+    fig, axes = plt.subplots(
+        1, 2,
+        figsize=(10, 14),
+        gridspec_kw={"width_ratios": [1, 1]},
+        sharex=True
+    )
+
+    # first half
+    sns.heatmap(
+        mat1,
+        cmap="coolwarm",
+        center=0,
+        linewidths=0.5,
+        ax=axes[0],
+        cbar=False
+    )
+
+    # second half
+    sns.heatmap(
+        mat2,
+        cmap="coolwarm",
+        center=0,
+        linewidths=0.5,
+        ax=axes[1],
+        cbar_kws={"label": "log2 Fold Change"}
+    )
+
+    fig.suptitle("Dataset-specific genes (log2 Fold Change)", fontsize=14)
+    fig.supxlabel("Dataset")
+    axes[0].set_xlabel("")
+    axes[1].set_xlabel("")
+    axes[0].set_ylabel("Gene")
+    axes[1].set_ylabel("")
+
+    plt.tight_layout()
+
+    plt.savefig(f"{plot_dir}/lfc_heatmap.png", dpi=300)
+    plt.show()
+
+
+def markergenes_venn(dataset_specific, plot_dir):
+    for key, value in dataset_specific.items():
+        dataset_specific[key] = set(value.to_list())
+        print(key, type(value))
+
+    venny4py(sets=dataset_specific, out=f"{plot_dir}/venny4py")

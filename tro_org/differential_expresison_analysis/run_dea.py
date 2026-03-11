@@ -1,8 +1,7 @@
 import pandas as pd
 import scanpy as sc
-from scipy import sparse
-import tro_org.differential_expresison_analysis.protocol_specific_genes as protocol_specific_genes
 import tro_org.differential_expresison_analysis.dea_deseq2 as dea_deseq2
+import tro_org.differential_expresison_analysis.analysis_dataset_genes as analysis_dataset_genes
 
 CANON = {
     "batch": ["batch", "Batch", "sample"],
@@ -103,25 +102,56 @@ def prepare_dataframes(adata, out, case):
     print(metadata.index == counts_df.index)
     print(counts_df)
     print(metadata)
-    #counts_df.to_csv(f"{out}/count_matrix_df_{case}.csv")
-    #metadata.to_csv(f"{out}/metadata_df_{case}.csv")
 
     return counts_df, metadata
 
-def differential_expression_analysis(h5ad_files, out, plot_dir):
+def handle_deseq_for_datasets(adata, out, plot_dir, go_plot_dir):
+    deseq_result = {}
+
+    for dataset in adata.obs["dataset"].unique():
+        adata_mask, contrast_cond = mask_condition_for_datasets(adata, dataset)
+        count_matrix_comp, metadata_comp = prepare_dataframes(adata_mask, out, "comp")
+        result = dea_deseq2.run_dea_deseq2(count_matrix_comp, metadata_comp, plot_dir, "condition", contrast_cond)
+        deseq_result[dataset] = result
+
+        del count_matrix_comp, metadata_comp
+
+    for key, value in deseq_result.items():
+        print(f"{key}: {value}")
+
+    analysis_dataset_genes.dataset_specific_genes_analysis(deseq_result, plot_dir, go_plot_dir)
+
+
+def mask_condition_for_datasets(adata_raw, dataset):
+    """
+    Another idea is a One vs the rest approach:
+    1. I divide my dataset into "A" (only dataset A) and "not A" (other datasets: B, C, D) saved in condition "is A"
+    2. Perform DeSeq2 with condition "is A"
+    3. compute stats: DeseqStats(dds, contrast=["is_A", "A", "notA"])
+    4. In the result table I can see with the LFC and the adj Pvalue which genes are expressed more in A and which are more expressed in other
+    5. do the same for all datasets
+    """
+
+    adata_raw.obs["condition"] = adata_raw.obs["dataset"].apply(lambda x: f"{dataset}" if x == dataset else f"not_{dataset}")
+
+    print("--------- MASK CONDITON ----------")
+    print(adata_raw.obs["condition"].value_counts())
+
+    return adata_raw, [f"{dataset}", f"not_{dataset}"]
+
+
+def differential_expression_analysis(h5ad_files, out, plot_dir, go_plot_dir):
     adata_comp = merge_adata(h5ad_files, filter_in_vivo=True)
-    """if not sparse.issparse(adata_comp.X):
-        adata_comp.X = sparse.csr_matrix(adata_comp.X)
-    print(sparse.issparse(adata_comp.X))
-    print(type(adata_comp.X))
-    adata_comp.write("database/integrated_data/in_vivo_dataset.h5ad")"""
+    handle_deseq_for_datasets(adata_comp, out, plot_dir, go_plot_dir)
 
-    adata_cond = merge_adata(h5ad_files)
 
-    count_matrix_comp, metadata_comp = prepare_dataframes(adata_comp, out, "comp")
+    """adata_cond = merge_adata(h5ad_files)
     count_matrix_cond, metadata_cond = prepare_dataframes(adata_cond, out, "condition")
-    # protocol_specific_genes.run_dea_sample_specific(count_matrix_comp, metadata_comp)
-    _ = dea_deseq2.run_dea_deseq2(count_matrix_cond, metadata_cond, plot_dir, "condition")
+    _ = dea_deseq2.run_dea_deseq2(count_matrix_cond,
+                                  metadata_cond,
+                                  plot_dir,
+                                  "condition",
+                                  ["organoid", "in_vivo"])"""
 
 
 def main():
@@ -133,8 +163,9 @@ def main():
     ]
     out = "tro_org/differential_expresison_analysis/matrix"
     plot_dir = "tro_org/differential_expresison_analysis/dea_plots"
+    go_plot_dir = "tro_org/differential_expresison_analysis/GO"
 
-    differential_expression_analysis(h5ad_files, out, plot_dir)
+    differential_expression_analysis(h5ad_files, out, plot_dir, go_plot_dir)
 
 
 if __name__ == '__main__':
