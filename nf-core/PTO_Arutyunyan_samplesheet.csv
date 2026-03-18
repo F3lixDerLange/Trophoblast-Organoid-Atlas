@@ -1,2 +1,2 @@
 sample, filtered, batch_col, label_col
-Arutyunyan_PTO, /nfs/proj/tropho_org_atlas/database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene_fixed.h5ad, sample, cell_annotation
+Arutyunyan_PTO, /nfs/proj/tropho_org_atlas/database/final_data/Organoid_PTO_cellxgene_raw_filter_normalized.h5ad, sample, cell_annotation

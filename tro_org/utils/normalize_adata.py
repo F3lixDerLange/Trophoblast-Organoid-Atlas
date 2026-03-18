@@ -6,6 +6,7 @@ import scanpy as sc
 def normalize(in_path, out_path):
     print("--- Normalization ---")
     adata = sc.read_h5ad(in_path)
+    adata.X = adata.layers["raw_counts"].copy()
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
 

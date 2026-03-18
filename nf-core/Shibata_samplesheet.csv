@@ -1,2 +1,2 @@
 sample, filtered, batch_col, label_col
-Shibata, /nfs/proj/tropho_org_atlas/database/Shibata/annotated/GSE241052_ari_org_annotated_fixed_normalized.h5ad, sample, celltype
+Shibata, /nfs/proj/tropho_org_atlas/database/final_data/Shibata_fixed_raw_filter_normalized.h5ad, sample, celltype

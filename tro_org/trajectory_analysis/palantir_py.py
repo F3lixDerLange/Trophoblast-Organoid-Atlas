@@ -41,7 +41,7 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
     start_cell = adata.obs_names[adata.obs[cluster_key] == startcluster][0]
     print("Start cell:", start_cell)
 
-    for k in range(20, 14, -1):
+    for k in range(20, 10, -1):
         try:
             terminal_states, excluded_boundaries = palantir.core.identify_terminal_states(ms_data=ms_data,
                                                                                           early_cell=start_cell,

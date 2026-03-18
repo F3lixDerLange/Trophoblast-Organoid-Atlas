@@ -42,6 +42,16 @@ def merge_adata(adata_files, filter_in_vivo=False):
 
     for path, name in adata_files:
         ad = sc.read_h5ad(path)
+
+        genes_to_remove = (
+                ad.var_names.str.startswith("MT-") |
+                ad.var_names.str.startswith("RPL") |
+                ad.var_names.str.startswith("RPS") |
+                (ad.var_names == "MALAT1")
+        )
+
+        ad = ad[:, ~genes_to_remove]
+
         if filter_in_vivo and "Type" in ad.obs.columns:
             ad = ad[ad.obs["Type"] != "in vivo"].copy()
         """    if "Model" in ad.obs.columns:
@@ -76,11 +86,11 @@ def merge_adata(adata_files, filter_in_vivo=False):
 
     return map_and_keep(adata_raw, CANON)
 
-def prepare_dataframes(adata, out, case):
+def prepare_dataframes(adata, out, case, dataset):
     print(adata.layers)
     bulk_adata = sc.get.aggregate(
         adata,
-        by=["label", "dataset", "condition"],
+        by=["batch", "label", "dataset", "condition"],
         func="sum",
         layer="raw_counts"
     )
@@ -102,15 +112,51 @@ def prepare_dataframes(adata, out, case):
     print(metadata.index == counts_df.index)
     print(counts_df)
     print(metadata)
-
+    debug_counts(adata, counts_df, dataset, out)
     return counts_df, metadata
+
+def debug_counts(adata, counts_df, dataset, out):
+    print("-----DEBUG------")
+    print(adata)
+    group_cols = ["batch", "label", "dataset", "condition"]
+
+    cell_counts = (
+        adata.obs
+        .groupby(group_cols, observed=True)
+        .size()
+        .reset_index(name="n_cells")
+    )
+
+    cell_counts["pseudobulk"] = (
+            cell_counts["batch"].astype(str) + "_" +
+            cell_counts["label"].astype(str) + "_" +
+            cell_counts["dataset"].astype(str) + "_" +
+            cell_counts["condition"].astype(str)
+    )
+
+    cell_counts.drop(columns=["batch", "label", "dataset", "condition"], inplace=True)
+
+    library_sizes = counts_df.sum(axis=1)
+
+    library_sizes = library_sizes.reset_index()
+    library_sizes.columns = ["pseudobulk", "total_counts"]
+
+    pb_df = library_sizes.merge(
+        cell_counts,
+        on="pseudobulk",
+        how="left"
+    )
+    pb_df["counts_per_cell"] = round(pb_df["total_counts"] / pb_df["n_cells"], 2)
+
+    pb_df.to_csv(f"{out}/{dataset}_pseudobulk_qc_table.csv", index=False)
+    print("------DEBUG------")
 
 def handle_deseq_for_datasets(adata, out, plot_dir, go_plot_dir):
     deseq_result = {}
 
     for dataset in adata.obs["dataset"].unique():
         adata_mask, contrast_cond = mask_condition_for_datasets(adata, dataset)
-        count_matrix_comp, metadata_comp = prepare_dataframes(adata_mask, out, "comp")
+        count_matrix_comp, metadata_comp = prepare_dataframes(adata_mask, out, "comp", dataset)
         result = dea_deseq2.run_dea_deseq2(count_matrix_comp, metadata_comp, plot_dir, "condition", contrast_cond)
         deseq_result[dataset] = result
 

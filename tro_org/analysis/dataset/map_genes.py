@@ -10,46 +10,6 @@ import anndata as ad
 from matplotlib import pyplot as plt
 
 
-def gene_mapping(adata):
-    """
-    Convert whatever gene names are used to HGNC gene names https://www.genenames.org/help/faq/#!/#tocAnchor-1-1-7
-    :param adata: adata object
-    :return: adata object with mapped gene names
-    """
-
-    handle_duplicate_gene_names(adata)
-
-    mg = mygene.MyGeneInfo()
-
-    genes = adata.var_names.tolist()
-
-    res = mg.querymany(genes,
-                       scopes=["symbol", "alias", "name", "retired"],
-                       fields=["symbol"],
-                       species="human",
-                       as_dataframe=True,
-                       verbose=False)
-
-
-    mapping = (res[res["notfound"] != True]
-               .drop_duplicates()
-               ["symbol"]
-               .to_dict())
-
-    new_names = [mapping.get(g, g) for g in genes]
-
-
-    for old, new in list(zip(genes, new_names))[:300]:
-        if old != new:
-            print(old, "->", new)
-
-
-    adata.var_names = new_names
-    print(len(new_names))
-    print(len(set(new_names)))
-    new_adata = handle_duplicate_gene_names(adata)
-
-    return new_adata
 
 def handle_duplicate_gene_names(adata):
     if not adata.var_names.has_duplicates:
