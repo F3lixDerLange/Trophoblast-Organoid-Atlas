@@ -1,14 +1,20 @@
 import scanpy as sc
 import cytetype
+from matplotlib.pyplot import savefig
+
 
 def cytetype_annotation(adata_file, clusters):
     adata = sc.read_h5ad(adata_file)
+    adata = adata[adata.obs["Type"] != "in vivo"].copy()
     print(adata)
     adata.layers["norm"] = adata.X.copy()
 
     print("Number of clusters: ", adata.obs[clusters].nunique())
     print(adata.obs[clusters].value_counts())
     adata.var['gene_symbols'] = adata.var_names # shibata "features"
+    sc.pp.pca(adata)
+    sc.pp.neighbors(adata)
+    sc.tl.umap(adata)
 
     sc.tl.rank_genes_groups(adata, groupby=clusters, method='t-test', layer="norm", use_raw=False, key_added='rank_genes_'+clusters)
     print(adata)
@@ -20,7 +26,6 @@ def cytetype_annotation(adata_file, clusters):
     Single-cell transcriptomics data, from trophoblast organoids from human samples.
     The cells were from hormone-responsive endometrial organoids (EMO), termed apical-out (AO)–EMO.
     The patients were either treated or untreated.
-    The data was generated using 10X genomics Chromium Controller.
     """
 
     context_TSC = """
@@ -35,9 +40,16 @@ def cytetype_annotation(adata_file, clusters):
     The data captures diverse trophoblast subtypes, including multinucleated syncytiotrophoblast (SCT) and early invasive EVT stages.
     """
 
+    context_shannon = """
+    Single-cell RNA sequencing dataset from healthy human trophoblast cells representing two distinct 3D placental in vitro models: 
+    primary trophoblast organoids (TBP-Orgs) and stem cell-derived organoids (TBS-Orgs).
+    Both organoid models were subjected to two specific treatment conditions: a regenerative maintenance medium to promote self-renewal and an extravillous trophoblast (EVT) differentiation medium supplemented with NRG1
+    """
+
     adata = annotator.run(study_context=context_PTO)
 
     sc.pl.embedding(adata, basis='umap', color=f'cytetype_annotation_{clusters}',)
+    sc.pl.umap(adata, color=f'cytetype_annotation_{clusters}', save=f"_cytetype")
 
     cols = ['cell_annotation',
             f'cytetype_annotation_{clusters}',
@@ -50,12 +62,13 @@ def cytetype_annotation(adata_file, clusters):
 
 
 def main():
-    input_file_shibata = "database/Shibata/Shibata_fixed_normalized.h5ad"
-    input_file_PTO = "database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad"
-    input_file_TSC = "database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene.h5ad"
+    input_file_shibata = "database/final_data/Shibata_fixed_raw_filter_normalized.h5ad"
+    input_file_PTO = "database/final_data/Organoid_PTO_cellxgene_raw_filter_normalized.h5ad"
+    input_file_TSC = "database/final_data/Organoid_TSC_cellxgene_raw_filter_normalized.h5ad"
+    input_file_shannon = "database/final_data/shannon_trophoblast_raw_filter_normalized.h5ad"
     clusters_shi = "celltype"
     clusters_aru = "cell_annotation"
-    cytetype_annotation(input_file_PTO, clusters_aru)
+    cytetype_annotation(input_file_shannon, clusters_shi)
 
 
 if __name__ == '__main__':

@@ -21,7 +21,8 @@ def plot_umap_after_integration(adata, osbm_key, method, outdir, batch_key, labe
     sc.pp.neighbors(adata, use_rep=osbm_key)
     sc.tl.umap(adata)
     sc.tl.leiden(adata, key_added=f"leiden_{method}", flavor="igraph", n_iterations=2, resolution=0.4)
-    sc.pl.umap(adata, color=[label_key, batch_key, f"leiden_{method}"], wspace=0.4, save=f"_after_integration_{method}.png")
+    sc.pl.umap(adata, color=[label_key, batch_key], wspace=0.4, legend_loc="on data" ,save=f"_after_integration_{method}.png")
+    # sc.pl.umap(adata, color=[label_key, batch_key, f"leiden_{method}"], wspace=0.4, save=f"_after_integration_{method}.png")
     print("after")
     print(adata)
 
@@ -34,4 +35,5 @@ def plot_umap_after_integration(adata, osbm_key, method, outdir, batch_key, labe
                    color=label_key,
                    ax=ax,
                    title=f"{method} Umap {batch} batch highlighted {method}",
+                   legend_loc="on data",
                    save=f"_after_integration_{method}_{batch}_highlighted_{method}.png")

@@ -21,7 +21,7 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
     sc.tl.umap(adata, min_dist=0.3)
     adata.obsm[f"{emb_key}_umap"] = adata.obsm["X_umap"].copy()
 
-    dm_res = palantir.utils.run_diffusion_maps(adata, pca_key=emb_key, n_components=30)
+    dm_res = palantir.utils.run_diffusion_maps(adata, pca_key=emb_key) #, n_components=30)
 
     palantir.plot.plot_diffusion_components(adata, embedding_basis=emb_key)
     plt.savefig(f"{output}/palantir/diffusion_components_{emb_key}.png")

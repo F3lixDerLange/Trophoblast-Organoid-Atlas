@@ -128,10 +128,10 @@ def merge_dataset_from_same_study(datasets: list):
 
 
 def main():
-    h5ad_files = [["database/Shibata/Shibata_fixed_normalized.h5ad", "Shibata"],
-                  ["database/Arutyunyan/Arutyunyan_PTO/Organoid_PTO_cellxgene.h5ad", "Arutyunyan_PTO"],
-                  ["database/Arutyunyan/Arutyunyan_TSC/Organoid_TSC_cellxgene.h5ad", "Arutyunyan_TSC"],
-                  ["database/Shannon_McNeil/Seurat/shannon_trophoblast.h5ad", "Shannon"]]
+    h5ad_files = [["database/final_data/Shibata_fixed_raw_filter_normalized.h5ad", "Shibata"],
+                  ["database/final_data/Organoid_PTO_cellxgene_raw_filter_normalized.h5ad", "Arutyunyan_PTO"],
+                  ["database/final_data/Organoid_TSC_cellxgene_raw_filter_normalized.h5ad", "Arutyunyan_TSC"],
+                  ["database/final_data/shannon_trophoblast_raw_filter_normalized.h5ad", "Shannon"]]
     savedir = "figures"
 
     manage_data(h5ad_files, savedir)

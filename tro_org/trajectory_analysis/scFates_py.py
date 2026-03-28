@@ -34,7 +34,7 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
 
     # Tree learning with SimplePPT
     scf.tl.tree(adata, method="ppt", Nodes=150, use_rep="palantir",
-                device="cpu", seed=1, ppt_lambda=100, ppt_sigma=0.025, ppt_nsteps=200)
+                device="cpu", seed=42, ppt_lambda=100, ppt_sigma=0.025, ppt_nsteps=200)
 
     # projecting results onto ForceAtlas2 embedding
     scf.pl.graph(adata, save=f"_scf_tree_{emb_key}.png") #, basis=f"{emb_key}_umap", save=f"_scf_tree_{emb_key}.png")
