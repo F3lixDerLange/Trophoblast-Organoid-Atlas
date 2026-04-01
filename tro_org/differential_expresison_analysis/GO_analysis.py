@@ -57,7 +57,7 @@ data_res = {'Shibata': ['CGA', 'MALAT1', 'CSH1', 'RPS2', 'RPLP1', 'RPS18', 'RPS8
 
 def gsea_analysis(data, ds):
        enr = gp.enrichr(gene_list=list(data[ds]),
-                        gene_sets=['GO_Biological_Process_2023', 'KEGG_2021_Human'],
+                        gene_sets=['GO_Biological_Process_2025', 'KEGG_2021_Human'],
                         organism='human',
                         outdir=None)
        return enr

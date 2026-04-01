@@ -22,7 +22,7 @@ def define_ds_specific_genes(df_dict, lfc_df, padj_df):
         top_genes = (
             lfc_df.loc[mask, ds]
             .sort_values(ascending=False)
-            .head(2000)
+            .head(400)
             .index
         )
         dataset_specific[ds] = top_genes

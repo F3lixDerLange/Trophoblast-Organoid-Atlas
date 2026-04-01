@@ -87,10 +87,14 @@ def filter_genes(adata):
 
 
 def raw_counts_2_layer(adata):
-    adata.layers["raw_counts"] = adata.raw.X.copy()
-    print("add raw_counts layer to adata")
+    print(adata.raw.var)
+    if adata.raw is not None and "raw_old_index" in adata.raw.var.columns:
+        adata.raw._var.index = adata.raw.var["raw_old_index"].astype(str)
+    common_genes = adata.var_names.intersection(adata.raw.var_names)
+    #adata.layers["raw_counts"] = adata.raw[:, adata.var_names].X.copy()
+    adata.layers["raw_counts"] = adata.raw[:, common_genes].X.copy()
+    print("added raw_counts layer (aligned)")
     return adata
-
 
 def generate_out(adata_path):
     adata_dir = os.path.dirname(adata_path)

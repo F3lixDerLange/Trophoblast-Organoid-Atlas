@@ -72,21 +72,28 @@ def identify_batch_specific_genes(adata, batch_key="batch", hi=0.1, lo=0.01):
     plt.savefig("figures/batch_specific_genes.png", dpi=300)
     plt.show()
 
-def identify_shared_genes_all_batches(adata, batch_key="batch", min_mean=0.2, top_n=80):
+def identify_shared_genes_all_batches(adata, batch_key="batch", min_mean=0.2, min_pct=0.4,top_n=80):
     batches = list(pd.unique(adata.obs[batch_key]))
     var_names = adata.var_names
 
     means = []
+    pcts = []
+
     for b in batches:
         adata_b = adata[adata.obs[batch_key] == b]
         mean_b = np.asarray(adata_b.X.mean(axis=0)).ravel()
         means.append(mean_b)
+        pct_b = np.asarray((adata_b.X > 0).mean(axis=0)).ravel()
+        pcts.append(pct_b)
 
-    mean_mat = np.vstack(means)
-    mean_df = pd.DataFrame(mean_mat, index=batches, columns=var_names)
 
-    shared_mask = (mean_df >= min_mean).all(axis=0)
+    mean_df = pd.DataFrame(np.vstack(means), index=batches, columns=var_names)
+    pct_df = pd.DataFrame(np.vstack(pcts), index=batches, columns=var_names)
+
+    shared_mask = (mean_df >= min_mean).all(axis=0) & (pct_df >= min_pct).all(axis=0)
     shared_genes = mean_df.columns[shared_mask]
+
+    print(len(shared_genes))
 
     if top_n is not None and len(shared_genes) > top_n:
         overall = mean_df[shared_genes].mean(axis=0).sort_values(ascending=False)
@@ -166,12 +173,12 @@ def batch_genes(adata):
     plt.show()
 
 def main():
-    hvg_file = "/Users/felixlang/Documents/Uni/Master/master-thesis/tro_org/benchmark/benchmark_plots/final/merged_integration/merged_integration_V2_integrated.h5ad"
+    hvg_file = "/Users/felixlang/Downloads/merged_integration_final/merged_integration_final_integrated.h5ad"
     adata = sc.read_h5ad(hvg_file)
 
     #identify_batch_specific_genes(adata)
-    #identify_shared_genes_all_batches(adata)
-    batch_genes(adata)
+    identify_shared_genes_all_batches(adata)
+    #batch_genes(adata)
     #test
 
 if __name__ == '__main__':

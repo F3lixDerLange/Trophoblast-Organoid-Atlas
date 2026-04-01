@@ -17,7 +17,7 @@ def create_venn(datasets, savedir):
     state = "after" if after_pre_pros == True else "before"
 
     v = venn3(tuple(venn_dict.values()), tuple(venn_dict.keys()), set_colors=("#383a6b", "#cb1f73", "#fcc72d"), alpha=0.8)
-    plt.title(f"Venn diagram for genes in datasets {state} preprocessing")
+    plt.title(f"Venn diagram for genes in datasets {state} preprocessing", fontsize=20)
     plt.savefig(f"{savedir}/venn_diagram_datasets_{state}.png")
     plt.show()
 
