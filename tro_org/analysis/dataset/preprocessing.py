@@ -55,8 +55,8 @@ def main():
 
         savedir = "figures"
         dataset_analysis.manage_data(h5ad_files, savedir)
-        gene_venn.create_venn(dataset_analysis.merge_dataset_from_same_study(h5ad_files), savedir) # turn list with multiple files form one study in dict #before
-        gene_venn.create_venn(processed_adata_dict, savedir) # after
+        #gene_venn.create_venn(dataset_analysis.merge_dataset_from_same_study(h5ad_files), savedir) # turn list with multiple files form one study in dict #before
+        #gene_venn.create_venn(processed_adata_dict, savedir) # after
     else:
         map_gene_symbols(adata_file)
 

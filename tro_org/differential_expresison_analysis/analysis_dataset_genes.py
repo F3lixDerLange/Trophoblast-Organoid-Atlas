@@ -19,6 +19,9 @@ def define_ds_specific_genes(df_dict, lfc_df, padj_df):
 
         mask = sig_in_X & not_sig_others
 
+        print(f"-- {ds} mask: {len(mask)}")
+        print(mask.sum())
+
         top_genes = (
             lfc_df.loc[mask, ds]
             .sort_values(ascending=False)
@@ -26,6 +29,8 @@ def define_ds_specific_genes(df_dict, lfc_df, padj_df):
             .index
         )
         dataset_specific[ds] = top_genes
+
+        print(f"** {ds} mask: {len(top_genes)}")
 
     print(dataset_specific["Shibata"])
     return dataset_specific

@@ -1,0 +1,131 @@
+import math
+import scanpy as sc
+from matplotlib import pyplot as plt
+import  tro_org.utils.utils as tutils
+
+
+def quickplot_umap(adata, output):
+    sc.set_figure_params(dpi_save=300, fontsize=16, vector_friendly=True)
+
+    print(adata)
+    adata = tutils.filter_invivo_cells(adata, "batch")
+    embeddings = [ "Unintegrated", "BBKNN", "Combat", "Harmony", "Scanorama", "scVI", "LIGER", "scGlue"]
+
+    """
+    n_cells = 2000
+    idx = np.random.choice(adata.n_obs, n_cells, replace=False)
+
+    adata = adata[idx].copy()
+    """
+
+    for emb in embeddings:
+        sc.pp.neighbors(adata, use_rep=emb, key_added=f"neighbors_{emb}")
+        sc.tl.umap(adata, neighbors_key=f"neighbors_{emb}", min_dist=0.3)
+        adata.obsm[f"X_umap_{emb}"] = adata.obsm["X_umap"].copy()
+
+    umap_by_dataset(adata, embeddings, output)
+    umap_by_cell_type(adata, embeddings, output)
+
+
+def umap_by_dataset(adata, embeddings, output):
+    fig, axes = plt.subplots(4, 2, figsize=(11, 14))
+    axes = axes.flatten()
+
+    for i, emb in enumerate(embeddings):
+        ax = axes[i]
+        sc.pl.embedding(
+            adata,
+            basis=f"X_umap_{emb}",
+            color="sample",
+            ax=ax,
+            show=False,
+            title=emb.replace("X_", ""),
+        )
+
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        if i == 6:
+            ax.set_xlabel("UMAP 1")
+            ax.set_ylabel("UMAP 2")
+            ax.annotate(
+                '', xy=(0.3, -0.05),
+                xytext=(-0.06, -0.05),
+                xycoords='axes fraction',
+                arrowprops=dict(arrowstyle='->', lw=2)
+            )
+
+            ax.annotate(
+                '', xy=(-0.06, 0.3),
+                xytext=(-0.06, -0.05),
+                xycoords='axes fraction',
+                arrowprops=dict(arrowstyle='->', lw=2),
+                annotation_clip=False
+            )
+
+    plt.tight_layout()
+    plt.savefig(f"{output}/umap_all_tools_by_dataset.png")
+    plt.show()
+
+
+def umap_by_cell_type(adata, embeddings, output):
+    n = len(embeddings)
+    ncols = 3
+    nrows = math.ceil(n / ncols)
+
+    fig, axes = plt.subplots(nrows, ncols, figsize=(11, 14))
+    axes = axes.flatten()
+
+    for i, emb in enumerate(embeddings):
+        ax = axes[i]
+        legend_loc = "right margin" if i == 7 else None
+
+        sc.pl.embedding(
+            adata,
+            basis=f"X_umap_{emb}",
+            color="label",
+            ax=ax,
+            show=False,
+            title=emb.replace("X_", ""),
+            legend_loc=legend_loc,
+            legend_fontsize = 11
+        )
+
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_xlabel("")
+        ax.set_ylabel("")
+        if i == 6:
+            ax.set_xlabel("UMAP 1")
+            ax.set_ylabel("UMAP 2")
+            ax.annotate(
+                '', xy=(0.3, -0.05),
+                xytext=(-0.06, -0.05),
+                xycoords='axes fraction',
+                arrowprops=dict(arrowstyle='->', lw=2)
+            )
+
+            ax.annotate(
+                '', xy=(-0.06, 0.3),
+                xytext=(-0.06, -0.05),
+                xycoords='axes fraction',
+                arrowprops=dict(arrowstyle='->', lw=2),
+                annotation_clip = False
+            )
+
+    for j in range(n, len(axes)):
+        fig.delaxes(axes[j])
+
+    plt.savefig(f"{output}/umap_all_tools_by_cell_type.png", dpi=300, bbox_inches="tight")
+    plt.show()
+
+
+def main():
+    output = "/Users/felixlang/Documents/Uni/Master/master-thesis/figures/integration_umaps"
+    adata_file = "/Users/felixlang/Downloads/merged_integration_final_label_on/merged_integration_final_label_on_integrated.h5ad"
+    adata = sc.read_h5ad(adata_file)
+    quickplot_umap(adata, output)
+
+if __name__ == '__main__':
+    main()

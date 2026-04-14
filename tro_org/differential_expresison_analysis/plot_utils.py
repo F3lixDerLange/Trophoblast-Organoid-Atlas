@@ -104,6 +104,9 @@ def plot_lfc_heatmap(lfc_df, dataset_specific, plot_dir, top_n=20):
     for ds in dataset_specific:
         genes.extend(dataset_specific[ds][:top_n])
 
+    for ds in dataset_specific:
+        print(f"{ds}: {len(dataset_specific[ds])}")
+
     genes = pd.Index(genes).unique()
     mat = lfc_df.loc[genes]
 
@@ -139,7 +142,7 @@ def plot_lfc_heatmap(lfc_df, dataset_specific, plot_dir, top_n=20):
         cbar_kws={"label": "log2 Fold Change"}
     )
 
-    fig.suptitle("Dataset-specific genes (log2 Fold Change)", fontsize=14)
+    fig.suptitle("Dataset-specific genes (log2 Fold Change)", fontsize=24)
     fig.supxlabel("Dataset")
     axes[0].set_xlabel("")
     axes[1].set_xlabel("")

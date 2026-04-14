@@ -4,6 +4,7 @@ import scanpy as sc
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.sparse as sp
+import tro_org.utils.utils as tutils
 
 FS = 20
 
@@ -72,7 +73,8 @@ def identify_batch_specific_genes(adata, batch_key="batch", hi=0.1, lo=0.01):
     plt.savefig("figures/batch_specific_genes.png", dpi=300)
     plt.show()
 
-def identify_shared_genes_all_batches(adata, batch_key="batch", min_mean=0.2, min_pct=0.4,top_n=80):
+def identify_shared_genes_all_batches(adata, batch_key="batch", min_mean=0.2, min_pct=0.4,top_n=60):
+    adata = tutils.filter_invivo_cells(adata, batch_key)
     batches = list(pd.unique(adata.obs[batch_key]))
     var_names = adata.var_names
 
@@ -105,21 +107,22 @@ def identify_shared_genes_all_batches(adata, batch_key="batch", min_mean=0.2, mi
     #print(expr_df.columns.tolist())
     #print(expr_df)
 
-    mat = expr_df.T.astype(float)
+    mat = expr_df.astype(float)
 
-    batch_labels = [str(b).replace("Arutyunyan_", "") for b in mat.columns]
-    plt.figure(figsize=(8, 14))
+    batch_labels = [str(b).replace("Arutyunyan_", "") for b in mat.T.columns]
+    print(batch_labels)
+    plt.figure(figsize=(18, 6))
     ax = sns.heatmap(
         mat,
         cmap="viridis",
     )
-    plt.title("Mean expression of genes expressed in all batches", fontsize=FS, pad=15)
-    plt.ylabel("Genes", fontsize=FS)
-    plt.xlabel("Batch", fontsize=FS)
-    plt.xticks(rotation=45, ha="right")
-    ax.set_yticks(np.arange(len(expr_df.columns)) + 0.5)
-    ax.set_yticklabels(expr_df.columns)
-    ax.set_xticklabels(batch_labels)
+    plt.title(f"Mean expression of genes expressed in all batches Top {top_n}", fontsize=FS, pad=15)
+    plt.xlabel("Genes", fontsize=FS)
+    plt.ylabel("Batch", fontsize=FS)
+    plt.yticks(rotation=45 , ha="right", rotation_mode="anchor")
+    ax.set_xticks(np.arange(len(expr_df.columns)) + 0.5)
+    ax.set_xticklabels(expr_df.columns)
+    ax.set_yticklabels(batch_labels)
     plt.tight_layout()
     plt.savefig("figures/genes_expressed_all_batches.png", dpi=300)
     plt.show()

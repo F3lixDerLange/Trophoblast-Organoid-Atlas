@@ -11,6 +11,7 @@ import tro_org.benchmark.utils as utils
 import tro_org.utils.plot_utils as pu
 from tro_org.benchmark.usage_profiler import profile_resources
 from tro_org.benchmark.plot_utils import plot_dotplot_benchmark
+from tro_org.utils.utils import filter_invivo_cells
 
 def run_integrations(base_adata, output_dir, batchkey, labelkey, modeldir, usage, gtf):
     osbm_keys = ["Unintegrated"]
@@ -99,6 +100,8 @@ def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adat
     osbm_keys, integrated_adata = run_integrations(h5ad_file, output_dir, batch_key, label_key, modeldir, usage, gtf)
     if merged_adata is not None:
         osbm_keys, integrated_adata = get_data_from_scdownstream_merged(merged_adata, integrated_adata, osbm_keys, output_dir, batch_key, label_key)
+
+    integrated_adata = filter_invivo_cells(integrated_adata, batch_key)
 
     integrated_adata.obsm["Unintegrated"] = integrated_adata.obsm["X_pca"]
 

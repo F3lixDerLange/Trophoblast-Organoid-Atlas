@@ -33,7 +33,7 @@ def compute_cosign_similarity(datasets, savedir):
             results[(ref_ds_name, target_ds_name)] = cosine_similarity
 
             print(cosine_similarity.shape)
-            plot_analysis.similarity_df_heatmap(cosine_similarity, f"ref:{ref_ds_name}_target:{target_ds_name}", "CosineSimilarity", savedir, f"{ref_ds_name}_{target_ds_name}")
+            plot_analysis.similarity_df_heatmap(cosine_similarity, f"{ref_ds_name} vs. {target_ds_name} Cosine", "CosineSimilarity", savedir, f"{ref_ds_name}_{target_ds_name}")
 
 
 def pairwise_cosine_similarity(profiles1, profiles2):
@@ -77,7 +77,7 @@ def jaccard_similarity(datasets, method, top_n, savedir):
             print(f"Computing Jaccard similarity -> {ref_ds_name} -> {target_ds_name}")
             jaccard_scors = calculate_jaccard_score(markerA, markerB)
 
-            plot_analysis.similarity_df_heatmap(jaccard_scors, f"ref:{ref_ds_name}_target:{target_ds_name}, gene select: {method}", "Jaccard_Similarity", savedir, f"{ref_ds_name}_{target_ds_name}_methods:{method}")
+            plot_analysis.similarity_df_heatmap(jaccard_scors, f"{ref_ds_name} vs. {target_ds_name} Jaccard", "Jaccard_Similarity", savedir, f"{ref_ds_name}_{target_ds_name}_methods:{method}")
 
 
 
@@ -99,7 +99,7 @@ def calculate_jaccard_score(markerA, markerB):
             union = genesA | genesB
             intersection = genesA & genesB
             jaccard_index = len(intersection) / len(union) if len(union) > 0 else 0
-            jaccard_matrix.loc[typ_a, typ_b] = jaccard_index
+            jaccard_matrix.loc[typ_a, typ_b] = round(jaccard_index, 3)
 
     return jaccard_matrix
 
@@ -143,11 +143,11 @@ def generate_marker_genes(adata, label_col, methods: Literal["wilcoxon","t-test"
 
 
 def main():
-    save_dir = "tro_org/analysis/analysis_plots_org_vs_inV"
-    #config = utils.load_config("tro_org/analysis/cosine_comp_config.yaml")
-    config = utils.load_config("tro_org/analysis/organoid_vs_invivo.yaml")
+    save_dir = "tro_org/analysis/analysis_plots"
+    config = utils.load_config("tro_org/analysis/cosine_comp_config.yaml")
+    # config = utils.load_config("tro_org/analysis/organoid_vs_invivo.yaml")
     print("Loaded datasets:", [d["name"] for d in config])
-    hvg = False
+    hvg = True
     datasets = utils.load_data(config, hvg=hvg)
     if hvg:
         save_dir = f"{save_dir}_hvg"

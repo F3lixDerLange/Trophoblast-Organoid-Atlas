@@ -1,3 +1,5 @@
+import os
+
 import gseapy as gp
 import numpy as np
 from matplotlib import pyplot as plt
@@ -62,7 +64,7 @@ def gsea_analysis(data, ds):
                         outdir=None)
        return enr
 
-def plot_go_analysis(enr, key, go_plot_dir, top_n=15):
+def plot_go_analysis(enr, key, go_plot_dir, top_n=10):
        df = enr.results.sort_values("Adjusted P-value").head(top_n)
        df["neglog10_p"] = -np.log10(df["Adjusted P-value"])
        df["Term_wrapped"] = df["Term"].apply(
@@ -84,6 +86,42 @@ def plot_go_analysis(enr, key, go_plot_dir, top_n=15):
        plt.tight_layout()
        plt.savefig(f"{go_plot_dir}/{key}_go_analysis.png")
        plt.show()
+
+def plot_go_analysis_2x2(marker_dict, go_plot_dir, top_n=3):
+    keys = list(marker_dict.keys())
+
+    fig, axes = plt.subplots(2, 2, figsize=(8, 5))
+    axes = axes.flatten()
+
+    for ax, key in zip(axes, keys):
+        enr = gsea_analysis(marker_dict, key)
+
+        df = enr.results.sort_values("Adjusted P-value").head(top_n).copy()
+        df["neglog10_p"] = -np.log10(df["Adjusted P-value"])
+        df["Term_wrapped"] = df["Term"].apply(
+            lambda x: "\n".join(textwrap.wrap(str(x), width=30))
+        )
+
+        sns.barplot(
+            data=df,
+            x="neglog10_p",
+            y="Term_wrapped",
+            color="#383a6b",
+            ax=ax
+        )
+
+        ax.set_title(f"{key}", fontsize=12)
+        ax.set_xlabel("-log10(adjusted p-value)", fontsize=10)
+        ax.set_ylabel("")
+        ax.tick_params(axis="both", labelsize=9)
+        ax.xaxis.get_offset_text().set_fontsize(9)
+
+    fig.suptitle("Top 3 GO terms per dataset", fontsize=16)
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+
+    #os.makedirs(go_plot_dir, exist_ok=True)
+    #plt.savefig(f"{go_plot_dir}/go_analysis_top3_all_ds.png", dpi=300, bbox_inches="tight")
+    plt.show()
 
 def scanpy_markergenes(adata):
        sc.tl.rank_genes_groups(adata, groupby='sample', method='wilcoxon')
@@ -112,6 +150,7 @@ def go_analysis(marker_dict, go_plot_dir):
        for key in marker_dict.keys():
               result = gsea_analysis(marker_dict, key)
               plot_go_analysis(result, key, go_plot_dir)
+       plot_go_analysis_2x2(marker_dict, go_plot_dir)
 
 if __name__ == '__main__':
     go_analysis(data_res, "tro_org/differential_expresison_analysis/GO")

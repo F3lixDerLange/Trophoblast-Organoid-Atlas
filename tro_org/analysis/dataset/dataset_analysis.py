@@ -35,6 +35,7 @@ def manage_data(h5ad_file, outdir):
 
 
 def plot_data(adata, save_dir, dataset_name):
+    fs = 20
 
     sc.pp.calculate_qc_metrics(adata, inplace=True)
     if "percent_mito" in adata.obs.columns:
@@ -64,8 +65,10 @@ def plot_data(adata, save_dir, dataset_name):
         color="#383a6b",
         show=False
     )
-    axs[0].set_title("Detected Genes per Cell")
-    axs[0].set_ylabel("Number of genes")
+    axs[0].set_title("Detected Genes per Cell", fontsize=fs)
+    axs[0].set_ylabel("Number of genes", fontsize=fs)
+    axs[0].set_xlabel("")
+    axs[0].set_xticklabels([])
 
     sc.pl.violin(
         adata,
@@ -75,8 +78,10 @@ def plot_data(adata, save_dir, dataset_name):
         color="#cb1f73",
         show=False
     )
-    axs[1].set_title("Total UMI Counts per Cell")
-    axs[1].set_ylabel("UMI counts")
+    axs[1].set_title("Total UMI Counts per Cell", fontsize=fs)
+    axs[1].set_ylabel("UMI counts", fontsize=fs)
+    axs[1].set_xlabel("")
+    axs[1].set_xticklabels([])
 
     sc.pl.violin(
         adata,
@@ -86,8 +91,10 @@ def plot_data(adata, save_dir, dataset_name):
         color="#e03a3c",
         show=False
     )
-    axs[2].set_title("Mitochondrial Content")
-    axs[2].set_ylabel("Mitochondrial (%)")
+    axs[2].set_title("Mitochondrial Content", fontsize=fs)
+    axs[2].set_ylabel("Mitochondrial (%)", fontsize=fs)
+    axs[2].set_xlabel("")
+    axs[2].set_xticklabels([])
 
     sns.violinplot(
         y=adata.var["n_cells_by_counts"],
@@ -95,11 +102,12 @@ def plot_data(adata, save_dir, dataset_name):
         cut=0,
         color="#ea6d3d",
     )
-    axs[3].set_title("Cells per Gene")
-    axs[3].set_ylabel("Number of cells")
-    axs[3].text(0.5, -0.03, "n_cells_by_counts", ha='center', va='top', transform=axs[3].transAxes)
+    axs[3].set_title("Cells per Gene", fontsize=fs)
+    axs[3].set_ylabel("Number of cells", fontsize=fs)
+    #axs[3].set_xlabel("n_cells_by_counts", fontsize=fs)
+    #axs[3].text(0.5, -0.03, "n_cells_by_counts", ha='center', va='top', transform=axs[3].transAxes, fontsize=fs)
 
-    fig.suptitle(f"QC metrics {dataset_name}")
+    fig.suptitle(f"QC metrics {dataset_name}", fontsize=fs+8)
     plt.tight_layout()
     plt.savefig(f"{save_dir}/qcmetrics_{dataset_name}.png")
     plt.show()
