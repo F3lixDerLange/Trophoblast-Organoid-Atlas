@@ -101,9 +101,8 @@ def benchmark(h5ad_file, output_dir, batch_key, label_key, modeldir, merged_adat
     if merged_adata is not None:
         osbm_keys, integrated_adata = get_data_from_scdownstream_merged(merged_adata, integrated_adata, osbm_keys, output_dir, batch_key, label_key)
 
-    integrated_adata_wo_invivo = filter_invivo_cells(integrated_adata, batch_key)
-
-    integrated_adata_wo_invivo.obsm["Unintegrated"] = integrated_adata_wo_invivo.obsm["X_pca"]
+    integrated_adata_wo_invivo = filter_invivo_cells(integrated_adata, batch_key).copy()
+    integrated_adata_wo_invivo.obsm["Unintegrated"] = integrated_adata_wo_invivo.obsm["X_pca"].copy()
 
     print("benchmark")
     bm = Benchmarker(
