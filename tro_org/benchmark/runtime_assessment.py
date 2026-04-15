@@ -7,7 +7,7 @@ import scanpy as sc
 from tro_org.utils.utils import filter_invivo_cells
 from matplotlib.pyplot import title
 
-import utils
+import tro_org.benchmark.utils as utils
 
 fontsize = 16
 
