@@ -4,6 +4,7 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import scanpy as sc
+from tro_org.utils.utils import filter_invivo_cells
 from matplotlib.pyplot import title
 
 import utils
@@ -213,7 +214,7 @@ def main():
         ram_usage = tsv_ram | log_ram
 
     dataset_identifier = os.path.basename(tsv_path)
-    plot_metrics(max_usage, ram_usage, sc.read_h5ad(h5ad), output_dir, dataset_identifier)
+    plot_metrics(max_usage, ram_usage, filter_invivo_cells(sc.read_h5ad(h5ad),"batch"), output_dir, dataset_identifier)
 
     """
     -h5ad
@@ -227,7 +228,7 @@ def main():
     """
 
     """
-    python3 Trophoblast-Organoid-Atlas/tro_org/benchmark/runtime_assessment.py -h5ad nf-core_out/merged_integration/merged_samplesheet_scvi/finalized/merged.h5ad -out torg/runtime/ -log nf-core_out/merged_integration/ -tsv torg/benchmark/merged_integration_V2/resource_usage
+    python3 Trophoblast-Organoid-Atlas/tro_org/benchmark/runtime_assessment.py -h5ad nf-core_out/merged_integration/merged_samplesheet_scvi/finalized/merged.h5ad -out torg/runtime/final -log nf-core_out/merged_integration/ -tsv torg/benchmark/merged_integration_final/resource_usage
     """
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 import math
+import numpy as np
 import scanpy as sc
 from matplotlib import pyplot as plt
 import  tro_org.utils.utils as tutils
@@ -10,21 +11,38 @@ def quickplot_umap(adata, output):
     print(adata)
     adata = tutils.filter_invivo_cells(adata, "batch")
     embeddings = [ "Unintegrated", "BBKNN", "Combat", "Harmony", "Scanorama", "scVI", "LIGER", "scGlue"]
+    embeddings = ["scVI"]
 
-    """
+
     n_cells = 2000
     idx = np.random.choice(adata.n_obs, n_cells, replace=False)
 
     adata = adata[idx].copy()
-    """
+
 
     for emb in embeddings:
         sc.pp.neighbors(adata, use_rep=emb, key_added=f"neighbors_{emb}")
         sc.tl.umap(adata, neighbors_key=f"neighbors_{emb}", min_dist=0.3)
         adata.obsm[f"X_umap_{emb}"] = adata.obsm["X_umap"].copy()
 
-    umap_by_dataset(adata, embeddings, output)
-    umap_by_cell_type(adata, embeddings, output)
+    # umap_by_dataset(adata, embeddings, output)
+    # umap_by_cell_type(adata, embeddings, output)
+        fig, ax = plt.subplots(figsize=(10, 6))
+        sc.pl.embedding(
+            adata,
+            basis=f"X_umap_{emb}",
+            color="sample",
+            title=emb.replace("X_", ""),
+            legend_loc='right margin',
+            legend_fontsize=12,
+            show=False,
+            ax=ax,
+            size=3,
+        )
+
+        plt.tight_layout()
+        #plt.savefig('final_atlas_umap.pdf', dpi=300, bbox_inches='tight')
+        plt.show()
 
 
 def umap_by_dataset(adata, embeddings, output):
