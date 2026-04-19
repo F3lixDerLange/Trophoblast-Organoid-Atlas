@@ -33,16 +33,17 @@ def filter_adata(adata):
     # filtering steps from https://www.nature.com/articles/s41596-020-0336-2
     print(f"Adata shape pre filtering {adata.shape}")
     adata = filter_invivo_cells(adata, "batch")
+    adata = adata.copy()
     sc.pp.filter_cells(adata, min_genes=200)
     sc.pp.filter_genes(adata, min_cells=3)
-    adata = adata[adata.obs['n_genes'] < 4000, :]
+    adata = adata[adata.obs['n_genes'] < 4000, :].copy()
     mt = adata.obs["pct_counts_mt"]
     print(f"MT stats pre: min:{mt.min()}, max:{mt.max()} mean:{mt.mean()}, median:{mt.median()}")
     if mt.max() <= 1:
         adata.obs["pct_counts_mt"] = mt * 100
         print("MT percent fixed")
 
-    adata = adata[adata.obs["pct_counts_mt"] < 15.0, :]
+    adata = adata[adata.obs["pct_counts_mt"] < 15.0, :].copy()
 
 
     print(f"Adata shape post filtering {adata.shape}")
