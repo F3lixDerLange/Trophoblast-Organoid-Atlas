@@ -10,8 +10,8 @@ def filter_invivo_cells(adata, obs_key="Model"):
     print(f"Adata shape before cell filtering: {adata.shape}")
 
     model_values = adata.obs[obs_key].astype(str)
-    keep_mask = ~model_values.isin(['1_Shannon', '2_Shannon', '3_Shannon'])
-    adata = adata[keep_mask].copy()
+    keep_cells = model_values[~model_values.isin(['1_Shannon', '2_Shannon', '3_Shannon'])].index
+    adata = adata[keep_cells].copy()
 
     print(f"Adata shape after cell filtering: {adata.shape}")
     return adata
