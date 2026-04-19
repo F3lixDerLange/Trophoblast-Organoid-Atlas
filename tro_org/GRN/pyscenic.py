@@ -32,7 +32,7 @@ def adata2loom(adata, loom_path):
 def filter_adata(adata):
     # filtering steps from https://www.nature.com/articles/s41596-020-0336-2
     print(f"Adata shape pre filtering {adata.shape}")
-    adata = filter_invivo_cells(adata)
+    adata = filter_invivo_cells(adata, "batch")
     sc.pp.filter_cells(adata, min_genes=200)
     sc.pp.filter_genes(adata, min_cells=3)
     adata = adata[adata.obs['n_genes'] < 4000, :]
