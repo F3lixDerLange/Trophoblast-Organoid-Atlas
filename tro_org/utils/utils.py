@@ -11,7 +11,7 @@ def filter_invivo_cells(adata, obs_key="Model"):
 
     model_values = adata.obs[obs_key].astype(str)
     keep_mask = ~model_values.isin(['1_Shannon', '2_Shannon', '3_Shannon'])
-    adata = adata[keep_mask]
+    adata = adata[keep_mask].copy()
 
     print(f"Adata shape after cell filtering: {adata.shape}")
     return adata
