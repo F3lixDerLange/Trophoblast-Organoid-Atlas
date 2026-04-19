@@ -228,7 +228,7 @@ def main():
     """
 
     """
-    python3 Trophoblast-Organoid-Atlas/tro_org/benchmark/runtime_assessment.py -h5ad nf-core_out/merged_integration/merged_samplesheet_scvi/finalized/merged.h5ad -out torg/runtime/final -log nf-core_out/merged_integration/ -tsv torg/benchmark/merged_integration_final/resource_usage
+    python3 -m tro_org.benchmark.runtime_assessment -h5ad ~/nf-core_out/merged_integration/merged_samplesheet_scvi/finalized/merged.h5ad -out ~/torg/runtime/final -log ~/nf-core_out/merged_integration/ -tsv ~/torg/benchmark/merged_integration_final/resource_usage    
     """
 
 if __name__ == '__main__':

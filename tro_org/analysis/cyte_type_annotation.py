@@ -91,8 +91,8 @@ def cytetype_annotation_final_atlas(ds, context):
     adata.var['gene_symbols'] = adata.var_names  # shibata "features"
 
     sc.pp.neighbors(adata, use_rep="X_scvi")
-    sc.tl.umap(adata, min_dist=0.3)
-    sc.tl.leiden(adata, resolution=0.5, key_added="leiden_scvi")
+    sc.tl.umap(adata, min_dist=0.3, random_state=0)
+    sc.tl.leiden(adata, resolution=0.6, key_added="leiden_scvi")
     sc.tl.rank_genes_groups(
         adata,
         groupby="leiden_scvi",
@@ -105,11 +105,12 @@ def cytetype_annotation_final_atlas(ds, context):
 
     annotator = cytetype.CyteType(adata, group_key="leiden_scvi", rank_key='rank_genes_leiden_scvi')
 
-    adata = annotator.run(study_context=context)
+    adata = annotator.run(study_context=context, n_parallel_clusters=4,)
 
     sc.pl.embedding(adata, basis='umap', color=f'cytetype_annotation_leiden_scvi', )
     plot_final_atlas(adata,ds, "Cell Type", ds.annotation_key)
     plot_final_atlas(adata, ds, "CyteType", 'cytetype_annotation_leiden_scvi')
+    adata.copy().write(f'/Users/felixlang/Documents/Uni/Master/master-thesis/figures/cytetype/cytetype_annotated_adata.h5ad')
 
 def plot_final_atlas(adata,ds, title, color):
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -140,7 +141,7 @@ def plot_final_atlas(adata,ds, title, color):
 
     plt.tight_layout()
     plt.savefig(
-        f'/Users/felixlang/Documents/Uni/Master/master-thesis/figures/integration_umaps/umap_{ds.name}_{title.replace(" ", "")}.png',
+        f'/Users/felixlang/Documents/Uni/Master/master-thesis/figures/cytetype/umap_{ds.name}_{title.replace(" ", "")}.png',
         dpi=300, bbox_inches='tight')
     plt.show()
 
