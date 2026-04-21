@@ -1,7 +1,7 @@
 #!/bin/bash
 # Metadata
 #SBATCH --job-name scenic_Troph
-#SBATCH --time=2-00:00:00
+#SBATCH --time=3-00:00:00
 #SBATCH --no-requeue
 # Working directory
 #SBATCH --chdir /nfs/home/students/f.lang/Trophoblast-Organoid-Atlas
@@ -15,7 +15,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
-#SBATCH --mem=156G
+#SBATCH --mem=180G
 
 export TMPDIR=/nfs/home/students/f.lang/torg/TMP/$SLURM_JOB_ID
 mkdir -p $TMPDIR
