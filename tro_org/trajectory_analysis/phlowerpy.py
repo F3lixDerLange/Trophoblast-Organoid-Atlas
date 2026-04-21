@@ -36,7 +36,7 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
     """
 
     # load kidney anndata with MOJITOO reduction and clustering
-    phlower.ext.ddhodge(adata, basis=emb_key, roots=(adata.obs.label==startcluster), k=7, npc=100, ndc=40, s=2,
+    phlower.ext.ddhodge(adata, basis=emb_key, roots=(adata.obs[cluster_key]==startcluster), k=7, npc=100, ndc=40, s=2,
                         lstsq_method='cholesky', verbose=True)
 
     figs = []
@@ -87,7 +87,7 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                                      node_size=5)
     plt.savefig(f"{output}/phlower/triangle_density_{emb_key}.png")
 
-    pu.plot_scatter_cluster_pseudotime(adata, 'u', output, "phlower", emb_key)
+    pu.plot_scatter_cluster_pseudotime(adata, 'u', output, "phlower", emb_key, cluster_key)
 
     """
     # Graph holdge laplacian TODO Debug

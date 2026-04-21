@@ -90,7 +90,7 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
                            ax=ax,
                            )
 
-            pu.plot_scatter_cluster_pseudotime(adata, "palantir_pseudotime", output, "palantir", emb_key)
+            pu.plot_scatter_cluster_pseudotime(adata, "palantir_pseudotime", output, "palantir", emb_key, cluster_key)
 
             if len(terminal_states) > 0:
                 print(f"Success with knn={k}")

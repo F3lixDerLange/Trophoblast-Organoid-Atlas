@@ -78,7 +78,7 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                        ax=ax,
                        )
 
-        pu.plot_scatter_cluster_pseudotime(adata, 't', output, "scFates", emb_key)
+        pu.plot_scatter_cluster_pseudotime(adata, 't', output, "scFates", emb_key, cluster_key)
 
     except Exception as e:
         print(f"Something went wrong {e}")

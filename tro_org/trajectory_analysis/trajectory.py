@@ -1,8 +1,7 @@
 import argparse
-from pathlib import Path
-
 import scanpy as sc
 import anndata as ad
+from pathlib import Path
 from tro_org.trajectory_analysis import PAGA
 from tro_org.trajectory_analysis import phlowerpy
 from tro_org.trajectory_analysis import palantir_py
@@ -23,9 +22,11 @@ def setup_traj_analysis(adata_file, output_dir, label_key, sub_cluster=None, dat
 
             if "sub" in dc.keys():
                 for cluster in dc["sub"].keys():
-                    print(f"Loading {cluster} from {path} containing: {dc["sub"][cluster]}")
-                    adata_sub = adata[adata.obs["label"].isin(dc["sub"][cluster])].copy()
+                    print(dc["sub"][cluster])
+                    print(f"Loading {cluster} from {path} containing {len(dc["sub"][cluster])}: {dc["sub"][cluster]}")
+                    adata_sub = adata[adata.obs[label_key].isin(dc["sub"][cluster])].copy()
                     print(adata_sub)
+                    print(f"Startcluster: {dc["sub"][cluster][0]}")
                     traj_analysis(adata_sub, output_dir, label_key, dc["sub"][cluster][0], f"Sub_cluster_{cluster}")
                     # root is saved in the dict form the config -> root is the first item in the dict
                     out_path = Path(output_dir) / "adata"
@@ -37,7 +38,7 @@ def setup_traj_analysis(adata_file, output_dir, label_key, sub_cluster=None, dat
 
     elif isinstance(adata_file, ad.AnnData):
         if sub_cluster is not None:
-            adata_file_sub = adata_file[adata_file.obs["label"].isin(sub_cluster)].copy()
+            adata_file_sub = adata_file[adata_file.obs[label_key].isin(sub_cluster)].copy()
             if adata_file_sub.shape[0] == 0:
                 raise ValueError("Anndata Object is empty")
             print(adata_file_sub)
@@ -48,14 +49,15 @@ def setup_traj_analysis(adata_file, output_dir, label_key, sub_cluster=None, dat
 
 
 def traj_analysis(adata, output_dir, label_key, startcluster, dataset):
-    methods = ['BBKNN', 'Combat', 'Harmony', 'LIGER', 'Scanorama', 'Unintegrated', 'scGlue', 'scVI']
+    # methods = ['BBKNN', 'Combat', 'Harmony', 'LIGER', 'Scanorama', 'Unintegrated', 'scGlue', 'scVI']
+    methods = ['scVI']
 
     for emb_key in methods:
         if emb_key in adata.obsm.keys():
             output_dir_tmp = f"{output_dir}/{dataset}/{emb_key}"
             print(output_dir_tmp)
             PAGA.sc_paga(adata, emb_key, startcluster, label_key, output_dir_tmp)
-            phlowerpy.phlower_traj(adata, emb_key, startcluster, label_key, output_dir_tmp)
+            #phlowerpy.phlower_traj(adata, emb_key, startcluster, label_key, output_dir_tmp)
             palantir_py.palantir_traj(adata, emb_key, startcluster, label_key,output_dir_tmp)
             scFates_py.scfates_traj(adata, emb_key, startcluster, label_key, output_dir_tmp)
 
@@ -75,7 +77,7 @@ def main():
     setup_traj_analysis(adata_file, out_dir, label_key)
 
     """
-    -adata tro_org/trajectory_analysis/trajectory_datasets.yaml 
+    -adata tro_org/trajectory_analysis/trajectory_datasets_local.yaml
     -output tro_org/trajectory_analysis/figures 
     -lk label 
     # -d shibata

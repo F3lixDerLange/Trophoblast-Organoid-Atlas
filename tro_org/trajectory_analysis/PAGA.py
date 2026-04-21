@@ -77,4 +77,4 @@ def sc_paga(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
                    ax=ax,
                    )
 
-    pu.plot_scatter_cluster_pseudotime(adata, 'dpt_pseudotime', output, "PAGA", emb_key)
+    pu.plot_scatter_cluster_pseudotime(adata, 'dpt_pseudotime', output, "PAGA", emb_key, cluster_key)
