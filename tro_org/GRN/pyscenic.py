@@ -52,7 +52,7 @@ def filter_adata(adata):
     return adata
 
 
-def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filter=False, multiprocessing=False):
+def create_grn(adata, data_dir, dataset, label_key, image=None, num_workers=16, adata_filter=False, multiprocessing=False):
     scenic_dir = os.path.split(data_dir)[0]
     save_dir = Path(f"{scenic_dir}/figure")
 
@@ -164,7 +164,7 @@ def create_grn(adata, data_dir, dataset, image=None, num_workers=16, adata_filte
     else:
         print(f"Skip ctx generation ---- {dataset}_pyscenic_output.loom already exists")
 
-    pu.pyscenic_heatmaps(adata, data_dir, dataset, save_dir)
+    pu.pyscenic_heatmaps(adata, data_dir, dataset, save_dir, label_key)
 
 
 def main():
@@ -175,6 +175,7 @@ def main():
     parser.add_argument("-f", "--adata_filter", required=False, action="store_true", help="filter adata")
     parser.add_argument("-m", "--multiprocessing", required=False, action="store_true", help="activate multiprocessing")
     parser.add_argument("-n", "--num_workers", required=False, help="Number of workers")
+    parser.add_argument("-l", "--label_key", required=True, help="obsm label key")
     #parser.add_argument("-o", "--output", required=True)
     args = parser.parse_args()
     image = args.image
@@ -183,6 +184,7 @@ def main():
     adata_f = args.adata_filter
     multipros = args.multiprocessing
     num_workers = args.num_workers
+    label_key = args.label_key
     #out_dir = args.output
 
     print(num_workers)
@@ -191,7 +193,7 @@ def main():
 
     start = time.time()
     adata = sc.read_h5ad(adata_path)
-    create_grn(adata, data_path, dataset, image, num_workers=num_workers, adata_filter=adata_f, multiprocessing=multipros)
+    create_grn(adata, data_path, dataset, label_key, image, num_workers=num_workers, adata_filter=adata_f, multiprocessing=multipros)
     end = time.time()
     print(f"{dataset} pyscenic GRN took {end-start} seconds -- {(end-start)//60} minutes")
 
