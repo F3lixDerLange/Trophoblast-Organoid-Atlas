@@ -15,7 +15,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
-#SBATCH --mem=64G
+#SBATCH --mem=128G
 
 export TMPDIR=/nfs/home/students/f.lang/torg/TMP/$SLURM_JOB_ID
 mkdir -p $TMPDIR
