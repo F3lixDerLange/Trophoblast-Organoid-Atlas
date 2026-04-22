@@ -7,6 +7,7 @@ import loompy as lp
 import scanpy as sc
 import anndata as ad
 import tro_org.utils.utils as utils
+from tro_org.analysis.plot_analysis import fontsize
 
 COLORS = ["#fcc72d", "#383a6b", "#cb1f73", "#e03a3c", "#ea6d3d", "#6a5fa8",
             "#f89c1c", "#b33a2b", "#7a1e3a", "#1f2a44", "#5c8d89", "#8a7bd1",
@@ -127,11 +128,12 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, l
 
     plot_df = (mean_expr.reset_index().melt(id_vars=label_key, var_name="TF", value_name="mean_expression"))
 
-    plt.figure(figsize=(7,12), dpi=150)
+    plt.figure(figsize=(5,12), dpi=150)
     sns.scatterplot(data=plot_df, x="mean_expression", y="TF", hue=label_key, s=90, palette=COLORS)
-    plt.xlabel("Mean TF expression")
-    plt.title(f"TF expression across cell types \n{dataset}")
-    plt.legend(title="label", loc='upper left', bbox_to_anchor=(1, 1))
+    plt.xlabel("Mean TF expression", fontsize=14)
+    plt.ylabel("TF", fontsize=14)
+    plt.title(f"TF expression across cell types \n{dataset}", fontsize=14)
+    plt.legend(title="label", loc='upper left', bbox_to_anchor=(1, 1), fontsize=14)
     plt.grid(True, axis="x", alpha=0.3)
     #plt.tight_layout()
     plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_mean_expression_celltype_allinone.png", dpi=150, bbox_inches="tight")
