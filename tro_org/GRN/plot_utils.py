@@ -127,7 +127,7 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, l
 
     plot_df = (mean_expr.reset_index().melt(id_vars=label_key, var_name="TF", value_name="mean_expression"))
 
-    plt.figure(figsize=(5,10), dpi=150)
+    plt.figure(figsize=(10,12), dpi=150)
     sns.scatterplot(data=plot_df, x="mean_expression", y="TF", hue=label_key, s=90, palette=COLORS)
     plt.xlabel("Mean TF expression")
     plt.title(f"TF expression across cell types \n{dataset}")
