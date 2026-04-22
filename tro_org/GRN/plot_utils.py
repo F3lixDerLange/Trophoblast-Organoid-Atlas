@@ -35,7 +35,7 @@ def quantile_histplot(adata, dataset, outdir):
     plt.savefig(f"{outdir}/{dataset}/{dataset}_quantile_histplot.png", dpi=150)
     plt.show()
 
-def pyscenic_heatmaps(adata, data_dir, dataset, outdir):
+def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
     sc.set_figure_params(dpi_save=300, figsize=(10, 8), fontsize=14, vector_friendly=True)
     utils.ensure_dir(f"{outdir}/{dataset}")
     sc.settings.figdir = f"{outdir}/{dataset}"
@@ -51,10 +51,10 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir):
 
     adata.obsm["X_umap_aucell"] = ad_auc_mtx.obsm["X_umap"]
 
-    sc.pl.embedding(adata, basis="X_umap_aucell", color="label")
+    sc.pl.embedding(adata, basis="X_umap_aucell", color=label_key)
 
-    auc_mtx["label"] = adata.obs["label"]
-    mean_auc_by_cell_type = auc_mtx.groupby("label").mean()
+    auc_mtx[label_key] = adata.obs[label_key]
+    mean_auc_by_cell_type = auc_mtx.groupby(label_key).mean()
 
     top_n = 50
     top_tfs = mean_auc_by_cell_type.max(axis=0).sort_values(ascending=False).head(top_n)
@@ -82,7 +82,7 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir):
     sc.pl.matrixplot(
         adata_batch_top_tfs,
         tf_names,
-        groupby="label",
+        groupby=label_key,
         cmap=LinearSegmentedColormap.from_list("single_color",["#ffffff", "#383a6b"]),
         dendrogram=False,
         figsize=(15, 5.5),
@@ -92,12 +92,12 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir):
     )
     plt.show()
 
-    top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir)
-    top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir)
+    top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir, label_key)
+    top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, label_key)
 
 
-def top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir):
-    celltypes = adata_batch_top_tfs.obs["label"].astype(str).unique()
+def top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir, label_key):
+    celltypes = adata_batch_top_tfs.obs[label_key].astype(str).unique()
 
     for ct in celltypes:
         expr_df = adata_batch_top_tfs.to_df()
@@ -116,19 +116,19 @@ def top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir):
         plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_mean_expression_in_{ct}", dpi=150)
         plt.show()
 
-def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir):
+def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, label_key):
     expr_df = adata_batch_top_tfs.to_df()
-    expr_df["label"] = adata_batch_top_tfs.obs["label"].values
+    expr_df[label_key] = adata_batch_top_tfs.obs[label_key].values
     print(expr_df.head())
 
-    mean_expr = expr_df.groupby("label").mean()
+    mean_expr = expr_df.groupby(label_key).mean()
     tf_order = mean_expr.mean(axis=0).sort_values(ascending=False).index
     mean_expr = mean_expr[tf_order]
 
-    plot_df = (mean_expr.reset_index().melt(id_vars="label", var_name="TF", value_name="mean_expression"))
+    plot_df = (mean_expr.reset_index().melt(id_vars=label_key, var_name="TF", value_name="mean_expression"))
 
     plt.figure(figsize=(5,10), dpi=150)
-    sns.scatterplot(plot_df, x="mean_expression", y="TF", hue="label", s=90, palette=COLORS)
+    sns.scatterplot(plot_df, x="mean_expression", y="TF", hue=label_key, s=90, palette=COLORS)
     plt.xlabel("Mean TF expression")
     plt.title(f"TF expression across cell types \n{dataset}")
     plt.legend(title="label", bbox_to_anchor=(1.02, 1), loc="upper left")

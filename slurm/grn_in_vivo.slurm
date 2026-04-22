@@ -1,6 +1,6 @@
 #!/bin/bash
 # Metadata
-#SBATCH --job-name scenic_Shibata
+#SBATCH --job-name scenic_in_vivo
 #SBATCH --time=2-00:00:00
 #SBATCH --no-requeue
 # Working directory
@@ -20,4 +20,4 @@
 export TMPDIR=/nfs/home/students/f.lang/torg/TMP/$SLURM_JOB_ID
 mkdir -p $TMPDIR
 
-srun python3 -m tro_org.GRN.pyscenic -i singularity -a /nfs/home/students/f.lang/torg/GRN/data/subcluster_Shibata-CT_integrated.h5ad -d /nfs/home/students/f.lang/torg/GRN/data/ -n 64 -f -m -l cytetype_annotation_leiden_scvi
+srun python3 -m tro_org.GRN.pyscenic -i singularity -a /nfs/home/students/f.lang/torg/GRN/data/integrated_invivo.h5ad -d /nfs/home/students/f.lang/torg/GRN/data/ -n 64 -f -m -l label

@@ -11,38 +11,22 @@ def quickplot_umap(adata, output):
     print(adata)
     adata = tutils.filter_invivo_cells(adata, "batch")
     embeddings = [ "Unintegrated", "BBKNN", "Combat", "Harmony", "Scanorama", "scVI", "LIGER", "scGlue"]
-    embeddings = ["scVI"]
+    # embeddings = ["scVI"]
 
-
+    """
     n_cells = 2000
     idx = np.random.choice(adata.n_obs, n_cells, replace=False)
 
     adata = adata[idx].copy()
-
+    """
 
     for emb in embeddings:
         sc.pp.neighbors(adata, use_rep=emb, key_added=f"neighbors_{emb}")
-        sc.tl.umap(adata, neighbors_key=f"neighbors_{emb}", min_dist=0.3)
+        sc.tl.umap(adata, neighbors_key=f"neighbors_{emb}", min_dist=0.3, random_state=0)
         adata.obsm[f"X_umap_{emb}"] = adata.obsm["X_umap"].copy()
 
-    # umap_by_dataset(adata, embeddings, output)
-    # umap_by_cell_type(adata, embeddings, output)
-        fig, ax = plt.subplots(figsize=(10, 6))
-        sc.pl.embedding(
-            adata,
-            basis=f"X_umap_{emb}",
-            color="sample",
-            title=emb.replace("X_", ""),
-            legend_loc='right margin',
-            legend_fontsize=12,
-            show=False,
-            ax=ax,
-            size=3,
-        )
-
-        plt.tight_layout()
-        #plt.savefig('final_atlas_umap.pdf', dpi=300, bbox_inches='tight')
-        plt.show()
+    umap_by_dataset(adata, embeddings, output)
+    umap_by_cell_type(adata, embeddings, output)
 
 
 def umap_by_dataset(adata, embeddings, output):
@@ -138,12 +122,47 @@ def umap_by_cell_type(adata, embeddings, output):
     plt.savefig(f"{output}/umap_all_tools_by_cell_type.png", dpi=300, bbox_inches="tight")
     plt.show()
 
+def quick_umap():
+    adata = sc.read_h5ad("/Users/felixlang/Documents/Uni/Master/master-thesis/figures/cytetype/cytetype_annotated_adata.h5ad")
+
+    fig, ax = plt.subplots(figsize=(10, 6))
+    sc.pl.embedding(adata,
+                    basis='umap',
+                    color="label",
+                    title=f'Cell Type annotation Final Atlas',
+                    legend_loc='on data',
+                    legend_fontsize=12,
+                    show=False,
+                    ax=ax,
+                    size=3)
+
+    legend = ax.get_legend()
+    if legend is not None:
+        handles = legend.legend_handles
+        labels = [t.get_text() for t in legend.get_texts()]
+        ax.legend(
+            handles,
+            labels,
+            loc='center left',
+            bbox_to_anchor=(1.0, 0.5),
+            ncol=2,
+            fontsize=12,
+            frameon=False,
+            markerscale=1.2
+        )
+
+    plt.tight_layout()
+    plt.savefig(
+        f'/Users/felixlang/Documents/Uni/Master/master-thesis/figures/cytetype/umap_celltype_final_atals.png',
+        dpi=300, bbox_inches='tight')
+    plt.show()
 
 def main():
     output = "/Users/felixlang/Documents/Uni/Master/master-thesis/figures/integration_umaps"
-    adata_file = "/Users/felixlang/Downloads/merged_integration_final_label_on/merged_integration_final_label_on_integrated.h5ad"
+    adata_file = "/Users/felixlang/Downloads/merged_integration_final/merged_integration_final_integrated.h5ad"
     adata = sc.read_h5ad(adata_file)
     quickplot_umap(adata, output)
+    quick_umap()
 
 if __name__ == '__main__':
     main()
