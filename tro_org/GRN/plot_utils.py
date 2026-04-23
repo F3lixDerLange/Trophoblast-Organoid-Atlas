@@ -136,7 +136,8 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, l
     plt.legend(title="label", loc='upper left', bbox_to_anchor=(1, 1), fontsize=14)
     plt.grid(True, axis="x", alpha=0.3)
     #plt.tight_layout()
-    plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_mean_expression_celltype_allinone.png", dpi=150, bbox_inches="tight")
+    save_path = f"{outdir}/{dataset}/{dataset}_tf_mean_expression_celltype_allinone".replace(".", "_")
+    plt.savefig(f"{save_path}.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 
