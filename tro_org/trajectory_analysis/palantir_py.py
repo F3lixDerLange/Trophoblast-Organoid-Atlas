@@ -11,8 +11,8 @@ import tro_org.utils.utils as utils
 # based on https://github.com/dpeerlab/Palantir/blob/master/notebooks/Palantir_sample_notebook.ipynb
 # and https://github.com/quadbio/scRNAseq_analysis_python_vignette/blob/8a5d02e9d651fb130bad50e6c96575ec9f66086f/Tutorial.md#From-the-raw-counts-to-a-UMAP
 
-def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
-    sc.set_figure_params(dpi_save=300, figsize=(10, 8), fontsize=14, vector_friendly=True)
+def palantir_traj(adata, emb_key, startcluster, cluster_key, output, dataset, n_neighbors=30):
+    sc.set_figure_params(dpi_save=300, figsize=(8, 8), fontsize=14, vector_friendly=True)
     save_dir = Path(f"{output}/palantir")
     sc.settings.figdir = save_dir
     utils.ensure_dir(f"{output}/palantir")
@@ -74,12 +74,17 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
 
             print(adata)
 
-            sc.pl.umap(
-                adata,
-                color=["palantir_pseudotime", cluster_key],  # change key if needed
-                cmap="viridis",
-                #legend_loc='on data',
-                save=f"_palantir_pseudotime_{emb_key}.png"
+            ax = sc.pl.umap(adata,
+                            color=["palantir_pseudotime", cluster_key],  # change key if needed
+                            cmap="viridis",
+                            legend_fontsize=24,
+                            show=False, )
+            ax[0].set_title(f"Palantir Pseudotime {dataset}", fontsize=27)
+            ax[1].set_title(f"UMAP {dataset}", fontsize=27)
+            plt.savefig(
+                f"{output}/palantir/umap_pseudotime_{emb_key}_palantir_{dataset}.png",
+                dpi=150,
+                bbox_inches="tight"
             )
 
             # Debugging and decision making
@@ -90,7 +95,7 @@ def palantir_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors
                            ax=ax,
                            )
 
-            pu.plot_scatter_cluster_pseudotime(adata, "palantir_pseudotime", output, "palantir", emb_key, cluster_key)
+            pu.plot_scatter_cluster_pseudotime(adata, "palantir_pseudotime", output, "palantir", emb_key, cluster_key, dataset)
 
             if len(terminal_states) > 0:
                 print(f"Success with knn={k}")

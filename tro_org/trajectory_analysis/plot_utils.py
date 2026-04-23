@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 
-def plot_scatter_cluster_pseudotime(adata, pseudotime_key, output_dir, method, emb_key, label_key):
+def plot_scatter_cluster_pseudotime(adata, pseudotime_key, output_dir, method, emb_key, label_key, dataset):
     df = adata.obs[[label_key, pseudotime_key]].copy()
     df = df.dropna()
 
@@ -33,7 +33,7 @@ def plot_scatter_cluster_pseudotime(adata, pseudotime_key, output_dir, method, e
     plt.yticks(range(len(order)), order)
     plt.xlabel(f"{emb_key} pseudotime")
     # plt.ylabel(label_key)
-    plt.title(f"Cells ordered by {emb_key}/{method} pseudotime")
+    plt.suptitle(f"{dataset} Cells ordered by pseudotime ({emb_key}/{method})", x=0.5)
     # plt.legend(bbox_to_anchor=(1.02, 1), loc="upper left", frameon=False)
     plt.tight_layout()
-    plt.savefig(f"{output_dir}/{method}/scatter_cluster_pseudotime_{emb_key}.png")
+    plt.savefig(f"{output_dir}/{method}/scatter_cluster_pseudotime_{emb_key}_{method}_{dataset}.png")

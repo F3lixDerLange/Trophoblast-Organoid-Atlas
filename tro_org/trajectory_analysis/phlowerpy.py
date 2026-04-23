@@ -11,8 +11,8 @@ import tro_org.utils.utils as utils
 # Followed https://phlower.readthedocs.io/en/latest/notebooks/fib2neuron.html and
 # https://phlower.readthedocs.io/en/latest/notebooks/kidney.html
 
-def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
-    sc.set_figure_params(dpi_save=300, figsize=(10, 8), fontsize=14, vector_friendly=True)
+def phlower_traj(adata, emb_key, startcluster, cluster_key, output, dataset, n_neighbors=30):
+    sc.set_figure_params(dpi_save=300, figsize=(8, 8), fontsize=14, vector_friendly=True)
     save_dir = Path(f"{output}/phlower")
     sc.settings.figdir = save_dir
     utils.ensure_dir(f"{output}/phlower")
@@ -48,12 +48,19 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
     plt.savefig(f"{output}/phlower/pseudotime_{emb_key}.png")
 
 
-    sc.pl.umap(adata,
+    ax = sc.pl.umap(adata,
                color=['u', cluster_key],
                cmap="viridis",
-               legend_loc='on data',
-               save=f"_phlower_pseudotime_{emb_key}.png"
+               legend_fontsize=24,
+               show=False,
                )
+    ax[0].set_title(f"Phlower Pseudotime {dataset}", fontsize=27)
+    ax[1].set_title(f"UMAP {dataset}", fontsize=27)
+    plt.savefig(
+        f"{output}/phlower/umap_pseudotime_{emb_key}_phlower_{dataset}.png",
+        dpi=150,
+        bbox_inches="tight"
+    )
 
     # Delaunay triangulation to construct graph with holes
     phlower.tl.construct_delaunay(adata, cluster_name=cluster_key, node_attr='u', start_n=10, end_n=10, circle_quant=0.1,
@@ -87,7 +94,7 @@ def phlower_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                                      node_size=5)
     plt.savefig(f"{output}/phlower/triangle_density_{emb_key}.png")
 
-    pu.plot_scatter_cluster_pseudotime(adata, 'u', output, "phlower", emb_key, cluster_key)
+    pu.plot_scatter_cluster_pseudotime(adata, 'u', output, "phlower", emb_key, cluster_key, dataset)
 
     """
     # Graph holdge laplacian TODO Debug

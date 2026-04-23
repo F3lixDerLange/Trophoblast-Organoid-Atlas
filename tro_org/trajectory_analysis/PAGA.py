@@ -5,15 +5,18 @@ import pandas as pd
 import scanpy as sc
 from matplotlib import pyplot as plt
 from matplotlib.collections import LineCollection
+from matplotlib.pyplot import title
+
 import tro_org.trajectory_analysis.plot_utils as pu
 import tro_org.utils.utils as utils
 
 
-def sc_paga(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
-    sc.set_figure_params(dpi_save=300, figsize=(10, 8), fontsize=14, vector_friendly=True)
+def sc_paga(adata, emb_key, startcluster, cluster_key, output, dataset ,n_neighbors=30):
+    sc.set_figure_params(dpi_save=300, vector_friendly=True)
     save_dir = Path(f"{output}/PAGA")
     sc.settings.figdir = save_dir
     utils.ensure_dir(f"{output}/PAGA")
+    dataset = dataset.replace("_CT", "")
 
     sc.pp.neighbors(adata, n_neighbors=n_neighbors, use_rep=emb_key)
     sc.tl.umap(adata)
@@ -22,7 +25,7 @@ def sc_paga(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
 
     sc.tl.paga(adata, groups=cluster_key)
 
-    sc.set_figure_params(figsize=(10, 10))
+    sc.set_figure_params(figsize=(8, 8))
     fig = sc.pl.paga(
         adata,
         color=cluster_key,
@@ -62,12 +65,21 @@ def sc_paga(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
 
     adata.uns['iroot'] = np.flatnonzero(adata.obs[cluster_key] == startcluster)[0]
     sc.tl.dpt(adata)
-    sc.pl.umap(adata,
+
+    ax = sc.pl.umap(adata,
                color=['dpt_pseudotime', cluster_key],
                cmap="viridis",
                #legend_loc='on data',
-               save=f"_dpt_pseudotime_{emb_key}.png"
-               )
+               legend_fontsize=24,
+               #title=[f"Pseudotime {dataset}",f"UMAP {dataset}"],
+               show=False, )
+    ax[0].set_title(f"Pseudotime {dataset}", fontsize=27)
+    ax[1].set_title(f"UMAP {dataset}", fontsize=27)
+    plt.savefig(
+        f"{output}/PAGA/umap_dpt_pseudotime_{emb_key}_PAGA_{dataset}.png",
+        dpi=150,
+        bbox_inches="tight"
+    )
 
     #Debugging and decision making
     if "Cctb_2" in adata.obs[cluster_key].unique():
@@ -77,4 +89,4 @@ def sc_paga(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
                    ax=ax,
                    )
 
-    pu.plot_scatter_cluster_pseudotime(adata, 'dpt_pseudotime', output, "PAGA", emb_key, cluster_key)
+    pu.plot_scatter_cluster_pseudotime(adata, 'dpt_pseudotime', output, "PAGA", emb_key, cluster_key, dataset)

@@ -9,8 +9,8 @@ import tro_org.trajectory_analysis.plot_utils as pu
 import tro_org.utils.utils as utils
 
 
-def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=30):
-    sc.set_figure_params(dpi_save=300, figsize=(10, 8), fontsize=14, vector_friendly=True)
+def scfates_traj(adata, emb_key, startcluster, cluster_key, output, dataset, n_neighbors=30):
+    sc.set_figure_params(dpi_save=300, figsize=(8, 8), fontsize=14, vector_friendly=True)
     save_dir = Path(f"{output}/scFates")
     sc.settings.figdir = save_dir
     utils.ensure_dir(f"{output}/scFates")
@@ -62,13 +62,20 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                           save=f"_dendrogram_label_{emb_key}.png"
                           )
 
-        sc.pl.umap(
-            adata,
-            color=["t", cluster_key],
-            cmap="viridis",
-            #legend_loc='on data',
-            save=f"_scFates_pseudotime_{emb_key}.png"
+        ax = sc.pl.umap(adata,
+                        color=['t', cluster_key],
+                        cmap="viridis",
+                        legend_fontsize=24,
+                        show=False,
+                        )
+        ax[0].set_title(f" Palantir Pseudotime {dataset}", fontsize=27)
+        ax[1].set_title(f"UMAP {dataset}", fontsize=27)
+        plt.savefig(
+            f"{output}/scFates/umap_pseudotime_{emb_key}_scFates_{dataset}.png",
+            dpi=150,
+            bbox_inches="tight"
         )
+
 
         # Debugging and decision making
         if "Cctb_2" in adata.obs[cluster_key].unique():
@@ -78,7 +85,7 @@ def scfates_traj(adata, emb_key, startcluster, cluster_key, output, n_neighbors=
                        ax=ax,
                        )
 
-        pu.plot_scatter_cluster_pseudotime(adata, 't', output, "scFates", emb_key, cluster_key)
+        pu.plot_scatter_cluster_pseudotime(adata, 't', output, "scFates", emb_key, cluster_key, dataset)
 
     except Exception as e:
         print(f"Something went wrong {e}")
