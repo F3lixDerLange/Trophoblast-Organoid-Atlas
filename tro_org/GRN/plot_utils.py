@@ -93,7 +93,7 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
     )
     plt.show()
 
-    auc_threshold = 0.1
+    auc_threshold = 0.2
     auc_mtx_top = auc_mtx[mean_auc_by_cell_type_top_n.columns]
     auc_mtx_top = auc_mtx_top.loc[adata.obs_names]
     auc_mtx_binary = (auc_mtx_top > auc_threshold).astype(np.float32)
