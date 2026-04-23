@@ -93,23 +93,28 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
     )
     plt.show()
 
-    auc_mtx_top = auc_mtx[mean_auc_by_cell_type_top_n.columns]  # keep only top N regulons
-    auc_mtx_top = auc_mtx_top.loc[adata.obs_names]  # align cell order
+    auc_threshold = 0.05
+    auc_mtx_top = auc_mtx[mean_auc_by_cell_type_top_n.columns]
+    auc_mtx_top = auc_mtx_top.loc[adata.obs_names]
+    auc_mtx_binary = (auc_mtx_top > auc_threshold).astype(np.float32)
     adata_auc_cells = ad.AnnData(
-        X=auc_mtx_top.values.astype(np.float32),
+        X=auc_mtx_binary.values,
         obs=adata.obs[[label_key]].copy(),
         var=pd.DataFrame(index=auc_mtx_top.columns)
     )
+    adata_auc_cells.layers["aucell"] = auc_mtx_top.values.astype(np.float32)
 
     sc.pl.dotplot(
         adata_auc_cells,
         var_names=mean_auc_by_cell_type_top_n.columns.tolist(),
         groupby=label_key,
+        layer="aucell",
         cmap=LinearSegmentedColormap.from_list("single_color", ["#ffffff", "#cb1f73"]),
         standard_scale="var",  # normalise per TF/regulon, not per group
         dendrogram=False,
         figsize=(15, 5.5),
         title=f"Top {top_n} TF regulons per cell type (AUCell activity)",
+        colorbar_title="Mean AUCell\nactivity (scaled)",
         save=f"{dataset}_tf_regulon_celltype_dotplot.png",
     )
 
