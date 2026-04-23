@@ -7,7 +7,6 @@ import loompy as lp
 import scanpy as sc
 import anndata as ad
 import tro_org.utils.utils as utils
-from tro_org.analysis.plot_analysis import fontsize
 
 COLORS = ["#fcc72d", "#383a6b", "#cb1f73", "#e03a3c", "#ea6d3d", "#6a5fa8",
             "#f89c1c", "#b33a2b", "#7a1e3a", "#1f2a44", "#5c8d89", "#8a7bd1",
@@ -142,13 +141,13 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, l
 
 
 def tf_target_importance(adjacencies, dataset, outdir):
-    utils.ensure_dir(f"{outdir}/{dataset}")
+    save_path = f"{outdir}/{dataset}/tf_target_importance".replace(".", "_")
+    utils.ensure_dir(save_path)
     plt.figure(figsize=(7, 5), dpi=150)
     plt.hist(np.log10(adjacencies["importance"]), bins=100)
     plt.xlim([-10, 10])
     plt.xlabel("log10(importance)")
     plt.ylabel("frequency")
     plt.title(f"Distribution TF-target importance")
-    save_path = f"{outdir}/{dataset}/tf_target_importance".replace(".", "_")
     plt.savefig(f"{save_path}.png", dpi=150, bbox_inches="tight")
     plt.show()
