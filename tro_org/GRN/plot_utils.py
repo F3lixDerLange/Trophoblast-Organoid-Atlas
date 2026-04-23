@@ -109,7 +109,7 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
         standard_scale="var",  # normalise per TF/regulon, not per group
         dendrogram=False,
         figsize=(15, 5.5),
-        title=f"Top {top_n} TF regulons per cell type (AUCell activity) - {dataset}",
+        title=f"Top {top_n} TF regulons per cell type (AUCell activity) - {dataset.replace('.', '_').split('_')[1]}",
         colorbar_title="Mean AUCell\nactivity (scaled)",
         save=f"{dataset}_tf_regulon_celltype_dotplot.png",
     )
