@@ -93,6 +93,18 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
     )
     plt.show()
 
+    sc.pl.dotplot(
+        adata_batch_top_tfs,
+        tf_names,
+        groupby=label_key,
+        cmap=LinearSegmentedColormap.from_list("single_color", ["#ffffff", "#383a6b"]),
+        standard_scale="var",  # normalise per TF/regulon, not per group
+        dendrogram=False,
+        figsize=(15, 5.5),
+        title=f"Top {top_n} TFs associated to cell types",
+        save=f"{dataset}_tf_regulon_celltype_dotplot.png",
+    )
+
     safe_dataset = dataset.replace(".", "_")
     save_path = f"{outdir}/{safe_dataset}"
     utils.ensure_dir(save_path)
