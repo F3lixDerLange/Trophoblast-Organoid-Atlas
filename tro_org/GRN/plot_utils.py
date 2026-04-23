@@ -97,11 +97,11 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
         mean_auc_by_cell_type_top_n,
         var_names=mean_auc_by_cell_type_top_n.columns.tolist(),
         groupby=label_key,
-        cmap=LinearSegmentedColormap.from_list("single_color", ["#ffffff", "#383a6b"]),
+        cmap=LinearSegmentedColormap.from_list("single_color", ["#ffffff", "#cb1f73"]),
         standard_scale="var",  # normalise per TF/regulon, not per group
         dendrogram=False,
         figsize=(15, 5.5),
-        title=f"Top {top_n} TFs associated to cell types",
+        title=f"Top {top_n} TF regulons per cell type (AUCell activity)",
         save=f"{dataset}_tf_regulon_celltype_dotplot.png",
     )
 
