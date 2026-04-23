@@ -130,9 +130,9 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, l
 
     plt.figure(figsize=(3,12), dpi=150)
     sns.scatterplot(data=plot_df, x="mean_expression", y="TF", hue=label_key, s=90, palette=COLORS)
-    plt.xlabel("Mean TF expression", fontsize=14)
-    plt.ylabel("TF", fontsize=14)
-    plt.title(f"TF expression across cell types \n{dataset}", fontsize=14)
+    plt.xlabel("Mean TF expression", fontsize=18)
+    plt.ylabel("TF", fontsize=18)
+    plt.title(f"TF expression across cell types \n{dataset}", fontsize=18)
     plt.legend(title="label", loc='upper left', bbox_to_anchor=(1, 1), fontsize=14)
     plt.grid(True, axis="x", alpha=0.3)
     #plt.tight_layout()
