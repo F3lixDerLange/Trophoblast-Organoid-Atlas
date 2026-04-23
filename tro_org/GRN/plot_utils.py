@@ -7,6 +7,7 @@ import loompy as lp
 import scanpy as sc
 import anndata as ad
 import tro_org.utils.utils as utils
+from tro_org.analysis.plot_analysis import fontsize
 
 COLORS = ["#fcc72d", "#383a6b", "#cb1f73", "#e03a3c", "#ea6d3d", "#6a5fa8",
             "#f89c1c", "#b33a2b", "#7a1e3a", "#1f2a44", "#5c8d89", "#8a7bd1",
@@ -92,8 +93,11 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
     )
     plt.show()
 
-    top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir, label_key)
-    top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, label_key)
+    safe_dataset = dataset.replace(".", "_")
+    save_path = f"{outdir}/{safe_dataset}"
+    utils.ensure_dir(save_path)
+    top_tf_per_celltype_scatter(adata_batch_top_tfs, safe_dataset, save_path, label_key)
+    top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, safe_dataset, save_path, label_key)
 
 
 def top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir, label_key):
@@ -131,23 +135,22 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, l
     sns.scatterplot(data=plot_df, x="mean_expression", y="TF", hue=label_key, s=90, palette=COLORS)
     plt.xlabel("Mean TF expression", fontsize=18)
     plt.ylabel("TF", fontsize=18)
-    plt.title(f"TF expression across cell types \n{dataset}", fontsize=18)
+    plt.title(f"TF expression across cell types \n{dataset}", fontsize=20)
     plt.legend(title="label", loc='upper left', bbox_to_anchor=(1, 1), fontsize=14)
     plt.grid(True, axis="x", alpha=0.3)
     #plt.tight_layout()
-    save_path = f"{outdir}/{dataset}/{dataset}_tf_mean_expression_celltype_allinone".replace(".", "_")
-    plt.savefig(f"{save_path}.png", dpi=150, bbox_inches="tight")
+    #save_path = f"{outdir}/{dataset}/{dataset}_tf_mean_expression_celltype_allinone".replace(".", "_")
+    plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_mean_expression_celltype_allinone.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 
 def tf_target_importance(adjacencies, dataset, outdir):
-    save_path = f"{outdir}/{dataset}".replace(".", "_")
-    utils.ensure_dir(save_path)
+    utils.ensure_dir(f"{outdir}/{dataset}")
     plt.figure(figsize=(7, 5), dpi=150)
     plt.hist(np.log10(adjacencies["importance"]), bins=100)
     plt.xlim([-10, 10])
     plt.xlabel("log10(importance)")
     plt.ylabel("frequency")
     plt.title(f"Distribution TF-target importance")
-    plt.savefig(f"{save_path}/tf_target_importance.png", dpi=150, bbox_inches="tight")
+    plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_target_importance.png", dpi=150)
     plt.show()
