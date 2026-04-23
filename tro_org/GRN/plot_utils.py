@@ -141,7 +141,7 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, l
 
 
 def tf_target_importance(adjacencies, dataset, outdir):
-    save_path = f"{outdir}/{dataset}/tf_target_importance".replace(".", "_")
+    save_path = f"{outdir}/{dataset}".replace(".", "_")
     utils.ensure_dir(save_path)
     plt.figure(figsize=(7, 5), dpi=150)
     plt.hist(np.log10(adjacencies["importance"]), bins=100)
@@ -149,5 +149,5 @@ def tf_target_importance(adjacencies, dataset, outdir):
     plt.xlabel("log10(importance)")
     plt.ylabel("frequency")
     plt.title(f"Distribution TF-target importance")
-    plt.savefig(f"{save_path}.png", dpi=150, bbox_inches="tight")
+    plt.savefig(f"{save_path}/tf_target_importance.png", dpi=150, bbox_inches="tight")
     plt.show()
