@@ -149,5 +149,6 @@ def tf_target_importance(adjacencies, dataset, outdir):
     plt.xlabel("log10(importance)")
     plt.ylabel("frequency")
     plt.title(f"Distribution TF-target importance")
-    plt.savefig(f"{outdir}/{dataset}/{dataset}_tf_target_importance.png", dpi=150)
+    save_path = f"{outdir}/{dataset}/tf_target_importance".replace(".", "_")
+    plt.savefig(f"{save_path}.png", dpi=150, bbox_inches="tight")
     plt.show()
