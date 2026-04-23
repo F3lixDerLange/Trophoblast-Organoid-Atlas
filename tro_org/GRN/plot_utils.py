@@ -93,8 +93,16 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
     )
     plt.show()
 
+    auc_mtx_top = auc_mtx[[c for c in mean_auc_by_cell_type_top_n.columns]]
+    adata.obsm["X_aucell_top"] = auc_mtx_top.loc[adata.obs_names].values
+    adata_auc_cells = ad.AnnData(
+        X=auc_mtx_top.loc[adata.obs_names].values.astype(np.float32),
+        obs=adata.obs[[label_key]],
+        var=pd.DataFrame(index=auc_mtx_top.columns)
+    )
+
     sc.pl.dotplot(
-        mean_auc_by_cell_type_top_n,
+        adata_batch_top_tfs,
         var_names=mean_auc_by_cell_type_top_n.columns.tolist(),
         groupby=label_key,
         cmap=LinearSegmentedColormap.from_list("single_color", ["#ffffff", "#cb1f73"]),
