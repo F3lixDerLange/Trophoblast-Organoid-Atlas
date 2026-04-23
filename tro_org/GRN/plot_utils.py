@@ -94,7 +94,7 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
     plt.show()
 
     safe_dataset = dataset.replace(".", "_")
-    save_path = f"{outdir}/{safe_dataset}/"
+    save_path = f"{outdir}/{safe_dataset}"
     utils.ensure_dir(save_path)
     top_tf_per_celltype_scatter(adata_batch_top_tfs, safe_dataset, save_path, label_key)
     top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, safe_dataset, save_path, label_key)
@@ -117,7 +117,7 @@ def top_tf_per_celltype_scatter(adata_batch_top_tfs, dataset, outdir, label_key)
         ax.set_title(f"Top 50 mean expressed TFs in \n{ct} - {dataset}")
         ax.grid(True, axis="x", alpha=0.3)
         fig.tight_layout()
-        plt.savefig(f"{dataset}_tf_mean_expression_in_{ct}", dpi=150)
+        plt.savefig(f"{outdir}/{dataset}_tf_mean_expression_in_{ct}", dpi=150)
         plt.show()
 
 def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, label_key):
@@ -140,7 +140,7 @@ def top_tf_per_celltype_scatter_allinone(adata_batch_top_tfs, dataset, outdir, l
     plt.grid(True, axis="x", alpha=0.3)
     #plt.tight_layout()
     #save_path = f"{outdir}/{dataset}/{dataset}_tf_mean_expression_celltype_allinone".replace(".", "_")
-    plt.savefig(f"{dataset}_tf_mean_expression_celltype_allinone.png", dpi=150, bbox_inches="tight")
+    plt.savefig(f"{outdir}/{dataset}_tf_mean_expression_celltype_allinone.png", dpi=150, bbox_inches="tight")
     plt.show()
 
 
