@@ -94,8 +94,8 @@ def pyscenic_heatmaps(adata, data_dir, dataset, outdir, label_key):
     plt.show()
 
     sc.pl.dotplot(
-        adata_batch_top_tfs,
-        tf_names,
+        mean_auc_by_cell_type_top_n,
+        var_names=mean_auc_by_cell_type_top_n.columns.tolist(),
         groupby=label_key,
         cmap=LinearSegmentedColormap.from_list("single_color", ["#ffffff", "#383a6b"]),
         standard_scale="var",  # normalise per TF/regulon, not per group
